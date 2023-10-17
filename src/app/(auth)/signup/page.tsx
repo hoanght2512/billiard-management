@@ -43,18 +43,18 @@ const Signup: React.FC = () => {
   };
 
   return (
-    <Row>
-      <Col span={24}>
-        <Card title="Sign Up" bordered={false} headStyle={{ fontSize: "25px" }}>
-          <Form
+        <Card bordered={false}>
+          <h1 style={{display: 'flex',justifyContent: 'center'}}>Sign Up</h1>
+          <Form 
             form={form}
             labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-            style={{ maxWidth: 600 }}
+            wrapperCol={{ span: 16 }}
+            style={{ maxWidth: 650 }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             validateMessages={validateMessages}
-            autoComplete="off"
+            labelAlign="left"
+            size="large"
           >
             <Form.Item<FieldType>
               label="Fullname"
@@ -117,8 +117,6 @@ const Signup: React.FC = () => {
             </Form.Item>
           </Form>
         </Card>
-      </Col>
-    </Row>
   );
 };
 

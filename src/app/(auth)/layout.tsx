@@ -1,6 +1,6 @@
 import React from 'react'
-import '@/styles/globals.css'
-import { Card, CardBody, Col, Container, Row } from 'react-bootstrap'
+import { Card, Col, Layout, Row } from 'antd'
+import '@/style/global.css'
 
 export default function RootLayout({
   children,
@@ -8,12 +8,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <Container fluid>
-      <Row>
-        <Col as={Card} color="white" md={{ span: 6, offset: 3 }}>
-          <CardBody>{children}</CardBody>
-        </Col>
+    <Layout >
+      <Row style={{minHeight: '100vh'}} justify={'center'} >
+        <Col style={{marginTop:60}} span={10}>{children}</Col>
       </Row>
-    </Container>
+    </Layout>
   )
 }
