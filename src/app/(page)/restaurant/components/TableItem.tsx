@@ -118,6 +118,94 @@ const data: DataType[] = [
     quantity: 1,
     price: 100000,
   },
+  {
+    key: 3,
+    name: 'Nước ngọt',
+    unit: 'Lon',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 4,
+    name: 'Mồi',
+    unit: 'Phần',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 2,
+    name: 'Bia',
+    unit: 'Lon',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 3,
+    name: 'Nước ngọt',
+    unit: 'Lon',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 4,
+    name: 'Mồi',
+    unit: 'Phần',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 2,
+    name: 'Bia',
+    unit: 'Lon',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 3,
+    name: 'Nước ngọt',
+    unit: 'Lon',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 4,
+    name: 'Mồi',
+    unit: 'Phần',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 2,
+    name: 'Bia',
+    unit: 'Lon',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 3,
+    name: 'Nước ngọt',
+    unit: 'Lon',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
+  {
+    key: 4,
+    name: 'Mồi',
+    unit: 'Phần',
+    hourly: false,
+    quantity: 1,
+    price: 100000,
+  },
 ]
 
 const TableItem = () => {
@@ -128,7 +216,9 @@ const TableItem = () => {
       columns={columns}
       dataSource={data}
       style={{
-        minHeight: '85vh',
+        minHeight: '82vh',
+        maxHeight: '82vh',
+        overflowY: 'scroll',
       }}
     />
   )

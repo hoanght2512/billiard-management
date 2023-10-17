@@ -11,7 +11,7 @@ const App: React.FC = () => {
       <Col span={13}>
         <Flex vertical>
           <TableItem />
-          <Flex>
+          <Flex vertical>
             <Footer />
           </Flex>
         </Flex>

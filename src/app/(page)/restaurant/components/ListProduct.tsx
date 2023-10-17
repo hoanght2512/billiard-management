@@ -54,7 +54,9 @@ const ListProduct = () => {
               hoverable
               cover={
                 <Image
-                  src={'https://picsum.photos/500/500'}
+                  src={
+                    'https://product.hstatic.net/1000141988/product/bia_heineken_lon_330_ml__2__e607f29d5ed642bc90f03c70c45c45a0.jpg'
+                  }
                   alt="product"
                   preview={false}
                 />
