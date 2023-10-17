@@ -1,37 +1,62 @@
 'use client'
 import { Button, Typography, Space, Card, Row, Col } from 'antd'
 import React from 'react'
-import TableItem from './TableItem'
 const { Text } = Typography
+
+const fullwidth: React.CSSProperties = {
+  width: '100%',
+}
+
 const Footer = () => {
   return (
-    <Row
-      style={{
-        padding: '20px',
-        backgroundColor: '#f1f2f5',
-      }}
-    >
-      <Col span={18}>
-        <Space wrap>
-          <Card hoverable cover size="small">
-            <Text strong>Tìm Khách Hàng</Text>
-          </Card>
-          <Card hoverable cover size="small">
-            <Text strong>Chuyển Bàn</Text>
-          </Card>
-          <Card hoverable cover size="small">
-            <Text strong>Đặt Bàn</Text>
-          </Card>
-          <Card hoverable cover size="small">
-            <Text strong>Tạm Tính</Text>
-          </Card>
+    <Row gutter={32} justify={'center'}>
+      <Col span={16}>
+        <Space direction="vertical" style={fullwidth}>
+          <Space direction="vertical" style={fullwidth}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Button type="primary" block>
+                  Tìm khách hàng
+                </Button>
+              </Col>
+              <Col span={12}>
+                <Button type="primary" block>
+                  Chuyển bàn
+                </Button>
+              </Col>
+            </Row>
+          </Space>
+          <Space
+            direction="vertical"
+            style={{
+              width: '100%',
+            }}
+          >
+            <Row gutter={16}>
+              <Col span={12}>
+                <Button type="primary" block>
+                  Giảm giá
+                </Button>
+              </Col>
+              <Col span={12}>
+                <Button type="primary" block>
+                  Tạm tính
+                </Button>
+              </Col>
+            </Row>
+          </Space>
         </Space>
       </Col>
-      <Col span={6}>
-        <Text strong>Tổng tiền: 0</Text>
-        <Card hoverable cover>
-          <Text strong>Thanh Toán</Text>
-        </Card>
+      <Col className="gutter-row" span={6}>
+        <Space direction="vertical" style={fullwidth}>
+          <Text strong>
+            Tổng cộng:
+            <Text type="danger"> 120.000 đ</Text>
+          </Text>
+          <Button type="primary" size="large" danger block>
+            Thanh toán
+          </Button>
+        </Space>
       </Col>
     </Row>
   )
