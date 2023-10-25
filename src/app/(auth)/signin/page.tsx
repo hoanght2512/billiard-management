@@ -1,8 +1,8 @@
 "use client";
-import { login, testProduct } from "@/app/services/userService";
+import { login } from "@/app/services/userService";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { Button, Form, Input, message } from "antd";
+import { Button, Form, Input, message, Card } from "antd";
 
 const Signin = () => {
   const success = () => {
@@ -31,7 +31,8 @@ const Signin = () => {
         message.error(jwtTokenData.message);
       };
       if (JSON.parse(JSON.stringify(jwtTokenData.status)) === true) {
-        router.replace("/");
+        // router.push("/restaurant");
+        window.location.reload();
       }
       console.log(jwtTokenData.status);
       if (jwtTokenData.status) {
@@ -48,51 +49,53 @@ const Signin = () => {
   };
 
   return (
-    <Form
-      layout="vertical"
-      onFinish={handleSubmit}
-      onSubmitCapture={(e) => e.preventDefault}
-    >
-      <h1>Đăng nhập</h1>
-      <Form.Item
-        name="username"
-        label="Tên đăng nhập"
-        rules={[
-          {
-            required: true,
-            message: "Vui lòng nhập tên đăng nhập!",
-          },
-        ]}
+    <Card style={{ width: 700}}>
+      <Form
+        layout="vertical"
+        onFinish={handleSubmit}
+        onSubmitCapture={(e) => e.preventDefault}
       >
-        <Input
-          type="username"
-          placeholder="Nhập tên đăng nhập"
-          onChange={(e) => handleChange(e, "username")}
-        />
-      </Form.Item>
+        <h1>Đăng nhập</h1>
+        <Form.Item
+          name="username"
+          label="Tên đăng nhập"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập tên đăng nhập!",
+            },
+          ]}
+        >
+          <Input
+            type="username"
+            placeholder="Nhập tên đăng nhập"
+            onChange={(e) => handleChange(e, "username")}
+          />
+        </Form.Item>
 
-      <Form.Item
-        name="password"
-        label="Mật khẩu"
-        rules={[
-          {
-            required: true,
-            message: "Vui lòng nhập mật khẩu!",
-          },
-        ]}
-      >
-        <Input
-          type="password"
-          placeholder="Nhập mật khẩu"
-          onChange={(e) => handleChange(e, "password")}
-        />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-      </Form.Item>
-    </Form>
+        <Form.Item
+          name="password"
+          label="Mật khẩu"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập mật khẩu!",
+            },
+          ]}
+        >
+          <Input
+            type="password"
+            placeholder="Nhập mật khẩu"
+            onChange={(e) => handleChange(e, "password")}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    </Card>
   );
 };
 

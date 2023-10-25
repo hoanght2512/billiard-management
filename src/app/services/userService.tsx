@@ -4,6 +4,9 @@ import { saveStorage } from "@/utils/storage";
 interface LoginPayload {
   [x: string]: unknown
 }
+interface SignupPayload{
+  [x: string]: unknown
+}
 
 export const login = async (loginDetail: LoginPayload) => {    
     const user = await axiosClient.post("http://localhost:8080/api/auth/signin", JSON.stringify(loginDetail));
@@ -17,3 +20,7 @@ export const login = async (loginDetail: LoginPayload) => {
     return user
   
  };
+ export const signup = async(signupDetail: SignupPayload) => {
+    const signup = await axiosClient.post("http://localhost:8080/api/auth/signup", JSON.stringify(signupDetail));
+    return signup
+ }

@@ -1,94 +1,78 @@
 "use client";
 import React, { useState } from "react";
 import { Button, Form, Input, Card, Col, Row } from "antd";
-import axios from "axios";
+import { useRouter } from "next/navigation";
+import { signup } from "@/app/services/userService";
 
-type FieldType = {
-  username: string;
-  fullname: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
+const SignUp = () => {
+const [signupDetail, setSignupDetail] = useState({
+  username: "",
+  fullname: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+});
+const handleChange = (event: any, field: any) => {
+  let actualValue = event.target.value;
+  setSignupDetail({
+    ...signupDetail,
+    [field]: actualValue,
+  });
 };
-
-const Signup: React.FC = () => {
-  const [form] = Form.useForm<FieldType>();
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
-
-  const validateMessages = {
-    required: "${label} is required!",
-    types: {
-      email: "${label} is not a valid email!",
-    },
-  };
-
-  const onFinish = async (values: FieldType) => {
-    console.log("Success:", values);
-
-    await axios({
-      method: "post",
-      url: "http://localhost:8080/api/auth/signup",
-      data: values,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        alert("Đăng kí thành công!"), console.log(res);
-      })
-      .catch((error) => console.log(error));
-  };
+const handleSubmit = async (event: any) => {
+  try {
+    const successSignup = await signup(signupDetail);
+    console.log(JSON.parse(JSON.stringify(successSignup)));
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
         <Card bordered={false}>
           <h1 style={{display: 'flex',justifyContent: 'center'}}>Sign Up</h1>
           <Form 
-            form={form}
             labelCol={{ span: 6 }}
             wrapperCol={{ span: 16 }}
             style={{ maxWidth: 650 }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-            validateMessages={validateMessages}
+            onFinish={handleSubmit}
+            // onFinishFailed={onFinishFailed}
             labelAlign="left"
             size="large"
           >
-            <Form.Item<FieldType>
+            <Form.Item
               label="Fullname"
               name="fullname"
               rules={[{ required: true, min: 6, max: 20 }]}
             >
-              <Input placeholder="Full name" />
+              <Input placeholder="Full name" onChange={(e) => handleChange(e, "fullname")}/>
             </Form.Item>
 
-            <Form.Item<FieldType>
+            <Form.Item
               label="Username"
               name="username"
               rules={[{ required: true, min: 6, max: 20 }]}
             >
-              <Input placeholder="Username" />
+              <Input placeholder="Username" onChange={(e) => handleChange(e, "username")}/>
             </Form.Item>
 
-            <Form.Item<FieldType>
+            <Form.Item
               label="E-mail"
               name="email"
               rules={[{ required: true, min: 6, max: 255 }, { type: "email" }]}
             >
-              <Input placeholder="E-mail" />
+              <Input placeholder="E-mail" onChange={(e) => handleChange(e, "email")}/>
             </Form.Item>
 
-            <Form.Item<FieldType>
+            <Form.Item
               label="Password"
               name="password"
               rules={[{ required: true, min: 8 }]}
             >
-              <Input.Password placeholder="Password" />
+              <Input.Password placeholder="Password" onChange={(e) => handleChange(e, "password")}/>
             </Form.Item>
 
-            <Form.Item<FieldType>
+            <Form.Item
               label="ConfirmPassword"
               name="confirmPassword"
               rules={[
@@ -100,14 +84,14 @@ const Signup: React.FC = () => {
                     }
                     return Promise.reject(
                       new Error(
-                        "The two passwords that you entered do not match!"
+                        "ConfirmPassword không trùng với Password!"
                       )
                     );
                   },
                 }),
               ]}
             >
-              <Input.Password placeholder="Confirm Password" />
+              <Input.Password placeholder="Confirm Password" onChange={(e) => handleChange(e, "confirmPassword")}/>
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
@@ -118,6 +102,5 @@ const Signup: React.FC = () => {
           </Form>
         </Card>
   );
-};
-
-export default Signup;
+            };
+export default SignUp;
