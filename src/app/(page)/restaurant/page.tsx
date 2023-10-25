@@ -4,6 +4,7 @@ import { Col, Flex, Layout, Row, Tag } from 'antd'
 import TableItem from './components/TableItem'
 import TabList from './components/TabList'
 import Footer from './components/Footer'
+import Nav from './components/Nav'
 
 const footer: React.CSSProperties = {
   padding: '15px 0',
@@ -13,7 +14,9 @@ const footer: React.CSSProperties = {
 
 const App: React.FC = () => {
   return (
-    <Row justify={'space-between'}>
+    <>
+    <Nav />
+    <Row justify={'space-between'}>   
       <Col span={13}>
         <Flex vertical>
           <TableItem />
@@ -26,6 +29,7 @@ const App: React.FC = () => {
         <TabList />
       </Col>
     </Row>
+    </>
   )
 }
 
