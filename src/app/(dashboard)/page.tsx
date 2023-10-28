@@ -1,22 +1,30 @@
-'use client'
-import React, { useState } from 'react'
+"use client";
+import React, { Suspense, useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
-} from '@ant-design/icons'
-import { Layout, Menu, Button, theme } from 'antd'
-
-const { Header, Sider, Content } = Layout
-
+} from "@ant-design/icons";
+import { Layout, Menu, Button, theme } from "antd";
+import Icon from "@ant-design/icons/lib/components/Icon";
+import { useNavigate, BrowserRouter } from "react-router-dom";
+import SignUp from "../(auth)/signup/page";
+import Signin from "../(auth)/signin/page";
+import AppRoomCTRL from "../(crud)/RoomCRUD/page";
+import { isBrowser } from "@/utils/is-browser";
+import { hydrate } from "react-dom";
+const { Header, Sider, Content } = Layout;
 const App: React.FC = () => {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
-  } = theme.useToken()
-
+  } = theme.useToken();
+  const [tabType, setTabType] = useState("1");
+  // const params = useParams();
+  // const location = useLocation();
+  const navigate = useNavigate();
   return (
     <Layout>
       <Sider
@@ -24,35 +32,41 @@ const App: React.FC = () => {
         collapsible
         collapsed={collapsed}
         style={{
-          overflow: 'auto',
-          height: '100vh',
+          overflow: "auto",
+          height: "100vh",
           left: 0,
           top: 0,
           bottom: 0,
           background: colorBgContainer,
         }}
       >
-        <div className="logo" style={{ padding: 10, textAlign: 'center' }}>
+        <div className="logo" style={{ padding: 10, textAlign: "center" }}>
           <h1>DASHBOARD</h1>
         </div>
         <Menu
           mode="inline"
-          defaultSelectedKeys={['1']}
+          defaultSelectedKeys={["1"]}
+          onClick={(e) => {
+            console.log(e);
+            setTabType(e.key);
+            // navigate(`/${e.key}`);
+            navigate(e.key);
+          }}
           items={[
             {
-              key: '1',
+              key: "1",
               icon: <UserOutlined />,
-              label: 'nav 1',
+              label: "Quản lý Room",
             },
             {
-              key: '2',
+              key: "2",
               icon: <VideoCameraOutlined />,
-              label: 'nav 2',
+              label: "Test Component Đăng nhập",
             },
             {
-              key: '3',
+              key: "3",
               icon: <UploadOutlined />,
-              label: 'nav 3',
+              label: "nav 3",
             },
           ]}
         />
@@ -60,12 +74,12 @@ const App: React.FC = () => {
       <Layout>
         <Header
           style={{
-            position: 'sticky',
+            position: "sticky",
             top: 0,
             zIndex: 1,
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
             background: colorBgContainer,
             padding: 0,
           }}
@@ -75,7 +89,7 @@ const App: React.FC = () => {
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
-              fontSize: '16px',
+              fontSize: "16px",
               width: 64,
               height: 64,
             }}
@@ -83,19 +97,43 @@ const App: React.FC = () => {
         </Header>
         <Content
           style={{
-            margin: '24px 16px',
+            margin: "24px 16px",
             padding: 24,
             minHeight: 280,
             background: colorBgContainer,
           }}
         >
-          <Button>
+          {+tabType === 1 && <AppRoomCTRL />}
+          {+tabType === 2 && <Signin />}
+          {+tabType === 3 && <SignUp />}
+          {/* <Button>
             <span>Button</span>
-          </Button>
+          </Button> */}
         </Content>
       </Layout>
     </Layout>
-  )
-}
+  );
+};
 
-export default App
+export default function RootLayout() {
+  const [initialRenderComplete, setInitialRenderComplete] =
+    React.useState(false);
+  React.useEffect(() => {
+    setInitialRenderComplete(true);
+  }, []);
+  if (!initialRenderComplete) {
+    return null;
+  } else {
+    if (isBrowser) {
+      return (
+        <Suspense fallback={<div>Loading...</div>}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </Suspense>
+      );
+    }
+
+    return null;
+  }
+}

@@ -10,7 +10,7 @@ const initCurrentUser: IRoom = { name: "", id: "", area:{
   // name: "", 
 } };
 
-const App: React.FC = () => {
+const AppRoomCTRL: React.FC = () => {
   const [editRoom, setEditRoom] = useState(initCurrentUser);
   const [editing, setEdit] = useState(false);
 
@@ -38,4 +38,4 @@ const App: React.FC = () => {
   )
 }
 
-export default App
+export default AppRoomCTRL
