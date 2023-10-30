@@ -9,18 +9,18 @@ interface SignupPayload{
 }
 
 export const login = async (loginDetail: LoginPayload) => {    
-    const user = await axiosClient.post("http://localhost:8080/api/auth/signin", JSON.stringify(loginDetail));
+    const response = await axiosClient.post("http://localhost:8080/api/auth/signin", JSON.stringify(loginDetail));
     // @ts-ignore 
-    if (user.status === true) {
+    if (response.status === true) {
       // @ts-ignore 
       saveStorage('access_token', user.token);
     } else{
-      console.log(user)
+      console.log(response);
     }
-    return user
+    return response;
   
  };
  export const signup = async(signupDetail: SignupPayload) => {
-    const signup = await axiosClient.post("http://localhost:8080/api/auth/signup", JSON.stringify(signupDetail));
-    return signup
+    const response = await axiosClient.post("http://localhost:8080/api/auth/signup", JSON.stringify(signupDetail));
+    return response;
  }

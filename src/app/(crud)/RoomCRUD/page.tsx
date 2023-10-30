@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Col, Flex, Layout, Row, Tag } from 'antd'
+import { Col, Flex, Layout, Row, Tag, theme } from 'antd'
 import RoomController from './components/ListRoom'
 import RoomMain from './components/TableCRUD'
 import { IRoom } from './components/interface'
@@ -18,7 +18,9 @@ const AppRoomCTRL: React.FC = () => {
     setEditRoom(room);
     // setEdit(true);
   };
-  
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
   return (
     <>
     <Row justify={'space-between'}>   
@@ -30,7 +32,7 @@ const AppRoomCTRL: React.FC = () => {
           </Flex> */}
         </Flex>
       </Col>
-      <Col span={11}>
+      <Col span={11} style={{ padding: 0, background: "" }}>
         <RoomController onEdit={onCurrentRoom}/>
       </Col>
     </Row>

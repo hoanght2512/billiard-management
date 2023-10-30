@@ -4,7 +4,7 @@ import {
   deleteArea,
   updateArea,
 } from "@/app/services/areaService";
-import { Button, Form, Input, Select, message, Row, Col, Space } from "antd";
+import { Button, Form, Input, Select, message, Row, Col, Space, Card } from "antd";
 import React, { useEffect, useState } from "react";
 import { IArea } from "./interface";
 
@@ -61,6 +61,7 @@ const TableArea: React.FunctionComponent<IProps> = (props) => {
     }
   };
   return (
+    <Card>
     <Form
       layout="vertical"
       onFinish={handleSubmit}
@@ -159,6 +160,7 @@ const TableArea: React.FunctionComponent<IProps> = (props) => {
         </Col>
       </Row>
     </Form>
+    </Card>
   );
 };
 export default TableArea;

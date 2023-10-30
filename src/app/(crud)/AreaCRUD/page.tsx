@@ -7,7 +7,7 @@ import { IArea } from './components/interface'
 
 const initCurrentUser: IArea = { name: "", id: "" };
 
-const Area: React.FC = () => {
+const AppAreaCTRL: React.FC = () => {
   const [editArea, setEditArea] = useState(initCurrentUser);
   const [editing, setEdit] = useState(false);
 
@@ -35,4 +35,4 @@ const Area: React.FC = () => {
   )
 }
 
-export default Area
+export default AppAreaCTRL

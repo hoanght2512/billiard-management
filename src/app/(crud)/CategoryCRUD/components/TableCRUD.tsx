@@ -4,7 +4,7 @@ import {
   deleteCategory,
   updateCategory,
 } from "@/app/services/categoryService";
-import { Button, Form, Input, Select, message, Row, Col, Space } from "antd";
+import { Button, Form, Input, Select, message, Row, Col, Space, Card } from "antd";
 import React, { useEffect, useState } from "react";
 import { ICategory } from "./interface";
 
@@ -61,6 +61,7 @@ const TableCategory: React.FunctionComponent<IProps> = (props) => {
     }
   };
   return (
+    <Card>
     <Form
       layout="vertical"
       onFinish={handleSubmit}
@@ -159,6 +160,7 @@ const TableCategory: React.FunctionComponent<IProps> = (props) => {
         </Col>
       </Row>
     </Form>
+    </Card>
   );
 };
 export default TableCategory;
