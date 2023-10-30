@@ -1,10 +1,16 @@
 "use client";
+import { addUnit, deleteUnit, updateUnit } from "@/app/services/unitService";
 import {
-  addUnit,
-  deleteUnit,
-  updateUnit,
-} from "@/app/services/unitService";
-import { Button, Form, Input, Select, message, Row, Col, Space } from "antd";
+  Button,
+  Form,
+  Input,
+  Select,
+  message,
+  Row,
+  Col,
+  Space,
+  Card,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { IUnit } from "./interface";
 
@@ -61,104 +67,111 @@ const TableUnit: React.FunctionComponent<IProps> = (props) => {
     }
   };
   return (
-    <Form
-      layout="vertical"
-      onFinish={handleSubmit}
-      onSubmitCapture={(e) => {
-        e.preventDefault;
-      }}
-    >
-      <Form.Item style={{ textAlign: "center" }}>
-        {editing ? (
-          <h1>Cập nhật đơn vị sản phẩm</h1>
-        ) : (
-          <h1>Tạo thêm đơn vị sản phẩm</h1>
-        )}
-      </Form.Item>
-      <Form.Item
-        name={unit?.name}
-        label="Tên đơn vị sản phẩm"
-        initialValue={unit?.name}
-        rules={[
-          {
-            required: true,
-            message: "Tên đơn vị không được để trống!",
-          },
-        ]}
+    <Card>
+      <Form
+        layout="vertical"
+        onFinish={handleSubmit}
+        onSubmitCapture={(e) => {
+          e.preventDefault;
+        }}
       >
-        <Input
-          name="name"
-          type="text"
-          placeholder="Nhập tên đơn vị sản phẩm"
-          value={unitDetail.name}
-          onChange={(e) => handleChange(e, "name")}
-        />
-      </Form.Item>
+        <Form.Item style={{ textAlign: "center" }}>
+          {editing ? (
+            <h1>Cập nhật đơn vị sản phẩm</h1>
+          ) : (
+            <h1>Tạo thêm đơn vị sản phẩm</h1>
+          )}
+        </Form.Item>
+        <Form.Item
+          name={unit?.name}
+          label="Tên đơn vị sản phẩm"
+          initialValue={unit?.name}
+          rules={[
+            {
+              required: true,
+              message: "Tên đơn vị không được để trống!",
+            },
+          ]}
+        >
+          <Input
+            name="name"
+            type="text"
+            placeholder="Nhập tên đơn vị sản phẩm"
+            value={unitDetail.name}
+            onChange={(e) => handleChange(e, "name")}
+          />
+        </Form.Item>
 
-      <Row gutter={32} justify={"center"}>
-        <Col span={16}>
-          <Space direction="vertical" style={fullwidth}>
+        <Row gutter={32} justify={"center"}>
+          <Col span={16}>
             <Space direction="vertical" style={fullwidth}>
-              <Row gutter={16}>
-                <Col span={12}>
-                  {editing ? (
-                    <Button
-                      htmlType="button"
-                      onClick={(e) => {
-                        setEdit(false);
-                        handleClick(e.preventDefault());
-                        setUnit(null);
-                      }}
-                      size="large"
-                      block
-                    >
-                      Hủy
-                    </Button>
-                  ) : (
-                    <Button htmlType="submit" type="primary" size="large" block>
-                      Thêm
-                    </Button>
-                  )}
-                </Col>
-                <Col span={12}>
-                  {editing ? (
-                    <Button
-                      type="primary"
-                      size="large"
-                      block
-                      onClick={() => {
-                        handleUpdate(unit?.id);
-                      }}
-                    >
-                      Sửa
-                    </Button>
-                  ) : (
-                    <Button type="primary" size="large" block disabled>
-                      Sửa
-                    </Button>
-                  )}
-                </Col>
-              </Row>
+              <Space direction="vertical" style={fullwidth}>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    {editing ? (
+                      <Button
+                        htmlType="button"
+                        onClick={(e) => {
+                          setEdit(false);
+                          handleClick(e.preventDefault());
+                          setUnit(null);
+                        }}
+                        size="large"
+                        block
+                      >
+                        Hủy
+                      </Button>
+                    ) : (
+                      <Button
+                        htmlType="submit"
+                        type="primary"
+                        size="large"
+                        block
+                      >
+                        Thêm
+                      </Button>
+                    )}
+                  </Col>
+                  <Col span={12}>
+                    {editing ? (
+                      <Button
+                        type="primary"
+                        size="large"
+                        block
+                        onClick={() => {
+                          handleUpdate(unit?.id);
+                        }}
+                      >
+                        Sửa
+                      </Button>
+                    ) : (
+                      <Button type="primary" size="large" block disabled>
+                        Sửa
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
+              </Space>
             </Space>
-          </Space>
-        </Col>
-        <Col className="gutter-row" span={6}>
-          <Space direction="vertical" style={fullwidth}>
-            <Button
-              type="primary"
-              size="large"
-              danger
-              block
-              onClick={() => {
-                handleDelete(unit?.id);
-              }}
-            >
-              Xóa
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-    </Form>
+          </Col>
+          <Col className="gutter-row" span={6}>
+            <Space direction="vertical" style={fullwidth}>
+              <Button
+                type="primary"
+                size="large"
+                danger
+                block
+                onClick={() => {
+                  handleDelete(unit?.id);
+                }}
+              >
+                Xóa
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+      </Form>
+    </Card>
   );
 };
 export default TableUnit;

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Space, Table, message } from "antd";
+import { Card, Space, Table, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { deleteUnit, findAll } from "@/app/services/unitService";
 import { IUnit } from "./interface";
@@ -74,7 +74,7 @@ const UnitController: React.FunctionComponent<IProps> = (props) => {
       setData(response);
       // console.log(response);
     };
-    return <Table columns={columns} dataSource={data} />;
+    return <Card><Table columns={columns} dataSource={data} /></Card>;
   };
   return <App />;
 };

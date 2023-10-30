@@ -4,22 +4,22 @@ interface categoryPayload {
     [x: string]: unknown
   }
   export const findAll = async () => {
-    const allCategory = await axiosClient.get("http://localhost:8080/api/v1/categories")
-    return allCategory;
+    const response = await axiosClient.get("http://localhost:8080/api/v1/categories")
+    return response;
   }
   export const categoryById = async (editId: any) => {
-    const categoryById = await axiosClient.get(`http://localhost:8080/api/v1/categories/${editId}`);
-    return categoryById;
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/categories/${editId}`);
+    return response;
   }
   export const addCategory = async (categoryDetail: categoryPayload) => {
-    const category = await axiosClient.post("http://localhost:8080/api/v1/categories", JSON.stringify(categoryDetail));
-    return category;
+    const response = await axiosClient.post("http://localhost:8080/api/v1/categories", JSON.stringify(categoryDetail));
+    return response;
   }
   export const deleteCategory = async (deleteId: any) => {
-    const delCategory = await axiosClient.delete(`http://localhost:8080/api/v1/categories/${deleteId}`)
-    return delCategory;
+    const response = await axiosClient.delete(`http://localhost:8080/api/v1/categories/${deleteId}`)
+    return response;
   }
   export const updateCategory = async (updId:any,categoryDetail: categoryPayload) => {
-    const updateCategory = await axiosClient.put(`http://localhost:8080/api/v1/categories/${updId}`, JSON.stringify(categoryDetail));
-    return updateCategory;
+    const response = await axiosClient.put(`http://localhost:8080/api/v1/categories/${updId}`, JSON.stringify(categoryDetail));
+    return response;
 }

@@ -7,19 +7,24 @@ import {
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Button, theme } from "antd";
+import { Layout, Menu, Button, theme, Flex, TourProps } from "antd";
 import Icon from "@ant-design/icons/lib/components/Icon";
 import { useNavigate, BrowserRouter } from "react-router-dom";
-import SignUp from "../(auth)/signup/page";
-import Signin from "../(auth)/signin/page";
 import AppRoomCTRL from "../(crud)/RoomCRUD/page";
 import { isBrowser } from "@/utils/is-browser";
 import { hydrate } from "react-dom";
+import AppUnitCTRL from "../(crud)/UnitCRUD/page";
+import AppCategoryCTRL from "../(crud)/CategoryCRUD/page";
+import AppAreaCTRL from "../(crud)/AreaCRUD/page";
+import Link from "next/link";
 const { Header, Sider, Content } = Layout;
 const App: React.FC = () => {
+  // const [editing, setEdit] = useState(false);
+  
+
   const [collapsed, setCollapsed] = useState(false);
   const {
-    token: { colorBgContainer },
+    token: { colorBgContainer, colorBgContainerDisabled },
   } = theme.useToken();
   const [tabType, setTabType] = useState("1");
   // const params = useParams();
@@ -61,17 +66,22 @@ const App: React.FC = () => {
             {
               key: "2",
               icon: <VideoCameraOutlined />,
-              label: "Test Component Đăng nhập",
+              label: "Quản lý Area",
             },
             {
               key: "3",
               icon: <UploadOutlined />,
-              label: "nav 3",
+              label: "Quản lý Unit",
+            },
+            {
+              key: "4",
+              icon: <UploadOutlined />,
+              label: "Quản lý Category",
             },
           ]}
         />
       </Sider>
-      <Layout>
+      <Layout style={{ background: colorBgContainerDisabled }}>
         <Header
           style={{
             position: "sticky",
@@ -94,18 +104,22 @@ const App: React.FC = () => {
               height: 64,
             }}
           />
+          <Link href="/restaurant">Trang thu ngân</Link>
         </Header>
+
         <Content
           style={{
             margin: "24px 16px",
             padding: 24,
             minHeight: 280,
-            background: colorBgContainer,
+            // background: colorBgContainerDisabled,
           }}
         >
           {+tabType === 1 && <AppRoomCTRL />}
-          {+tabType === 2 && <Signin />}
-          {+tabType === 3 && <SignUp />}
+          {+tabType === 2 && <AppAreaCTRL />}
+          {+tabType === 3 && <AppUnitCTRL />}
+          {+tabType === 4 && <AppCategoryCTRL />}
+
           {/* <Button>
             <span>Button</span>
           </Button> */}

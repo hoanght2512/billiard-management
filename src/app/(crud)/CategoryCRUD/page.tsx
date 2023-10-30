@@ -7,7 +7,7 @@ import { ICategory } from './components/interface'
 
 const initCurrentUser: ICategory = { name: "", id: "" };
 
-const Category: React.FC = () => {
+const AppCategoryCTRL: React.FC = () => {
   const [editCategory, setEditCategory] = useState(initCurrentUser);
   const [editing, setEdit] = useState(false);
 
@@ -35,4 +35,4 @@ const Category: React.FC = () => {
   )
 }
 
-export default Category
+export default AppCategoryCTRL

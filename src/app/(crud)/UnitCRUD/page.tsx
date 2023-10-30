@@ -7,7 +7,7 @@ import { IUnit } from './components/interface'
 
 const initCurrentUser: IUnit = { name: "", id: "" };
 
-const Unit: React.FC = () => {
+const AppUnitCTRL: React.FC = () => {
   const [editUnit, setEditUnit] = useState(initCurrentUser);
   const [editing, setEdit] = useState(false);
 
@@ -35,4 +35,4 @@ const Unit: React.FC = () => {
   )
 }
 
-export default Unit
+export default AppUnitCTRL
