@@ -3,7 +3,7 @@ import { axiosClient } from "@/lib/http/axios-client";
 interface unitPayload {
     [x: string]: unknown
   }
-  export const findAll = async () => {
+  export const findAllUnit = async () => {
     const response = await axiosClient.get("http://localhost:8080/api/v1/units")
     return response;
   }

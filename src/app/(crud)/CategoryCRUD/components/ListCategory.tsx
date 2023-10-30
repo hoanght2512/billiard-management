@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Space, Table, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { deleteCategory, findAll } from "@/app/services/categoryService";
+import { deleteCategory, findAllCategory } from "@/app/services/categoryService";
 import { ICategory } from "./interface";
 
 interface IProps {
@@ -69,7 +69,7 @@ const CategoryController: React.FunctionComponent<IProps> = (props) => {
     }, [data]);
 
     const fetchData = async () => {
-      const response = await findAll();
+      const response = await findAllCategory();
       //@ts-ignore
       setData(response);
       // console.log(response)
