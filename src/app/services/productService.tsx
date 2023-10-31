@@ -1,7 +1,7 @@
 import { axiosClient } from "@/lib/http/axios-client";
 
 interface productPayload {
-  [x: string]: unknown
+  [x: string]: any
 }
 
   export const findAll = async () => {
