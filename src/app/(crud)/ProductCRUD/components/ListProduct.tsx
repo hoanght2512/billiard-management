@@ -1,12 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Card, Space, Table, message } from "antd";
+import { Card, Image, Space, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { deleteProduct, findAll } from "@/app/services/productService";
 import { IProduct, DataTypeProduct } from "./interface";
 interface IProps {
   onEdit: (product: IProduct) => void;
 }
+const { Paragraph, Text } = Typography;
+
 const ProductController: React.FunctionComponent<IProps> = (props) => {
   const getEditId = (record: DataTypeProduct) => {
     return record.id;
@@ -27,12 +29,29 @@ const ProductController: React.FunctionComponent<IProps> = (props) => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      render: (_, record) => (
+        <Paragraph ellipsis={{ rows: 1, expandable: true, symbol: "more" }}>
+          {record.name}
+        </Paragraph>
+      ),
     },
     {
-      title: "Image",
+      title: "Url",
       dataIndex: "image",
       key: "image",
-      // render: ( record) => <img src={record.image} alt={record.image} />
+      render: (_, record) => (
+        <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: "more" }}>
+          {record.image}
+        </Paragraph>
+      ),
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (_, record) => (
+        <Image width={80} src={record.image}/>
+      ),
     },
     {
       title: "Price",
@@ -45,7 +64,7 @@ const ProductController: React.FunctionComponent<IProps> = (props) => {
       key: "category.name",
       render: (category) => {
         //@ts-ignore
-        return category.name; 
+        return category?.name;
       },
     },
     {
@@ -54,7 +73,7 @@ const ProductController: React.FunctionComponent<IProps> = (props) => {
       key: "unit.name",
       render: (unit) => {
         //@ts-ignore
-        return unit.name;
+        return unit?.name;
       },
     },
     {
@@ -92,11 +111,11 @@ const ProductController: React.FunctionComponent<IProps> = (props) => {
     const fetchData = async () => {
       const response = await findAll();
       //@ts-ignore
-      setData(response); 
+      setData(response);
     };
     return (
       <Card>
-        <Table columns={columns} dataSource={data}/>
+        <Table columns={columns} dataSource={data} />
       </Card>
     );
   };

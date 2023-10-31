@@ -10,10 +10,11 @@ interface SignupPayload{
 
 export const login = async (loginDetail: LoginPayload) => {    
     const response = await axiosClient.post("http://localhost:8080/api/auth/signin", JSON.stringify(loginDetail));
+    console.log(response.status)
     // @ts-ignore 
     if (response.status === true) {
       // @ts-ignore 
-      saveStorage('access_token', user.token);
+      saveStorage('access_token', response.token);
     } else{
       console.log(response);
     }

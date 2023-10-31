@@ -17,15 +17,19 @@ import {
   Space,
   Card,
   Popover,
-  TourProps,
-  Tour,
-  Upload 
+  Upload,
+  List,
+  Progress,
+  Image,
+  Modal,
 } from "antd";
-import { UploadOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from "react";
 import { IProduct, DataTypeCategory, DataTypeUnit } from "./interface";
 import { PlusOutlined } from "@ant-design/icons";
-import { rejects } from "assert";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { storage } from "@/firebaseConfig";
+import { RcFile, UploadFile } from "antd/es/upload";
+
 interface IProps {
   product: IProduct | null;
   setEdit: (bool: boolean) => void;
@@ -33,12 +37,61 @@ interface IProps {
 const fullwidth: React.CSSProperties = {
   width: "100%",
 };
-
+const getBase64 = (file: RcFile): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
 const TableCRUD = (props: IProps) => {
   const [editing, setEdit] = useState(false);
   const [product, setProduct] = useState<IProduct | null>(props.product);
   const [dataCategory, setDataCategory] = useState<DataTypeCategory[]>([]);
   const [dataUnit, setDataUnit] = useState<DataTypeUnit[]>([]);
+
+  const [imageFile, setImageFile] = useState<File>();
+  const [downloadURL, setDownloadURL] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [progressUpload, setProgressUpload] = useState(0);
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </div>
+  );
+  const handleCancel = () => setPreviewOpen(false);
+
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as RcFile);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1)
+    );
+  };
+  const handleSelectedFile = (files: RcFile) => {
+    // if (files && files[0].size < 10000000) {
+    setImageFile(files);
+
+    console.log(files);
+    // } else {
+    // message.error("File size to large");
+    // }
+  };
+  const handleRemoveFile = () => setImageFile(undefined);
+
+  // const handleUploadFile = () => {
+
+  // };
 
   const [productDetail, setProductDetail] = useState({
     name: "",
@@ -80,11 +133,51 @@ const TableCRUD = (props: IProps) => {
   };
 
   const handleSubmit = async (event: any) => {
-    const product = await addProduct(productDetail);
-    if (product.status) {
-      message.success("Thêm sản phẩm thành công!");
+    if (imageFile) {
+      const name = imageFile.name;
+      const urlImg = downloadURL;
+      productDetail.image = urlImg;
+      const storageRef = ref(storage, `image/${name}`);
+      const uploadTask = uploadBytesResumable(storageRef, imageFile);
+
+      uploadTask.on (
+        "state_changed",
+        (snapshot)  =>  {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+          setProgressUpload(progress); // to show progress upload
+
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          message.error(error.message);
+        },
+        ()  => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            setDownloadURL(url);
+            const addPd = async () => {
+              const product = await addProduct(productDetail);
+            if (product.status) {
+              handleRemoveFile();
+              message.success("Thêm sản phẩm thành công!");
+            }
+            }
+            addPd();
+          });
+        }
+      );
+    } else {
+      message.error("File not found");
     }
-    console.log(product);
+    // console.log(product);
   };
   const handleUpdate = async (updId: any) => {
     await updateProduct(updId, productDetail);
@@ -145,8 +238,93 @@ const TableCRUD = (props: IProps) => {
             onChange={(e) => handleChange(e, "name")}
           />
         </Form.Item>
+        {/* <Input
+              type="file"
+              placeholder="Select file to upload"
+              accept="image/png"
+              onChange={(files) => handleSelectedFile(files.target.files)}
+            /> */}
+        <Form.Item>
+          <Upload
+            name={product?.image}
+            accept="image/png, image/jpg"
+            action={"localhost:3000"}
+            listType="picture-card"
+            showUploadList={{ showRemoveIcon: true }}
+            onPreview={handlePreview}
+            beforeUpload={(file) => {
+              handleSelectedFile(file);
+              console.log(file.name);
+              return false;
+            }}
+            maxCount={1}
+          >
+            {uploadButton}
+          </Upload>
+          {imageFile && (
+            <>
+              {" "}
+              <Progress percent={progressUpload} />
+            </>
+          )}
+          <Modal
+            open={previewOpen}
+            title={previewTitle}
+            footer={null}
+            onCancel={handleCancel}
+          >
+            <img
+              alt="viewPicture"
+              style={{ width: "100%" }}
+              src={previewImage}
+            />
+          </Modal>
+        </Form.Item>
+        {/* <Card>
+          {imageFile && (
+            <>
+              <List.Item
+                extra={[
+                  <Button
+                    key="btnRemoveFile"
+                    onClick={handleRemoveFile}
+                    type="text"
+                    icon={<i className="fas fa-times"></i>}
+                  />,
+                ]}
+              >
+                <List.Item.Meta
+                  title={imageFile.name}
+                  description={`Size: ${imageFile.size}`}
+                />
+              </List.Item>
 
-        <Form.Item
+              <div className="text-right mt-3">
+                <Button
+                  loading={isUploading}
+                  type="primary"
+                  onClick={handleUploadFile}
+                >
+                  Upload
+                </Button>
+
+                <Progress percent={progressUpload} />
+              </div>
+            </>
+          )}
+
+          {downloadURL && (
+            <>
+              <Image
+                src={downloadURL}
+                alt={downloadURL}
+                style={{ width: 200, height: 200, objectFit: "cover" }}
+              />
+              <p>{downloadURL}</p>
+            </>
+          )}
+        </Card> */}
+        {/* <Form.Item
           name={product?.image}
           label="Ảnh sản phẩm"
           initialValue={product?.image}
@@ -164,10 +342,10 @@ const TableCRUD = (props: IProps) => {
             value={productDetail.image}
             onChange={(e) => handleChange(e, "image")}
           />
-          {/* <Upload maxCount={1} >
+          <Upload maxCount={1} >
             <Button icon={<UploadOutlined />}>Click to Upload</Button>
-          </Upload> */}
-        </Form.Item>
+          </Upload>
+        </Form.Item> */}
 
         <Form.Item
           name={product?.price}
@@ -275,6 +453,7 @@ const TableCRUD = (props: IProps) => {
                         type="primary"
                         size="large"
                         block
+                        loading={isUploading}
                       >
                         Thêm
                       </Button>
