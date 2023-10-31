@@ -1,47 +1,89 @@
-'use client'
-import React, { useEffect, useState } from 'react'
-import { Col, Flex, Layout, Row, Tag, theme } from 'antd'
-import ProductController from './components/ListProduct'
-import ProductMain from './components/TableCRUD'
-import { IProduct } from './components/interface'
-
-const initCurrentUser: IProduct = { name: "", id: "",image: "", price: 0,
-  category:{
-    id: "",
-    // name: "", 
-  },unit:{
-  id: "",
-  // name: "", 
-} };
+"use client";
+import React, { useEffect, useState } from "react";
+import { Col, Flex, Layout, Row, Tag, message, theme } from "antd";
+import ProductController from "./components/ListProduct";
+import ProductMain from "./components/TableCRUD";
+import { IProduct, ProductDetail } from "./components/interface";
+import {
+  addProduct,
+  deleteProduct,
+  findAll,
+  updateProduct,
+} from "@/app/services/productService";
 
 const AppProductCTRL: React.FC = () => {
-  const [editProduct, setEditProduct] = useState(initCurrentUser);
-  const [editing, setEdit] = useState(false);
+  const [editProduct, setEditProduct] = useState<IProduct>();
+  const [data, setData] = useState<IProduct[]>([]);
 
-  const onCurrentRoom = (product: IProduct) => {
-    setEditProduct(product);
-    // setEdit(true);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const response = await findAll();
+    //@ts-ignore
+    setData(response);
   };
+
+  const onCurrentProduct = (product: IProduct) => {
+    setEditProduct(product);
+  };
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const onSubmmit = async (product: ProductDetail, resetFormData: () => void) => {
+    const res = await addProduct(product);
+    if (res) {
+      message.success("Thêm sản phẩm thành công!");
+      resetFormData();
+      fetchData();
+    }
+  };
+
+  const onUpdate = async (productId: number, product: ProductDetail) => {
+    const res = await updateProduct(productId, product);
+    if (res) {
+      message.success("Cập nhật sản phẩm thành công!");
+      fetchData();
+    }
+  };
+
+  const onDelete = async (productId: number) => {
+    const res = await deleteProduct(productId);
+    if (res) {
+      message.success("Xóa thành công!");
+      fetchData();
+    }
+  };
+
   return (
     <>
-    <Row justify={'space-between'}>   
-      <Col span={12}>
-        <Flex vertical>
-          <ProductMain product={editProduct} setEdit={setEdit}/>
-          {/* <Flex vertical style={footer}>
+      <Row justify={"space-between"}>
+        <Col span={12}>
+          <Flex vertical>
+            <ProductMain
+              product={editProduct}
+              onSubmit={onSubmmit}
+              onDelete={onDelete}
+              onUpdate={onUpdate}
+            />
+            {/* <Flex vertical style={footer}>
             <Footer />
           </Flex> */}
-        </Flex>
-      </Col>
-      <Col span={11} style={{ padding: 0, background: "" }}>
-        <ProductController onEdit={onCurrentRoom}/>
-      </Col>
-    </Row>
+          </Flex>
+        </Col>
+        <Col span={11} style={{ padding: 0, background: "" }}>
+          <ProductController
+            onEdit={onCurrentProduct}
+            data={data}
+            onDelete={onDelete}
+          />
+        </Col>
+      </Row>
     </>
-  )
-}
+  );
+};
 
-export default AppProductCTRL
+export default AppProductCTRL;

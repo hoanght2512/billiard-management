@@ -1,9 +1,4 @@
 "use client";
-import {
-  addProduct,
-  deleteProduct,
-  updateProduct,
-} from "@/app/services/productService";
 import { findAllCategory } from "@/app/services/categoryService";
 import { findAllUnit } from "@/app/services/unitService";
 import {
@@ -19,38 +14,45 @@ import {
   Popover,
   TourProps,
   Tour,
-  Upload 
+  Upload,
+  InputNumber
 } from "antd";
-import { UploadOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from "react";
-import { IProduct, DataTypeCategory, DataTypeUnit } from "./interface";
-import { PlusOutlined } from "@ant-design/icons";
-import { rejects } from "assert";
+import {
+  IProduct,
+  DataTypeCategory,
+  DataTypeUnit,
+  ProductDetail,
+} from "./interface";
+
 interface IProps {
-  product: IProduct | null;
-  setEdit: (bool: boolean) => void;
+  product?: IProduct;
+  onSubmit: (product: ProductDetail, resetFormData: () => void) => void;
+  onDelete: (productId: number) => void;
+  onUpdate: (productId: number, product: ProductDetail) => void;
 }
+
+const initialValues: ProductDetail = {
+  name: "",
+  image: "",
+  price: 0,
+  productCategory: {
+    id: "",
+  },
+  productUnit: {
+    id: "",
+  },
+}
+
 const fullwidth: React.CSSProperties = {
   width: "100%",
 };
 
-const TableCRUD = (props: IProps) => {
-  const [editing, setEdit] = useState(false);
-  const [product, setProduct] = useState<IProduct | null>(props.product);
+const TableCRUD: React.FC<IProps> = (props) => {
+  const [editing, setEditing] = useState(false);
   const [dataCategory, setDataCategory] = useState<DataTypeCategory[]>([]);
   const [dataUnit, setDataUnit] = useState<DataTypeUnit[]>([]);
-
-  const [productDetail, setProductDetail] = useState({
-    name: "",
-    image: "",
-    price: 0,
-    category: {
-      id: "",
-    },
-    unit: {
-      id: "",
-    },
-  });
+  const [form] = Form.useForm<ProductDetail>();
 
   const fetchDataCategory = async () => {
     const response = await findAllCategory();
@@ -65,37 +67,32 @@ const TableCRUD = (props: IProps) => {
   };
 
   useEffect(() => {
-    setProduct(props.product);
-    setEdit(true);
     fetchDataCategory();
     fetchDataUnit();
-  }, [props]);
+  }, []);
 
-  const handleChange = (event: any, field: any) => {
-    let actualValue = event.target.value;
-    setProductDetail({
-      ...productDetail,
-      [field]: actualValue,
-    });
-  };
-
-  const handleSubmit = async (event: any) => {
-    const product = await addProduct(productDetail);
-    if (product.status) {
-      message.success("Thêm sản phẩm thành công!");
+  useEffect(() => {
+    if (props.product) {
+      setEditing(true);
+      form.setFieldsValue(props.product)
     }
-    console.log(product);
+  }, [form, props.product]);
+
+  const handleSubmit = (data: ProductDetail) => {
+      props.onSubmit(data, () => form.resetFields());
   };
-  const handleUpdate = async (updId: any) => {
-    await updateProduct(updId, productDetail);
-    clearForm();
-    console.log(props.product);
-  };
-  const handleDelete = async (deleteId: any) => {
+
+  const handleUpdate = async (productId: any) => {
     try {
-      await deleteProduct(deleteId);
-      message.success("Xóa thành công!");
-      clearForm();
+      props.onUpdate(productId, form.getFieldsValue());
+    } catch (error) {
+      message.error("Lỗi!");
+    }
+  };
+
+  const handleDelete = async (productId: any) => {
+    try {
+      props.onDelete(productId);
     } catch (error) {
       message.error("Lỗi!");
     }
@@ -107,29 +104,23 @@ const TableCRUD = (props: IProps) => {
   );
 
   const handleClick = async (event: any) => {};
-  const clearForm = () => {
-    setProduct(null);
-    setEdit(false);
-    productDetail.name = "";
-    productDetail.image = "";
-    productDetail.price = 0;
-  };
   return (
     <Card>
       <Form
+        form={form}
         layout="vertical"
         onFinish={handleSubmit}
         onSubmitCapture={(e) => {
           e.preventDefault;
         }}
+        initialValues={initialValues}
       >
         <Form.Item style={{ textAlign: "center" }}>
           {editing ? <h1>Cập nhật sản phẩm</h1> : <h1>Tạo thêm sản phẩm</h1>}
         </Form.Item>
         <Form.Item
-          name={product?.name}
+          name="name"
           label="Tên sản phẩm"
-          initialValue={product?.name}
           rules={[
             {
               required: true,
@@ -137,19 +128,12 @@ const TableCRUD = (props: IProps) => {
             },
           ]}
         >
-          <Input
-            name="name"
-            type="text"
-            placeholder="Nhập tên sản phẩm"
-            value={productDetail.name}
-            onChange={(e) => handleChange(e, "name")}
-          />
+          <Input name="name" type="text" placeholder="Nhập tên sản phẩm" />
         </Form.Item>
 
         <Form.Item
-          name={product?.image}
+          name="image"
           label="Ảnh sản phẩm"
-          initialValue={product?.image}
           rules={[
             {
               required: true,
@@ -161,37 +145,18 @@ const TableCRUD = (props: IProps) => {
             name="image"
             type="text"
             placeholder="Ảnh"
-            value={productDetail.image}
-            onChange={(e) => handleChange(e, "image")}
           />
           {/* <Upload maxCount={1} >
             <Button icon={<UploadOutlined />}>Click to Upload</Button>
           </Upload> */}
         </Form.Item>
 
-        <Form.Item
-          name={product?.price}
-          label="Giá sản phẩm"
-          initialValue={product?.price}
-          rules={[
-            {
-              required: true,
-              message: "Giá sản phẩm không được để trống!",
-            },
-          ]}
-        >
-          <Input
-            name="price"
-            type="number"
-            min={0}
-            placeholder="Nhập giá sản phẩm"
-            value={productDetail.price}
-            onChange={(e) => handleChange(e, "price")}
-          />
+        <Form.Item name="price" label="Giá sản phẩm">
+          <InputNumber addonAfter="VNĐ" name="price" min={0}/>
         </Form.Item>
 
         <Form.Item
-          name="category"
+          name={["productCategory","id"]}
           label="Danh mục"
           rules={[
             {
@@ -200,20 +165,13 @@ const TableCRUD = (props: IProps) => {
             },
           ]}
         >
-          <Select
-            value={productDetail.category.id}
-            onChange={(value) =>
-              setProductDetail({
-                ...productDetail,
-                category: {
-                  id: value,
-                },
-              })
-            }
-          >
-            {dataCategory.map((category) => (
-              <Select.Option key={category.id} value={category.id}>
-                {category.name}
+          <Select>
+            {dataCategory.map((productCategory) => (
+              <Select.Option
+                key={productCategory.id}
+                value={productCategory.id}
+              >
+                {productCategory.name}
               </Select.Option>
             ))}
             ;
@@ -221,7 +179,7 @@ const TableCRUD = (props: IProps) => {
         </Form.Item>
 
         <Form.Item
-          name="unit"
+          name={["productUnit", "id"]}
           label="Đơn vị"
           rules={[
             {
@@ -230,20 +188,10 @@ const TableCRUD = (props: IProps) => {
             },
           ]}
         >
-          <Select
-            value={productDetail.unit.id}
-            onChange={(value) =>
-              setProductDetail({
-                ...productDetail,
-                unit: {
-                  id: value,
-                },
-              })
-            }
-          >
-            {dataUnit.map((unit) => (
-              <Select.Option key={unit.id} value={unit.id}>
-                {unit.name}
+          <Select>
+            {dataUnit.map((productUnit) => (
+              <Select.Option key={productUnit.id} value={productUnit.id}>
+                {productUnit.name}
               </Select.Option>
             ))}
             ;
@@ -260,9 +208,9 @@ const TableCRUD = (props: IProps) => {
                       <Button
                         htmlType="button"
                         onClick={(e) => {
-                          setEdit(false);
+                          setEditing(false);
                           handleClick(e.preventDefault());
-                          setProduct(null);
+                          form.resetFields();
                         }}
                         size="large"
                         block
@@ -287,7 +235,7 @@ const TableCRUD = (props: IProps) => {
                         size="large"
                         block
                         onClick={() => {
-                          handleUpdate(product?.id);
+                          handleUpdate(props.product?.id);
                         }}
                       >
                         Sửa
@@ -317,7 +265,7 @@ const TableCRUD = (props: IProps) => {
                   danger
                   block
                   onClick={() => {
-                    handleDelete(product?.id);
+                    handleDelete(props.product?.id);
                   }}
                 >
                   Xóa

@@ -1,42 +1,22 @@
-export interface IBaseProduct {
+export interface IProduct {
+  id: number;
   name: string;
   image: string;
   price: number;
-  category: {
-    id: string | number;
-    // name: string
-  };
-  unit: {
-    id: string | number;
-    // name: string
-  };
+  productCategory: DataTypeCategory;
+  productUnit: DataTypeUnit;
 }
-
-export interface IProduct extends IBaseProduct{
-  id: number | string;
-}
-
-export interface DataTypeProduct {
-  id: string;
-  name: string;
-  image: string;
-  price: number;
-  category: {
-    id: number | string;
-    name: string;
-  };
-  unit: {
-    id: number | string;
-    name: string;
-  };
-}
-
 export interface DataTypeCategory {
   id: string;
   name: string;
 }
 
-export interface DataTypeUnit {
-  id: string;
+export interface DataTypeUnit extends DataTypeCategory {};
+
+export interface ProductDetail {
   name: string;
+  image: string;
+  price: number;
+  productCategory: Pick<DataTypeCategory, 'id'>;
+  productUnit: Pick<DataTypeUnit, 'id'>;
 }

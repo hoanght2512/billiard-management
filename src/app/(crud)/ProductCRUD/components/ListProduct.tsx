@@ -2,21 +2,16 @@
 import React, { useEffect, useState } from "react";
 import { Card, Space, Table, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { deleteProduct, findAll } from "@/app/services/productService";
-import { IProduct, DataTypeProduct } from "./interface";
+import { IProduct } from "./interface";
+
 interface IProps {
   onEdit: (product: IProduct) => void;
+  onDelete: (productId: number) => void;
+  data: IProduct[];
 }
-const ProductController: React.FunctionComponent<IProps> = (props) => {
-  const getEditId = (record: DataTypeProduct) => {
-    return record.id;
-  };
-  const handleDelete = async (deleteId: any) => {
-    message.success("Xóa thành công!");
-    await deleteProduct(deleteId);
-  };
 
-  const columns: ColumnsType<DataTypeProduct> = [
+const ProductController: React.FC<IProps> = (props) => {
+  const columns: ColumnsType<IProduct> = [
     {
       title: "ID",
       dataIndex: "id",
@@ -32,7 +27,6 @@ const ProductController: React.FunctionComponent<IProps> = (props) => {
       title: "Image",
       dataIndex: "image",
       key: "image",
-      // render: ( record) => <img src={record.image} alt={record.image} />
     },
     {
       title: "Price",
@@ -41,21 +35,13 @@ const ProductController: React.FunctionComponent<IProps> = (props) => {
     },
     {
       title: "Category",
-      dataIndex: "category",
-      key: "category.name",
-      render: (category) => {
-        //@ts-ignore
-        return category.name; 
-      },
+      dataIndex: ["productCategory", "name"],
+      key: "productCategory.name",
     },
     {
       title: "Unit",
-      dataIndex: "unit",
+      dataIndex: ["productUnit", "name"],
       key: "unit.name",
-      render: (unit) => {
-        //@ts-ignore
-        return unit.name;
-      },
     },
     {
       title: "Action",
@@ -70,36 +56,16 @@ const ProductController: React.FunctionComponent<IProps> = (props) => {
           >
             Edit
           </a>
-          <a
-            onClick={() => {
-              handleDelete(getEditId(record));
-            }}
-          >
-            {" "}
-            Delete
-          </a>
+          <a onClick={() => props.onDelete(record.id)}> Delete</a>
         </Space>
       ),
     },
   ];
 
-  const App = () => {
-    const [data, setData] = useState<DataTypeProduct[]>([]);
-    useEffect(() => {
-      fetchData();
-    }, [data]);
-
-    const fetchData = async () => {
-      const response = await findAll();
-      //@ts-ignore
-      setData(response); 
-    };
-    return (
-      <Card>
-        <Table columns={columns} dataSource={data}/>
-      </Card>
-    );
-  };
-  return <App />;
+  return (
+    <Card>
+      <Table columns={columns} dataSource={props.data} />
+    </Card>
+  );
 };
 export default ProductController;
