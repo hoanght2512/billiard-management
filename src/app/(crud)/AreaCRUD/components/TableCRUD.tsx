@@ -1,165 +1,162 @@
 "use client";
 import {
-  addArea,
-  deleteArea,
-  updateArea,
-} from "@/app/services/areaService";
-import { Button, Form, Input, Select, message, Row, Col, Space, Card } from "antd";
+  Button,
+  Form,
+  Input,
+  Row,
+  Col,
+  Space,
+  Card,
+  Popover,
+} from "antd";
 import React, { useEffect, useState } from "react";
-import { IArea } from "./interface";
+import { AreaDetail, IArea } from "@/lib/interfaceBase";
 
 interface IProps {
-  area: IArea | null;
-  setEdit: (bool: boolean) => void;
+  area?: IArea;
+  onSubmit: (area: AreaDetail, resetFormData: () => void) => void;
+  onDelete: (areaId: number) => void;
+  onUpdate: (areaId: number, area: AreaDetail) => void;
 }
+const initialValues: AreaDetail = {
+  name: "",
+};
 const fullwidth: React.CSSProperties = {
   width: "100%",
 };
-const TableArea: React.FunctionComponent<IProps> = (props) => {
-  const [editing, setEdit] = useState(false);
-  const [area, setArea] = useState<IArea | null>(props.area);
+
+const TableArea: React.FC<IProps> = (props) => {
+  const [editing, setEditing] = useState(false);
+  const [form] = Form.useForm<AreaDetail>();
+
   useEffect(() => {
-    setArea(props.area);
-    setEdit(true);
-  }, [props]);
-
-  const [areaDetail, setAreaDetail] = useState({
-    name: "",
-  });
-
-  const handleUpdate = async (updId: any) => {
-    await updateArea(updId, areaDetail);
-    setArea(null);
-    console.log(props.area);
-    setEdit(false);
-  };
-
-  const handleChange = (event: any, field: any) => {
-    let actualValue = event.target.value;
-    setAreaDetail({
-      ...areaDetail,
-      [field]: actualValue,
-    });
-  };
-
-  const handleSubmit = async (event: any) => {
-    const unit = await addArea(areaDetail);
-    if (unit.status) {
-      message.success("Thêm khu vực thành công!");
+    if (props.area) {
+      setEditing(true);
+      form.setFieldsValue(props.area);
     }
-    console.log(unit);
+  }, [form, props.area]);
+  const handleSubmit = (data: AreaDetail) => {
+    props.onSubmit(data, () => form.resetFields());
   };
+
+  const handleUpdate = async (areaId: any) => {
+    props.onUpdate(areaId, form.getFieldsValue());
+  };
+
+  const handleDelete = async (areaId: any) => {
+    props.onDelete(areaId);
+  };
+  const RemovePOP = (
+    <div>
+      <p>Nhấp vào Edit để xóa khu vực với ID!</p>
+    </div>
+  );
+
   const handleClick = async (event: any) => {};
-  const handleDelete = async (deleteId: any) => {
-    try {
-      await deleteArea(deleteId);
-      message.success("Xóa thành công!");
-      setEdit(false);
-      setArea(null);
-    } catch (error) {
-      message.error("Lỗi!");
-    }
-  };
   return (
     <Card>
-    <Form
-      layout="vertical"
-      onFinish={handleSubmit}
-      onSubmitCapture={(e) => {
-        e.preventDefault;
-      }}
-    >
-      <Form.Item style={{ textAlign: "center" }}>
-        {editing ? (
-          <h1>Cập nhật khu vực</h1>
-        ) : (
-          <h1>Tạo thêm khu vực</h1>
-        )}
-      </Form.Item>
-      <Form.Item
-        name={area?.name}
-        label="Tên khu vực"
-        initialValue={area?.name}
-        rules={[
-          {
-            required: true,
-            message: "Tên khu vực không được để trống!",
-          },
-        ]}
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        onSubmitCapture={(e) => {
+          e.preventDefault;
+        }}
+        initialValues={initialValues}
       >
-        <Input
+        <Form.Item style={{ textAlign: "center" }}>
+          {editing ? <h1>Cập nhật khu vực</h1> : <h1>Tạo thêm khu vực</h1>}
+        </Form.Item>
+        <Form.Item
           name="name"
-          type="text"
-          placeholder="Nhập tên khu vực"
-          value={areaDetail.name}
-          onChange={(e) => handleChange(e, "name")}
-        />
-      </Form.Item>
+          label="Tên khu vực"
+          rules={[
+            {
+              required: true,
+              message: "Tên khu vực không được để trống!",
+            },
+          ]}
+        >
+          <Input name="name" type="text" placeholder="Nhập tên khu vực" />
+        </Form.Item>
 
-      <Row gutter={32} justify={"center"}>
-        <Col span={16}>
-          <Space direction="vertical" style={fullwidth}>
+        <Row gutter={32} justify={"center"}>
+          <Col span={16}>
             <Space direction="vertical" style={fullwidth}>
-              <Row gutter={16}>
-                <Col span={12}>
-                  {editing ? (
-                    <Button
-                      htmlType="button"
-                      onClick={(e) => {
-                        setEdit(false);
-                        handleClick(e.preventDefault());
-                        setArea(null);
-                      }}
-                      size="large"
-                      block
-                    >
-                      Hủy
-                    </Button>
-                  ) : (
-                    <Button htmlType="submit" type="primary" size="large" block>
-                      Thêm
-                    </Button>
-                  )}
-                </Col>
-                <Col span={12}>
-                  {editing ? (
-                    <Button
-                      type="primary"
-                      size="large"
-                      block
-                      onClick={() => {
-                        handleUpdate(area?.id);
-                      }}
-                    >
-                      Sửa
-                    </Button>
-                  ) : (
-                    <Button type="primary" size="large" block disabled>
-                      Sửa
-                    </Button>
-                  )}
-                </Col>
-              </Row>
+              <Space direction="vertical" style={fullwidth}>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    {editing ? (
+                      <Button
+                        htmlType="button"
+                        onClick={(e) => {
+                          setEditing(false);
+                          handleClick(e.preventDefault());
+                          form.resetFields();
+                        }}
+                        size="large"
+                        block
+                      >
+                        Hủy
+                      </Button>
+                    ) : (
+                      <Button
+                        htmlType="submit"
+                        type="primary"
+                        size="large"
+                        block
+                      >
+                        Thêm
+                      </Button>
+                    )}
+                  </Col>
+                  <Col span={12}>
+                    {editing ? (
+                      <Button
+                        type="primary"
+                        size="large"
+                        block
+                        onClick={() => {
+                          handleUpdate(props.area?.id);
+                        }}
+                      >
+                        Sửa
+                      </Button>
+                    ) : (
+                      <Button type="primary" size="large" block disabled>
+                        Sửa
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
+              </Space>
             </Space>
-          </Space>
-        </Col>
-        <Col className="gutter-row" span={6}>
-          <Space direction="vertical" style={fullwidth}>
-            <Button
-              type="primary"
-              size="large"
-              danger
-              block
-              onClick={() => {
-                handleDelete(area?.id);
-              }}
-            >
-              Xóa
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-    </Form>
+          </Col>
+          <Col className="gutter-row" span={6}>
+            <Space direction="vertical" style={fullwidth}>
+              {!editing ? (
+                <Popover content={RemovePOP} title="Lưu ý!">
+                  <Button type="primary" size="large" danger block disabled>
+                    Xóa
+                  </Button>
+                </Popover>
+              ) : (
+                <Button
+                  type="primary"
+                  size="large"
+                  danger
+                  block
+                  onClick={() => {
+                    handleDelete(props.area?.id);
+                  }}
+                >
+                  Xóa
+                </Button>
+              )}
+            </Space>
+          </Col>
+        </Row>
+      </Form>
     </Card>
   );
 };

@@ -1,165 +1,156 @@
 "use client";
-import {
-  addCategory,
-  deleteCategory,
-  updateCategory,
-} from "@/app/services/categoryService";
-import { Button, Form, Input, Select, message, Row, Col, Space, Card } from "antd";
+import { Button, Form, Input, Row, Col, Space, Card, Popover } from "antd";
 import React, { useEffect, useState } from "react";
-import { ICategory } from "./interface";
+import { CategoryDetail, ICategory } from "@/lib/interfaceBase";
 
 interface IProps {
-  category: ICategory | null;
-  setEdit: (bool: boolean) => void;
+  category?: ICategory;
+  onSubmit: (category: CategoryDetail, resetFormData: () => void) => void;
+  onDelete: (categoryId: number) => void;
+  onUpdate: (categoryId: number, area: CategoryDetail) => void;
 }
+const initialValues: CategoryDetail = {
+  name: "",
+};
 const fullwidth: React.CSSProperties = {
   width: "100%",
 };
-const TableCategory: React.FunctionComponent<IProps> = (props) => {
-  const [editing, setEdit] = useState(false);
-  const [category, setCategory] = useState<ICategory | null>(props.category);
+const TableCategory: React.FC<IProps> = (props) => {
+  const [editing, setEditing] = useState(false);
+  const [form] = Form.useForm<CategoryDetail>();
+
   useEffect(() => {
-    setCategory(props.category);
-    setEdit(true);
-  }, [props]);
-
-  const [categoryDetail, setCategoryDetail] = useState({
-    name: "",
-  });
-
-  const handleUpdate = async (updId: any) => {
-    await updateCategory(updId, categoryDetail);
-    setCategory(null);
-    console.log(props.category);
-    setEdit(false);
-  };
-
-  const handleChange = (event: any, field: any) => {
-    let actualValue = event.target.value;
-    setCategoryDetail({
-      ...categoryDetail,
-      [field]: actualValue,
-    });
-  };
-
-  const handleSubmit = async (event: any) => {
-    const category = await addCategory(categoryDetail);
-    if (category.status) {
-      message.success("Thêm danh mục sản phẩm thành công!");
+    if (props.category) {
+      setEditing(true);
+      form.setFieldsValue(props.category);
     }
-    console.log(category);
+  }, [form, props.category]);
+  const handleSubmit = (data: CategoryDetail) => {
+    props.onSubmit(data, () => form.resetFields());
   };
+
+  const handleUpdate = async (categoryId: any) => {
+    props.onUpdate(categoryId, form.getFieldsValue());
+  };
+
+  const handleDelete = async (categoryId: any) => {
+    props.onDelete(categoryId);
+  };
+  const RemovePOP = (
+    <div>
+      <p>Nhấp vào Edit để xóa danh mục với ID!</p>
+    </div>
+  );
+
   const handleClick = async (event: any) => {};
-  const handleDelete = async (deleteId: any) => {
-    try {
-      await deleteCategory(deleteId);
-      message.success("Xóa thành công!");
-      setEdit(false);
-      setCategory(null);
-    } catch (error) {
-      message.error("Lỗi!");
-    }
-  };
   return (
     <Card>
-    <Form
-      layout="vertical"
-      onFinish={handleSubmit}
-      onSubmitCapture={(e) => {
-        e.preventDefault;
-      }}
-    >
-      <Form.Item style={{ textAlign: "center" }}>
-        {editing ? (
-          <h1>Cập nhật danh mục sản phẩm</h1>
-        ) : (
-          <h1>Tạo thêm danh mục sản phẩm</h1>
-        )}
-      </Form.Item>
-      <Form.Item
-        name={category?.name}
-        label="Tên danh mục sản phẩm"
-        initialValue={category?.name}
-        rules={[
-          {
-            required: true,
-            message: "Tên danh mục không được để trống!",
-          },
-        ]}
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        onSubmitCapture={(e) => {
+          e.preventDefault;
+        }}
+        initialValues={initialValues}
       >
-        <Input
+        <Form.Item style={{ textAlign: "center" }}>
+          {editing ? (
+            <h1>Cập nhật danh mục sản phẩm</h1>
+          ) : (
+            <h1>Tạo thêm danh mục sản phẩm</h1>
+          )}
+        </Form.Item>
+        <Form.Item
           name="name"
-          type="text"
-          placeholder="Nhập tên danh mục sản phẩm"
-          value={categoryDetail.name}
-          onChange={(e) => handleChange(e, "name")}
-        />
-      </Form.Item>
+          label="Tên danh mục sản phẩm"
+          rules={[
+            {
+              required: true,
+              message: "Tên danh mục không được để trống!",
+            },
+          ]}
+        >
+          <Input name="name" type="text" placeholder="Nhập tên danh mục" />
+        </Form.Item>
 
-      <Row gutter={32} justify={"center"}>
-        <Col span={16}>
-          <Space direction="vertical" style={fullwidth}>
+        <Row gutter={32} justify={"center"}>
+          <Col span={16}>
             <Space direction="vertical" style={fullwidth}>
-              <Row gutter={16}>
-                <Col span={12}>
-                  {editing ? (
-                    <Button
-                      htmlType="button"
-                      onClick={(e) => {
-                        setEdit(false);
-                        handleClick(e.preventDefault());
-                        setCategory(null);
-                      }}
-                      size="large"
-                      block
-                    >
-                      Hủy
-                    </Button>
-                  ) : (
-                    <Button htmlType="submit" type="primary" size="large" block>
-                      Thêm
-                    </Button>
-                  )}
-                </Col>
-                <Col span={12}>
-                  {editing ? (
-                    <Button
-                      type="primary"
-                      size="large"
-                      block
-                      onClick={() => {
-                        handleUpdate(category?.id);
-                      }}
-                    >
-                      Sửa
-                    </Button>
-                  ) : (
-                    <Button type="primary" size="large" block disabled>
-                      Sửa
-                    </Button>
-                  )}
-                </Col>
-              </Row>
+              <Space direction="vertical" style={fullwidth}>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    {editing ? (
+                      <Button
+                        htmlType="button"
+                        onClick={(e) => {
+                          setEditing(false);
+                          handleClick(e.preventDefault());
+                          form.resetFields();
+                        }}
+                        size="large"
+                        block
+                      >
+                        Hủy
+                      </Button>
+                    ) : (
+                      <Button
+                        htmlType="submit"
+                        type="primary"
+                        size="large"
+                        block
+                      >
+                        Thêm
+                      </Button>
+                    )}
+                  </Col>
+                  <Col span={12}>
+                    {editing ? (
+                      <Button
+                        type="primary"
+                        size="large"
+                        block
+                        onClick={() => {
+                          handleUpdate(props.category?.id);
+                        }}
+                      >
+                        Sửa
+                      </Button>
+                    ) : (
+                      <Button type="primary" size="large" block disabled>
+                        Sửa
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
+              </Space>
             </Space>
-          </Space>
-        </Col>
-        <Col className="gutter-row" span={6}>
-          <Space direction="vertical" style={fullwidth}>
-            <Button
-              type="primary"
-              size="large"
-              danger
-              block
-              onClick={() => {
-                handleDelete(category?.id);
-              }}
-            >
-              Xóa
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-    </Form>
+          </Col>
+          <Col className="gutter-row" span={6}>
+            <Space direction="vertical" style={fullwidth}>
+              {!editing ? (
+                <Popover content={RemovePOP} title="Lưu ý!">
+                  <Button type="primary" size="large" danger block disabled>
+                    Xóa
+                  </Button>
+                </Popover>
+              ) : (
+                <Button
+                  type="primary"
+                  size="large"
+                  danger
+                  block
+                  onClick={() => {
+                    handleDelete(props.category?.id);
+                  }}
+                >
+                  Xóa
+                </Button>
+              )}
+            </Space>
+          </Col>
+        </Row>
+      </Form>
     </Card>
   );
 };

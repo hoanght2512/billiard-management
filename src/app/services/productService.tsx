@@ -17,7 +17,7 @@ interface productPayload {
     return response;
   }
   export const deleteProduct = async (deleteId: any) => {
-    const response = await axiosClient.delete(`http://localhost:8080/api/v1/products/${deleteId}`)
+    const response = await axiosClient.delete(`http://localhost:8080/api/v1/products/${deleteId}`);
     return response;
   }
   export const updateProduct = async (updId:any,productDetail: productPayload) => {

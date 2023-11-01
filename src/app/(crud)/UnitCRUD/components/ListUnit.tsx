@@ -1,30 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Card, Space, Table, message } from "antd";
+import React from "react";
+import { Card, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { deleteUnit, findAllUnit } from "@/app/services/unitService";
-import { IUnit } from "./interface";
+import { IUnit } from "@/lib/interfaceBase";
 
 interface IProps {
   onEdit: (unit: IUnit) => void;
+  onDelete: (areaId: number) => void;
+  data: IUnit[];
 }
-
-const UnitController: React.FunctionComponent<IProps> = (props) => {
-  const getEditId = (record: DataType) => {
-    return record.id;
-  };
-
-  const handleDelete = async (deleteId: any) => {
-    message.success("Xóa thành công!");
-    await deleteUnit(deleteId);
-  };
-
-  interface DataType {
-    id: string;
-    name: string;
-  }
-
-  const columns: ColumnsType<DataType> = [
+const UnitController: React.FC<IProps> = (props) => {
+  const columns: ColumnsType<IUnit> = [
     {
       title: "ID",
       dataIndex: "id",
@@ -49,33 +36,15 @@ const UnitController: React.FunctionComponent<IProps> = (props) => {
           >
             Edit
           </a>
-          <a
-            onClick={() => {
-              handleDelete(getEditId(record));
-            }}
-          >
-            {" "}
-            Delete
-          </a>
+          <a onClick={() => props.onDelete(record.id)}> Delete</a>
         </Space>
       ),
     },
   ];
-
-  const App = () => {
-    const [data, setData] = useState<DataType[]>([]);
-    useEffect(() => {
-      fetchData();
-    }, [data]);
-
-    const fetchData = async () => {
-      const response = await findAllUnit();
-      //@ts-ignore
-      setData(response);
-      // console.log(response);
-    };
-    return <Card><Table columns={columns} dataSource={data} /></Card>;
-  };
-  return <App />;
+  return (
+    <Card>
+      <Table columns={columns} dataSource={props.data} />
+    </Card>
+  );
 };
 export default UnitController;

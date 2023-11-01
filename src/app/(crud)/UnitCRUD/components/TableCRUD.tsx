@@ -1,79 +1,67 @@
 "use client";
-import { addUnit, deleteUnit, updateUnit } from "@/app/services/unitService";
 import {
   Button,
   Form,
   Input,
-  Select,
-  message,
   Row,
   Col,
   Space,
   Card,
+  Popover,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { IUnit } from "./interface";
+import { IUnit, UnitDetail } from "@/lib/interfaceBase";
 
 interface IProps {
-  unit: IUnit | null;
-  setEdit: (bool: boolean) => void;
+  unit?: IUnit;
+  onSubmit: (unit: UnitDetail, resetFormData: () => void) => void;
+  onDelete: (unitId: number) => void;
+  onUpdate: (unitId: number, area: UnitDetail) => void;
 }
+const initialValues: UnitDetail = {
+  name: "",
+};
 const fullwidth: React.CSSProperties = {
   width: "100%",
 };
-const TableUnit: React.FunctionComponent<IProps> = (props) => {
-  const [editing, setEdit] = useState(false);
-  const [unit, setUnit] = useState<IUnit | null>(props.unit);
+const TableUnit: React.FC<IProps> = (props) => {
+  const [editing, setEditing] = useState(false);
+  const [form] = Form.useForm<UnitDetail>();
+
   useEffect(() => {
-    setUnit(props.unit);
-    setEdit(true);
-  }, [props]);
-
-  const [unitDetail, setUnitDetail] = useState({
-    name: "",
-  });
-
-  const handleUpdate = async (updId: any) => {
-    await updateUnit(updId, unitDetail);
-    setUnit(null);
-    console.log(props.unit);
-    setEdit(false);
-  };
-
-  const handleChange = (event: any, field: any) => {
-    let actualValue = event.target.value;
-    setUnitDetail({
-      ...unitDetail,
-      [field]: actualValue,
-    });
-  };
-
-  const handleSubmit = async (event: any) => {
-    const unit = await addUnit(unitDetail);
-    if (unit.status) {
-      message.success("Thêm đơn vị sản phẩm thành công!");
+    if (props.unit) {
+      setEditing(true);
+      form.setFieldsValue(props.unit);
     }
-    console.log(unit);
+  }, [form, props.unit]);
+  const handleSubmit = (data: UnitDetail) => {
+    props.onSubmit(data, () => form.resetFields());
   };
+
+  const handleUpdate = async (unitId: any) => {
+    props.onUpdate(unitId, form.getFieldsValue());
+  };
+
+  const handleDelete = async (unitId: any) => {
+    props.onDelete(unitId);
+  };
+  const RemovePOP = (
+    <div>
+      <p>Nhấp vào Edit để xóa "Loại" với ID!</p>
+    </div>
+  );
   const handleClick = async (event: any) => {};
-  const handleDelete = async (deleteId: any) => {
-    try {
-      await deleteUnit(deleteId);
-      message.success("Xóa thành công!");
-      setEdit(false);
-      setUnit(null);
-    } catch (error) {
-      message.error("Lỗi!");
-    }
-  };
+
   return (
     <Card>
       <Form
+        form={form}
         layout="vertical"
         onFinish={handleSubmit}
         onSubmitCapture={(e) => {
           e.preventDefault;
         }}
+        initialValues={initialValues}
       >
         <Form.Item style={{ textAlign: "center" }}>
           {editing ? (
@@ -83,9 +71,8 @@ const TableUnit: React.FunctionComponent<IProps> = (props) => {
           )}
         </Form.Item>
         <Form.Item
-          name={unit?.name}
+          name="name"
           label="Tên đơn vị sản phẩm"
-          initialValue={unit?.name}
           rules={[
             {
               required: true,
@@ -97,8 +84,6 @@ const TableUnit: React.FunctionComponent<IProps> = (props) => {
             name="name"
             type="text"
             placeholder="Nhập tên đơn vị sản phẩm"
-            value={unitDetail.name}
-            onChange={(e) => handleChange(e, "name")}
           />
         </Form.Item>
 
@@ -112,9 +97,9 @@ const TableUnit: React.FunctionComponent<IProps> = (props) => {
                       <Button
                         htmlType="button"
                         onClick={(e) => {
-                          setEdit(false);
+                          setEditing(false);
                           handleClick(e.preventDefault());
-                          setUnit(null);
+                          form.resetFields();
                         }}
                         size="large"
                         block
@@ -139,7 +124,7 @@ const TableUnit: React.FunctionComponent<IProps> = (props) => {
                         size="large"
                         block
                         onClick={() => {
-                          handleUpdate(unit?.id);
+                          handleUpdate(props.unit?.id);
                         }}
                       >
                         Sửa
@@ -156,17 +141,25 @@ const TableUnit: React.FunctionComponent<IProps> = (props) => {
           </Col>
           <Col className="gutter-row" span={6}>
             <Space direction="vertical" style={fullwidth}>
-              <Button
-                type="primary"
-                size="large"
-                danger
-                block
-                onClick={() => {
-                  handleDelete(unit?.id);
-                }}
-              >
-                Xóa
-              </Button>
+              {!editing ? (
+                <Popover content={RemovePOP} title="Lưu ý!">
+                  <Button type="primary" size="large" danger block disabled>
+                    Xóa
+                  </Button>
+                </Popover>
+              ) : (
+                <Button
+                  type="primary"
+                  size="large"
+                  danger
+                  block
+                  onClick={() => {
+                    handleDelete(props.unit?.id);
+                  }}
+                >
+                  Xóa
+                </Button>
+              )}
             </Space>
           </Col>
         </Row>

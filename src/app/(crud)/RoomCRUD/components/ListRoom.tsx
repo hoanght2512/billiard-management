@@ -1,22 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Card, Space, Table, message } from "antd";
+import React from "react";
+import { Card, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { deleteRoom, findAll } from "@/app/services/roomService";
-import { IRoom, DataTypeRoom } from "./interface";
+import { IRoom } from "@/lib/interfaceBase";
 interface IProps {
   onEdit: (room: IRoom) => void;
+  onDelete: (roomId: number) => void;
+  data: IRoom[];
 }
-const RoomController: React.FunctionComponent<IProps> = (props) => {
-  const getEditId = (record: DataTypeRoom) => {
-    return record.id;
-  };
-  const handleDelete = async (deleteId: any) => {
-    message.success("Xóa thành công!");
-    await deleteRoom(deleteId);
-  };
-
-  const columns: ColumnsType<DataTypeRoom> = [
+const RoomController: React.FC<IProps> = (props) => {
+  const columns: ColumnsType<IRoom> = [
     {
       title: "ID",
       dataIndex: "id",
@@ -29,12 +22,9 @@ const RoomController: React.FunctionComponent<IProps> = (props) => {
       key: "name",
     },
     {
-      title: "Area_name",
-      dataIndex: "area",
+      title: "Area",
+      dataIndex: ["area", "name"],
       key: "area.name",
-      render: (area) => {
-        return area.name;
-      },
     },
     {
       title: "Action",
@@ -49,36 +39,16 @@ const RoomController: React.FunctionComponent<IProps> = (props) => {
           >
             Edit
           </a>
-          <a
-            onClick={() => {
-              handleDelete(getEditId(record));
-            }}
-          >
-            {" "}
-            Delete
-          </a>
+          <a onClick={() => props.onDelete(record.id)}> Delete</a>
         </Space>
       ),
     },
   ];
 
-  const App = () => {
-    const [data, setData] = useState<DataTypeRoom[]>([]);
-    useEffect(() => {
-      fetchData();
-    }, [data]);
-
-    const fetchData = async () => {
-      const response = await findAll();
-      //@ts-ignore
-      setData(response);
-    };
-    return (
-      <Card>
-        <Table columns={columns} dataSource={data} />
-      </Card>
-    );
-  };
-  return <App />;
+  return (
+    <Card>
+      <Table columns={columns} dataSource={props.data} />
+    </Card>
+  );
 };
 export default RoomController;

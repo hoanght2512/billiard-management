@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Card, Space, Table, message } from "antd";
+import React from "react";
+import { Card, Image, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { IProduct } from "./interface";
+import { IProduct } from "@/lib/interfaceBase";
+import Paragraph from "antd/es/typography/Paragraph";
 
 interface IProps {
   onEdit: (product: IProduct) => void;
@@ -24,9 +25,20 @@ const ProductController: React.FC<IProps> = (props) => {
       key: "name",
     },
     {
+      title: "Ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (_, record) => <Image width={80} src={record.image} />,
+    },
+    {
       title: "Image",
       dataIndex: "image",
       key: "image",
+      render: (_, record) => (
+        <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: "more" }}>
+          {record.image}
+        </Paragraph>
+      ),
     },
     {
       title: "Price",

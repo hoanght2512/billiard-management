@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Form, Input, Card, Col, Row } from "antd";
+import { Button, Form, Input, Card, Col, Row, message } from "antd";
 import { useRouter } from "next/navigation";
 import { signup } from "@/app/services/userService";
 
 const SignUp = () => {
+  const router = useRouter();
 const [signupDetail, setSignupDetail] = useState({
   username: "",
   fullname: "",
@@ -23,6 +24,8 @@ const handleSubmit = async (event: any) => {
   try {
     const successSignup = await signup(signupDetail);
     console.log(JSON.parse(JSON.stringify(successSignup)));
+    message.success("Đăng ký thành công!")
+    router.push("/signin")
   } catch (error) {
     console.log(error);
   }
