@@ -14,19 +14,21 @@
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "cookies-next": "^4.0.0",
     "antd": "^5.10.0",
-    "next": "13.5.4",
-    "swr": "^2.2.4",
     "axios": "^1.5.1",
+    "cookies-next": "^4.0.0",
+    "firebase": "^10.5.2",
+    "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18",
-    "react-router-dom": "^6.17.0"
+    "react-router-dom": "^6.17.0",
+    "swr": "^2.2.4"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "encoding": "^0.1.13",
     "eslint": "^8",
     "eslint-config-next": "13.5.4",
     "typescript": "^5"

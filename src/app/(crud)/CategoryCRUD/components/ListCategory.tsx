@@ -1,30 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Card, Space, Table, message } from "antd";
+import React from "react";
+import { Card, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { deleteCategory, findAllCategory } from "@/app/services/categoryService";
-import { ICategory } from "./interface";
+import { ICategory } from "@/lib/interfaceBase";
 
 interface IProps {
   onEdit: (category: ICategory) => void;
+  onDelete: (categoryId: number) => void;
+  data: ICategory[];
 }
 
-const CategoryController: React.FunctionComponent<IProps> = (props) => {
-  const getEditId = (record: DataType) => {
-    return record.id;
-  };
-
-  const handleDelete = async (deleteId: any) => {
-    message.success("Xóa thành công!");
-    await deleteCategory(deleteId);
-  };
-  
-  interface DataType {
-    id: string;
-    name: string;
-  }
-
-  const columns: ColumnsType<DataType> = [
+const CategoryController: React.FC<IProps> = (props) => {
+  const columns: ColumnsType<ICategory> = [
     {
       title: "ID",
       dataIndex: "id",
@@ -49,33 +36,16 @@ const CategoryController: React.FunctionComponent<IProps> = (props) => {
           >
             Edit
           </a>
-          <a
-            onClick={() => {
-              handleDelete(getEditId(record));
-            }}
-          >
-            {" "}
-            Delete
-          </a>
+          <a onClick={() => props.onDelete(record.id)}> Delete</a>
         </Space>
       ),
     },
   ];
 
-  const App = () => {
-    const [data, setData] = useState<DataType[]>([]);
-    useEffect(() => {
-      fetchData();
-    }, [data]);
-
-    const fetchData = async () => {
-      const response = await findAllCategory();
-      //@ts-ignore
-      setData(response);
-      // console.log(response)
-    };
-    return <Card><Table columns={columns} dataSource={data} /></Card>;
-  };
-  return <App />;
+  return (
+    <Card>
+      <Table columns={columns} dataSource={props.data} />
+    </Card>
+  );
 };
 export default CategoryController;

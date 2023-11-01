@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Col, Flex, Layout, Row, Tag, message, theme } from "antd";
+import { Col, Flex, Row, message } from "antd";
 import ProductController from "./components/ListProduct";
 import ProductMain from "./components/TableCRUD";
-import { IProduct, ProductDetail } from "./components/interface";
+import { IProduct, ProductDetail } from "@/lib/interfaceBase";
 import {
   addProduct,
   deleteProduct,
@@ -29,11 +29,10 @@ const AppProductCTRL: React.FC = () => {
     setEditProduct(product);
   };
 
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-
-  const onSubmmit = async (product: ProductDetail, resetFormData: () => void) => {
+  const onSubmmit = async (
+    product: ProductDetail,
+    resetFormData: () => void
+  ) => {
     const res = await addProduct(product);
     if (res) {
       message.success("Thêm sản phẩm thành công!");
@@ -61,7 +60,7 @@ const AppProductCTRL: React.FC = () => {
   return (
     <>
       <Row justify={"space-between"}>
-        <Col span={12}>
+        <Col span={10}>
           <Flex vertical>
             <ProductMain
               product={editProduct}
@@ -74,7 +73,7 @@ const AppProductCTRL: React.FC = () => {
           </Flex> */}
           </Flex>
         </Col>
-        <Col span={11} style={{ padding: 0, background: "" }}>
+        <Col span={13} style={{ padding: 0, background: "" }}>
           <ProductController
             onEdit={onCurrentProduct}
             data={data}

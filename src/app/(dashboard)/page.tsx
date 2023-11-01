@@ -17,6 +17,7 @@ import AppUnitCTRL from "../(crud)/UnitCRUD/page";
 import AppCategoryCTRL from "../(crud)/CategoryCRUD/page";
 import AppAreaCTRL from "../(crud)/AreaCRUD/page";
 import Link from "next/link";
+import AppProductCTRL from "../(crud)/ProductCRUD/page";
 const { Header, Sider, Content } = Layout;
 const App: React.FC = () => {
   // const [editing, setEdit] = useState(false);
@@ -58,25 +59,31 @@ const App: React.FC = () => {
             navigate(e.key);
           }}
           items={[
+            
             {
               key: "1",
               icon: <UserOutlined />,
-              label: "Quản lý Room",
+              label: "Quản lý bàn",
             },
             {
               key: "2",
               icon: <VideoCameraOutlined />,
-              label: "Quản lý Area",
+              label: "Quản lý khu vực",
             },
             {
               key: "3",
               icon: <UploadOutlined />,
-              label: "Quản lý Unit",
+              label: "Quản lý sản phẩm",
             },
             {
               key: "4",
               icon: <UploadOutlined />,
-              label: "Quản lý Category",
+              label: "Quản lý loại sản phẩm",
+            },
+            {
+              key: "5",
+              icon: <UploadOutlined />,
+              label: "Quản lý danh mục",
             },
           ]}
         />
@@ -117,8 +124,9 @@ const App: React.FC = () => {
         >
           {+tabType === 1 && <AppRoomCTRL />}
           {+tabType === 2 && <AppAreaCTRL />}
-          {+tabType === 3 && <AppUnitCTRL />}
-          {+tabType === 4 && <AppCategoryCTRL />}
+          {+tabType === 3 && <AppProductCTRL />}
+          {+tabType === 4 && <AppUnitCTRL />}
+          {+tabType === 5 && <AppCategoryCTRL />}
 
           {/* <Button>
             <span>Button</span>

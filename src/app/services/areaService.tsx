@@ -1,9 +1,9 @@
 import { axiosClient } from "@/lib/http/axios-client";
 
 interface areaPayload {
-    [x: string]: unknown
+    [x: string]: any
   }
-  export const findAll = async () => {
+  export const findAllArea = async () => {
     const response = await axiosClient.get("http://localhost:8080/api/v1/areas")
     return response;
   }

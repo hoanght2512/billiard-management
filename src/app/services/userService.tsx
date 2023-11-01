@@ -13,7 +13,7 @@ export const login = async (loginDetail: LoginPayload) => {
     // @ts-ignore 
     if (response.status === true) {
       // @ts-ignore 
-      saveStorage('access_token', user.token);
+      saveStorage('access_token', response.token);
     } else{
       console.log(response);
     }

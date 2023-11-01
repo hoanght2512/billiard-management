@@ -1,7 +1,7 @@
 import { axiosClient } from "@/lib/http/axios-client";
 
 interface categoryPayload {
-    [x: string]: unknown
+    [x: string]: any
   }
   export const findAllCategory = async () => {
     const response = await axiosClient.get("http://localhost:8080/api/v1/categories")
