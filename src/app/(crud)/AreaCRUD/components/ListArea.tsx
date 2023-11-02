@@ -10,7 +10,15 @@ interface IProps {
   data: IArea[];
 }
 
-const AreaController: React.FC<IProps> = (props) => {
+const AreaController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
+  const handleEdit = (record: IArea) => {
+    onEdit(record);
+  };
+
+  const handleDelete = (id: number) => {
+    onDelete(id);
+  };
+
   const columns: ColumnsType<IArea> = [
     {
       title: "ID",
@@ -28,15 +36,8 @@ const AreaController: React.FC<IProps> = (props) => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-              props.onEdit(record);
-            }}
-          >
-            Edit
-          </a>
-          <a onClick={() => props.onDelete(record.id)}> Delete</a>
+          <a onClick={() => handleEdit(record)}>Edit</a>
+          <a onClick={() => handleDelete(record.id)}>Delete</a>
         </Space>
       ),
     },
@@ -44,7 +45,10 @@ const AreaController: React.FC<IProps> = (props) => {
 
   return (
     <Card>
-      <Table columns={columns} dataSource={props.data} />
+      <Table
+        columns={columns}
+        dataSource={data.map((area) => ({ ...area, key: area.id }))}
+      />
     </Card>
   );
 };

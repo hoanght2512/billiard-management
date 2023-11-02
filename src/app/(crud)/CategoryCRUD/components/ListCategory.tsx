@@ -10,7 +10,14 @@ interface IProps {
   data: ICategory[];
 }
 
-const CategoryController: React.FC<IProps> = (props) => {
+const CategoryController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
+  const handleEdit = (record: ICategory) => {
+    onEdit(record);
+  };
+
+  const handleDelete = (id: number) => {
+    onDelete(id);
+  };
   const columns: ColumnsType<ICategory> = [
     {
       title: "ID",
@@ -28,15 +35,8 @@ const CategoryController: React.FC<IProps> = (props) => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-              props.onEdit(record);
-            }}
-          >
-            Edit
-          </a>
-          <a onClick={() => props.onDelete(record.id)}> Delete</a>
+          <a onClick={() => handleEdit(record)}>Edit</a>
+          <a onClick={() => handleDelete(record.id)}>Delete</a>
         </Space>
       ),
     },
@@ -44,7 +44,13 @@ const CategoryController: React.FC<IProps> = (props) => {
 
   return (
     <Card>
-      <Table columns={columns} dataSource={props.data} />
+      <Table
+        columns={columns}
+        dataSource={data.map((category) => ({
+          ...category,
+          key: category.id,
+        }))}
+      />
     </Card>
   );
 };
