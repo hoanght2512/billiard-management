@@ -45,6 +45,7 @@ const AppAreaCTRL: React.FC = () => {
 
   const onDelete = async (areaId: number) => {
     const res = await deleteArea(areaId);
+    // console.log(res?.data)
     if (res) {
       message.success("Xóa thành công!");
       fetchData();

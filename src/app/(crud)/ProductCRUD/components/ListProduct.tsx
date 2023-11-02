@@ -11,7 +11,14 @@ interface IProps {
   data: IProduct[];
 }
 
-const ProductController: React.FC<IProps> = (props) => {
+const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
+  const handleEdit = (record: IProduct) => {
+    onEdit(record);
+  };
+
+  const handleDelete = (id: number) => {
+    onDelete(id);
+  };
   const columns: ColumnsType<IProduct> = [
     {
       title: "ID",
@@ -47,12 +54,12 @@ const ProductController: React.FC<IProps> = (props) => {
     },
     {
       title: "Category",
-      dataIndex: ["productCategory", "name"],
-      key: "productCategory.name",
+      dataIndex: ["category", "name"],
+      key: "category.name",
     },
     {
       title: "Unit",
-      dataIndex: ["productUnit", "name"],
+      dataIndex: ["unit", "name"],
       key: "unit.name",
     },
     {
@@ -60,15 +67,8 @@ const ProductController: React.FC<IProps> = (props) => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-              props.onEdit(record);
-            }}
-          >
-            Edit
-          </a>
-          <a onClick={() => props.onDelete(record.id)}> Delete</a>
+          <a onClick={() => handleEdit(record)}>Edit</a>
+          <a onClick={() => handleDelete(record.id)}>Delete</a>
         </Space>
       ),
     },
@@ -76,8 +76,15 @@ const ProductController: React.FC<IProps> = (props) => {
 
   return (
     <Card>
-      <Table columns={columns} dataSource={props.data} />
+      <Table
+        columns={columns}
+        dataSource={data.map((product) => ({
+          ...product,
+          key: product.id,
+        }))}
+      />
     </Card>
   );
 };
+
 export default ProductController;

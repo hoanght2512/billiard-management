@@ -10,6 +10,7 @@ import {
   Space,
   Card,
   Popover,
+  Radio,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { IRoom, DataTypeArea, RoomDetail } from "@/lib/interfaceBase";
@@ -24,6 +25,7 @@ const initialValues: RoomDetail = {
   area: {
     id: "",
   },
+  status: false,
 };
 const fullwidth: React.CSSProperties = {
   width: "100%",
@@ -109,6 +111,21 @@ const TableCRUD: React.FC<IProps> = (props) => {
             ))}
             ;
           </Select>
+        </Form.Item>
+        <Form.Item
+          name="status"
+          label="Trạng thái"
+          rules={[
+            {
+              required: true,
+              message: "Please select the status",
+            },
+          ]}
+        >
+          <Radio.Group>
+            <Radio value={true}>Mở</Radio>
+            <Radio value={false}>Đóng</Radio>
+          </Radio.Group>
         </Form.Item>
         <Row gutter={32} justify={"center"}>
           <Col span={16}>
