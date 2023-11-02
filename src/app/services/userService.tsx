@@ -2,10 +2,10 @@ import { axiosClient } from "@/lib/http/axios-client";
 import { saveStorage } from "@/utils/storage";
 
 interface LoginPayload {
-  [x: string]: unknown
+  [x: string]: any
 }
 interface SignupPayload{
-  [x: string]: unknown
+  [x: string]: any
 }
 
 export const login = async (loginDetail: LoginPayload) => {    

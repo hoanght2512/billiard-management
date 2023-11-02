@@ -3,35 +3,24 @@ import { login } from "@/app/services/userService";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Button, Form, Input, message, Card } from "antd";
+import { LoginDetail } from "@/lib/interfaceBase";
 
 const Signin = () => {
+  const [form] = Form.useForm<LoginDetail>();
+
   const success = () => {
     message.success("Đăng nhập thành công!");
   };
 
-  const [loginDetail, setLoginDetail] = useState({
-    username: "",
-    password: "",
-  });
-  const router = useRouter();
-
-  const handleChange = (event: any, field: any) => {
-    let actualValue = event.target.value;
-    setLoginDetail({
-      ...loginDetail,
-      [field]: actualValue,
-    });
-  };
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = async (data: LoginDetail) => {
     try {
-      const jwtTokenData = await login(loginDetail);
+      const jwtTokenData = await login(data);
       console.log(JSON.parse(JSON.stringify(jwtTokenData)));
       const error = () => {
         //@ts-ignore
         message.error(jwtTokenData.message);
       };
       if (JSON.parse(JSON.stringify(jwtTokenData.status)) === true) {
-        // router.push("/restaurant");
         window.location.reload();
       }
       console.log(jwtTokenData.status);
@@ -40,9 +29,6 @@ const Signin = () => {
       } else {
         error();
       }
-      // (Hàng debug của Rin Lê :v)
-      // const token = JSON.parse(JSON.stringify(jwtTokenData.token));
-      // document.cookie = `jwt_token=${jwtTokenData.token}; expires=${new Date(Date.now() + 1000)}; path=/`;
     } catch (error) {
       console.log(error);
     }
@@ -51,9 +37,9 @@ const Signin = () => {
   return (
     <Card style={{ width: 700}}>
       <Form
+        form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        onSubmitCapture={(e) => e.preventDefault}
       >
         <h1>Đăng nhập</h1>
         <Form.Item
@@ -66,11 +52,7 @@ const Signin = () => {
             },
           ]}
         >
-          <Input
-            type="username"
-            placeholder="Nhập tên đăng nhập"
-            onChange={(e) => handleChange(e, "username")}
-          />
+          <Input type="username" placeholder="Nhập tên đăng nhập" />
         </Form.Item>
 
         <Form.Item
@@ -83,11 +65,7 @@ const Signin = () => {
             },
           ]}
         >
-          <Input
-            type="password"
-            placeholder="Nhập mật khẩu"
-            onChange={(e) => handleChange(e, "password")}
-          />
+          <Input type="password" placeholder="Nhập mật khẩu" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
