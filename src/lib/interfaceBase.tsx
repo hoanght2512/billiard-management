@@ -60,3 +60,8 @@ export interface IArea {
     area: Pick<DataTypeArea, 'id'>;
   }
   //
+  export interface LoginDetail{
+    username: string;
+    password: string;
+  }
+  //
