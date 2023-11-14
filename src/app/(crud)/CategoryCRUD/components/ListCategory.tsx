@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
-import { Card, Space, Table } from "antd";
+import { Card, Modal, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ICategory } from "@/lib/interfaceBase";
 
 interface IProps {
@@ -16,7 +17,15 @@ const CategoryController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
   };
 
   const handleDelete = (id: number) => {
-    onDelete(id);
+    Modal.confirm({
+      title: "Bạn có muốn xóa ?",
+      okText: "Yes",
+      okType: "danger",
+      width: "600px",
+      onOk: () => {
+        onDelete(id);
+      },
+    });
   };
   const columns: ColumnsType<ICategory> = [
     {
@@ -26,7 +35,7 @@ const CategoryController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "Name",
+      title: "Tên danh mục",
       dataIndex: "name",
       key: "name",
     },
@@ -35,8 +44,8 @@ const CategoryController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <a onClick={() => handleEdit(record)}>Edit</a>
-          <a onClick={() => handleDelete(record.id)}>Delete</a>
+          <a onClick={() => handleEdit(record)}><EditOutlined/> Edit</a>
+          <a onClick={() => handleDelete(record.id)}><DeleteOutlined /> Delete</a>
         </Space>
       ),
     },
@@ -45,6 +54,7 @@ const CategoryController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
   return (
     <Card>
       <Table
+        pagination={{defaultPageSize:5}}
         columns={columns}
         dataSource={data.map((category) => ({
           ...category,

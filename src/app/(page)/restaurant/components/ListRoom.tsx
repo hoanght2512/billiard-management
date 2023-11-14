@@ -31,6 +31,10 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
   const [valueRadioButton, setValueRadioButton] = useState(0);
   const [usedTablesCount, setUsedTablesCount] = useState<number>(0);
   const [availableTablesCount, setAvailableTablesCount] = useState<number>(0);
+const { Text } = Typography
+
+const ListRoom = () => {
+  const [data, setData] = useState<[]>([]);
 
   const handleEdit = async (id: number) => {
     const roomOrder = await findRoomOrderID(id);
@@ -86,6 +90,8 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
     setUsedTablesCount((prevCount) => (usedTables.length > 0? usedTables.length : prevCount ));
     setAvailableTablesCount((prevCount) => (availableTables.length > 0  ? availableTables.length : prevCount));
   }, [data, selectedArea, selectedStatus]);
+    listData();
+  }, []);
   return (
     <>
       <div style={{ padding: "10px", minHeight: "80vh"}}>

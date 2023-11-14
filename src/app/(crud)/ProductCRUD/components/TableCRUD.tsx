@@ -169,7 +169,15 @@ const TableCRUD: React.FC<IProps> = (props) => {
   };
 
   const handleDelete = async (productId: any) => {
-    props.onDelete(productId);
+    Modal.confirm({
+      title: "Bạn có muốn xóa ?",
+      okText: "Yes",
+      okType: "danger",
+      width: "600px",
+      onOk: () => {
+        props.onDelete(productId);
+      },
+    });
   };
   const RemovePOP = (
     <div>

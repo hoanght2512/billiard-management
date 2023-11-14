@@ -82,7 +82,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
         </Form.Item>
         <Form.Item
           name="name"
-          label="name"
+          label="Tên bàn"
           rules={[
             {
               required: true,
@@ -95,7 +95,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
 
         <Form.Item
           name={["area", "id"]}
-          label="Area"
+          label="Khu vực"
           rules={[
             {
               required: true,

@@ -1,8 +1,9 @@
 "use client";
 import React from "react";
-import { Card, Space, Table } from "antd";
+import { Card, Modal, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IRoom } from "@/lib/interfaceBase";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 interface IProps {
   onEdit: (room: IRoom) => void;
   onDelete: (roomId: number) => void;
@@ -14,7 +15,15 @@ const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
   };
 
   const handleDelete = (id: number) => {
-    onDelete(id);
+    Modal.confirm({
+      title: "Bạn có muốn xóa ?",
+      okText: "Yes",
+      okType: "danger",
+      width: "600px",
+      onOk: () => {
+        onDelete(id);
+      },
+    });
   };
   const columns: ColumnsType<IRoom> = [
     {
@@ -24,28 +33,28 @@ const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "Name",
+      title: "Tên bàn",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Area",
+      title: "Khu vực",
       dataIndex: ["area", "name"],
       key: "area.name",
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status) => (status ? "Mở" : "Đóng"),
+      render: (status : boolean) => <>{status ? "Mở" : "Đóng"}</>
     },
     {
       title: "Action",
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <a onClick={() => handleEdit(record)}>Edit</a>
-          <a onClick={() => handleDelete(record.id)}>Delete</a>
+          <a onClick={() => handleEdit(record)}><EditOutlined/> Edit</a>
+          <a onClick={() => handleDelete(record.id)}><DeleteOutlined /> Delete</a>
         </Space>
       ),
     },
@@ -54,6 +63,7 @@ const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
   return (
     <Card>
       <Table
+        pagination={{defaultPageSize:5}}
         columns={columns}
         dataSource={data.map((room) => ({ ...room, key: room.id }))}
       />

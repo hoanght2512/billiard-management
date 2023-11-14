@@ -54,6 +54,8 @@ const ListProduct: React.FC<IProps> = (props) => {
       console.error("Error adding to RoomOrder:", error);
     }
   };
+  }, []);
+
   return (
     <List
     grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 5 }}  // Adjust the grid settings

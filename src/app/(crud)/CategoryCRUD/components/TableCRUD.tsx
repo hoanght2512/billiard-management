@@ -1,5 +1,5 @@
 "use client";
-import { Button, Form, Input, Row, Col, Space, Card, Popover } from "antd";
+import { Button, Form, Input, Row, Col, Space, Card, Popover, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { CategoryDetail, ICategory } from "@/lib/interfaceBase";
 
@@ -34,7 +34,15 @@ const TableCategory: React.FC<IProps> = (props) => {
   };
 
   const handleDelete = async (categoryId: any) => {
-    props.onDelete(categoryId);
+    Modal.confirm({
+      title: "Bạn có muốn xóa ?",
+      okText: "Yes",
+      okType: "danger",
+      width: "600px",
+      onOk: () => {
+        props.onDelete(categoryId);
+      },
+    });
   };
   const RemovePOP = (
     <div>
@@ -63,7 +71,7 @@ const TableCategory: React.FC<IProps> = (props) => {
         </Form.Item>
         <Form.Item
           name="name"
-          label="Tên danh mục sản phẩm"
+          label="Tên danh mục"
           rules={[
             {
               required: true,
