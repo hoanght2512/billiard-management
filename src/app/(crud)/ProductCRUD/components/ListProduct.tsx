@@ -37,16 +37,16 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
       key: "image",
       render: (_, record) => <Image width={80} src={record.image} />,
     },
-    {
-      title: "Image",
-      dataIndex: "image",
-      key: "image",
-      render: (_, record) => (
-        <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: "more" }}>
-          {record.image}
-        </Paragraph>
-      ),
-    },
+    // {
+    //   title: "Image",
+    //   dataIndex: "image",
+    //   key: "image",
+    //   render: (_, record) => (
+    //     <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: "more" }}>
+    //       {record.image}
+    //     </Paragraph>
+    //   ),
+    // },
     {
       title: "Price",
       dataIndex: "price",

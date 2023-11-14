@@ -1,11 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Flex, Menu, MenuProps } from "antd";
-import {
-  AppstoreOutlined,
-  MailOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
+import { Button, Menu, MenuProps } from "antd";
 import { useAuth } from "@/app/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { deleteCookie } from "cookies-next";

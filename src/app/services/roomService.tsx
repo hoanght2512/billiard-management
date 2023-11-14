@@ -7,8 +7,12 @@ interface roomPayload {
     const response = await axiosClient.get("http://localhost:8080/api/v1/rooms")
     return response;
   }
-  export const roomById = async (editId: any) => {
-    const response = await axiosClient.get(`http://localhost:8080/api/v1/rooms/${editId}`);
+  export const roomById = async (roomId: any) => {
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/rooms/${roomId}`);
+    return response;
+  }
+  export const roomByAreaId = async (areaId: any) => {
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/rooms/area/${areaId}`);
     return response;
   }
   export const addRoom = async (roomDetail: roomPayload) => {

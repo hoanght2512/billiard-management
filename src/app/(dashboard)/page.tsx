@@ -7,12 +7,10 @@ import {
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Button, theme, Flex, TourProps } from "antd";
-import Icon from "@ant-design/icons/lib/components/Icon";
+import { Layout, Menu, Button, theme } from "antd";
 import { useNavigate, BrowserRouter } from "react-router-dom";
 import AppRoomCTRL from "../(crud)/RoomCRUD/page";
 import { isBrowser } from "@/utils/is-browser";
-import { hydrate } from "react-dom";
 import AppUnitCTRL from "../(crud)/UnitCRUD/page";
 import AppCategoryCTRL from "../(crud)/CategoryCRUD/page";
 import AppAreaCTRL from "../(crud)/AreaCRUD/page";
