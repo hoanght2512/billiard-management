@@ -8,6 +8,7 @@ import {
   Space,
   Card,
   Popover,
+  Modal,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { AreaDetail, IArea } from "@/lib/interfaceBase";
@@ -44,7 +45,16 @@ const TableArea: React.FC<IProps> = (props) => {
   };
 
   const handleDelete = async (areaId: any) => {
-    props.onDelete(areaId);
+    Modal.confirm({
+      title: "Bạn có muốn xóa ?",
+      okText: "Yes",
+      okType: "danger",
+      width: "600px",
+      onOk: () => {
+        props.onDelete(areaId);
+      },
+    });
+    
   };
   const RemovePOP = (
     <div>

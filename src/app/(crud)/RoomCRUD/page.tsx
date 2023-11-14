@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Col, Flex, Row, message } from "antd";
-import RoomController from "./components/ListRoom";
 import RoomMain from "./components/TableCRUD";
 import { IRoom, RoomDetail } from "@/lib/interfaceBase";
 import {
@@ -10,6 +9,7 @@ import {
   findAll,
   updateRoom,
 } from "@/app/services/roomService";
+import RoomController from "./components/ListRoom";
 const AppRoomCTRL: React.FC = () => {
   const [editRoom, setEditRoom] = useState<IRoom>();
   const [data, setData] = useState<IRoom[]>([]);

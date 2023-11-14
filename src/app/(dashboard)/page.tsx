@@ -4,20 +4,28 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
-  UserOutlined,
+  UserOutlined,TableOutlined,
   VideoCameraOutlined,
+  BorderlessTableOutlined,
+  ShopOutlined,
+  WalletOutlined,
+  UngroupOutlined,
+  TeamOutlined,
+  AccountBookOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Button, theme, Flex, TourProps } from "antd";
 import Icon from "@ant-design/icons/lib/components/Icon";
 import { useNavigate, BrowserRouter } from "react-router-dom";
 import AppRoomCTRL from "../(crud)/RoomCRUD/page";
 import { isBrowser } from "@/utils/is-browser";
-import { hydrate } from "react-dom";
 import AppUnitCTRL from "../(crud)/UnitCRUD/page";
 import AppCategoryCTRL from "../(crud)/CategoryCRUD/page";
 import AppAreaCTRL from "../(crud)/AreaCRUD/page";
 import Link from "next/link";
 import AppProductCTRL from "../(crud)/ProductCRUD/page";
+import AppCustomerCTRL from "../(crud)/CustomerCRUD/page";
+import AppOrderCTRL from "../(crud)/Order/page";
+import AppUserCTRL from "../(crud)/UserCRUD/page";
 const { Header, Sider, Content } = Layout;
 const App: React.FC = () => {
   // const [editing, setEdit] = useState(false);
@@ -62,28 +70,43 @@ const App: React.FC = () => {
             
             {
               key: "1",
-              icon: <UserOutlined />,
+              icon: <TableOutlined />,
               label: "Quản lý bàn",
             },
             {
               key: "2",
-              icon: <VideoCameraOutlined />,
+              icon: <BorderlessTableOutlined />,
               label: "Quản lý khu vực",
             },
             {
               key: "3",
-              icon: <UploadOutlined />,
+              icon: <ShopOutlined />,
               label: "Quản lý sản phẩm",
             },
             {
               key: "4",
-              icon: <UploadOutlined />,
+              icon: <WalletOutlined />,
               label: "Quản lý loại sản phẩm",
             },
             {
               key: "5",
-              icon: <UploadOutlined />,
+              icon: <UngroupOutlined />,
               label: "Quản lý danh mục",
+            },
+            {
+              key: "6",
+              icon: <TeamOutlined />,
+              label: "Quản lý khách hàng",
+            },
+            {
+              key: "7",
+              icon: <AccountBookOutlined />,
+              label: "Quản lý hóa đơn",
+            },
+            {
+              key: "8",
+              icon: <UserOutlined />,
+              label: "Quản lý tài khoản",
             },
           ]}
         />
@@ -127,7 +150,9 @@ const App: React.FC = () => {
           {+tabType === 3 && <AppProductCTRL />}
           {+tabType === 4 && <AppUnitCTRL />}
           {+tabType === 5 && <AppCategoryCTRL />}
-
+          {+tabType === 6 && <AppCustomerCTRL />}
+          {+tabType === 7 && <AppOrderCTRL />}
+          {+tabType === 8 && <AppUserCTRL />}
           {/* <Button>
             <span>Button</span>
           </Button> */}

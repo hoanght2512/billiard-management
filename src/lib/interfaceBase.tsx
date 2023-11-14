@@ -1,7 +1,7 @@
 export interface IArea {
     id: number;
     name: string;
-  }
+}
   export interface AreaDetail {
     name: string;
   }
@@ -67,3 +67,34 @@ export interface IArea {
     password: string;
   }
   //
+  export interface ICustomer {
+    id: number
+    name: string
+    email: string
+    phone: string
+    discount: number
+  }
+  export interface CustomerDetail {
+    name: string
+    email: string
+    phone: string
+    discount: number
+  }
+  //
+  export interface IRole extends IArea{}
+  export interface IUser {
+    id: number
+    username: string
+    password: string
+    fullname: string
+    email: string
+    roles: IRole[]
+  }
+
+  export interface UserDetail {
+    username: string
+    password: string
+    fullname: string
+    email: string
+    roles: IRole[]
+  }

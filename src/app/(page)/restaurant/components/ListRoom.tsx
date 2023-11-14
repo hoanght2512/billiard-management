@@ -5,27 +5,6 @@ import React, { useEffect, useState } from 'react'
 
 const { Text } = Typography
 
-// const data = [
-//   {
-//     title: 'Bàn 1',
-//   },
-//   {
-//     title: 'Bàn 2',
-//   },
-//   {
-//     title: 'Bàn 3',
-//   },
-//   {
-//     title: 'Bàn 4',
-//   },
-//   {
-//     title: 'Bàn 5',
-//   },
-//   {
-//     title: 'Bàn 6',
-//   },
-// ]
-
 const ListRoom = () => {
   const [data, setData] = useState<[]>([]);
 
@@ -36,7 +15,7 @@ const ListRoom = () => {
   };
   useEffect(() => {
     listData();
-  }, [data]);
+  }, []);
   return (
     <List
       grid={{ gutter: 5, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 3 }}
