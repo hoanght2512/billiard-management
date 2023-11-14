@@ -51,7 +51,7 @@ const ListProduct = () => {
   };
   useEffect(() => {
     listData();
-  }, [data]);
+  }, []);
 
   return (
     <List

@@ -8,60 +8,64 @@ import {
   Space,
   Card,
   Popover,
+  InputNumber,
   Modal,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { IUnit, UnitDetail } from "@/lib/interfaceBase";
+import { UserDetail, IUser } from "@/lib/interfaceBase";
 
 interface IProps {
-  unit?: IUnit;
-  onSubmit: (unit: UnitDetail, resetFormData: () => void) => void;
-  onDelete: (unitId: number) => void;
-  onUpdate: (unitId: number, area: UnitDetail) => void;
+  user?: IUser;
+  onSubmit: (user: UserDetail, resetFormData: () => void) => void;
+  onDelete: (userId: number) => void;
+  onUpdate: (userId: number, area: UserDetail) => void;
 }
-const initialValues: UnitDetail = {
-  name: "",
+const initialValues: UserDetail = {
+  username: "",
+  password: "",
+  email: "",
+  fullname: "",
+  roles: []
 };
 const fullwidth: React.CSSProperties = {
   width: "100%",
 };
-const TableUnit: React.FC<IProps> = (props) => {
+const TableUser: React.FC<IProps> = (props) => {
   const [editing, setEditing] = useState(false);
-  const [form] = Form.useForm<UnitDetail>();
+  const [form] = Form.useForm<UserDetail>();
 
   useEffect(() => {
-    if (props.unit) {
+    if (props.user) {
       setEditing(true);
-      form.setFieldsValue(props.unit);
+      form.setFieldsValue(props.user);
     }
-  }, [form, props.unit]);
-  const handleSubmit = (data: UnitDetail) => {
+  }, [form, props.user]);
+  const handleSubmit = (data: UserDetail) => {
     props.onSubmit(data, () => form.resetFields());
   };
 
-  const handleUpdate = async (unitId: any) => {
-    props.onUpdate(unitId, form.getFieldsValue());
+  const handleUpdate = async (userId: any) => {
+    props.onUpdate(userId, form.getFieldsValue());
   };
 
-  const handleDelete = async (unitId: any) => {
+  const handleDelete = async (userId: any) => {
     Modal.confirm({
       title: "Bạn có muốn xóa ?",
       okText: "Yes",
       okType: "danger",
       width: "600px",
       onOk: () => {
-        props.onDelete(unitId);
+        props.onDelete(userId);
       },
     });
-    
   };
   const RemovePOP = (
     <div>
-      <p>Nhấp vào Edit để xóa "Loại" với ID!</p>
+      <p>Nhấp vào Edit để xóa user với ID!</p>
     </div>
   );
-  const handleClick = async (event: any) => {};
 
+  const handleClick = async (event: any) => {};
   return (
     <Card>
       <Form
@@ -75,26 +79,48 @@ const TableUnit: React.FC<IProps> = (props) => {
       >
         <Form.Item style={{ textAlign: "center" }}>
           {editing ? (
-            <h1>Cập nhật đơn vị sản phẩm</h1>
+            <h1>Cập nhật tài khoản</h1>
           ) : (
-            <h1>Tạo thêm đơn vị sản phẩm</h1>
+            <h1>Tạo thêm tài khoản</h1>
           )}
         </Form.Item>
         <Form.Item
-          name="name"
-          label="Tên đơn vị sản phẩm"
+          label="Họ và tên"
+          name="fullname"
+          rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+        >
+          <Input placeholder="Họ và tên" />
+        </Form.Item>
+
+        <Form.Item
+          label="Tên đăng nhập"
+          name="username"
           rules={[
-            {
-              required: true,
-              message: "Tên đơn vị không được để trống!",
-            },
+            { required: true, message: "Vui lòng nhập tên đăng nhập!" },
+            { min: 6, max: 20, message: "Tên đăng nhập từ 6-20 kí tự!" },
           ]}
         >
-          <Input
-            name="name"
-            type="text"
-            placeholder="Nhập tên đơn vị sản phẩm"
-          />
+          <Input placeholder="Tên đăng nhập" />
+        </Form.Item>
+
+        <Form.Item
+          label="E-mail"
+          name="email"
+          rules={[
+            { required: true, message: "Vui lòng nhập Email!" },
+            { type: "email", message: "Email không đúng định dạng!" },
+          ]}
+        >
+          <Input placeholder="E-mail" />
+        </Form.Item>
+
+        <Form.Item
+          label="Mật khẩu"
+          name="password"
+          rules={[{ required: true, message: "Vui lòng nhập mật khẩu!"},
+          { min: 8, max: 20, message: "Mật khẩu từ 8-20 kí tự!" }]}
+        >
+          <Input.Password placeholder="Mật khẩu" />
         </Form.Item>
 
         <Row gutter={32} justify={"center"}>
@@ -134,7 +160,7 @@ const TableUnit: React.FC<IProps> = (props) => {
                         size="large"
                         block
                         onClick={() => {
-                          handleUpdate(props.unit?.id);
+                          handleUpdate(props.user?.id);
                         }}
                       >
                         Sửa
@@ -164,7 +190,7 @@ const TableUnit: React.FC<IProps> = (props) => {
                   danger
                   block
                   onClick={() => {
-                    handleDelete(props.unit?.id);
+                    handleDelete(props.user?.id);
                   }}
                 >
                   Xóa
@@ -177,4 +203,4 @@ const TableUnit: React.FC<IProps> = (props) => {
     </Card>
   );
 };
-export default TableUnit;
+export default TableUser;

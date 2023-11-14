@@ -8,60 +8,63 @@ import {
   Space,
   Card,
   Popover,
+  InputNumber,
   Modal,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { IUnit, UnitDetail } from "@/lib/interfaceBase";
+import { CustomerDetail, ICustomer } from "@/lib/interfaceBase";
 
 interface IProps {
-  unit?: IUnit;
-  onSubmit: (unit: UnitDetail, resetFormData: () => void) => void;
-  onDelete: (unitId: number) => void;
-  onUpdate: (unitId: number, area: UnitDetail) => void;
+  customer?: ICustomer;
+  onSubmit: (customer: CustomerDetail, resetFormData: () => void) => void;
+  onDelete: (customerId: number) => void;
+  onUpdate: (customerId: number, area: CustomerDetail) => void;
 }
-const initialValues: UnitDetail = {
+const initialValues: CustomerDetail = {
   name: "",
+  email: "",
+  phone: "",
+  discount: 0,
 };
 const fullwidth: React.CSSProperties = {
   width: "100%",
 };
-const TableUnit: React.FC<IProps> = (props) => {
+const TableCustomer: React.FC<IProps> = (props) => {
   const [editing, setEditing] = useState(false);
-  const [form] = Form.useForm<UnitDetail>();
+  const [form] = Form.useForm<CustomerDetail>();
 
   useEffect(() => {
-    if (props.unit) {
+    if (props.customer) {
       setEditing(true);
-      form.setFieldsValue(props.unit);
+      form.setFieldsValue(props.customer);
     }
-  }, [form, props.unit]);
-  const handleSubmit = (data: UnitDetail) => {
+  }, [form, props.customer]);
+  const handleSubmit = (data: CustomerDetail) => {
     props.onSubmit(data, () => form.resetFields());
   };
 
-  const handleUpdate = async (unitId: any) => {
-    props.onUpdate(unitId, form.getFieldsValue());
+  const handleUpdate = async (customerId: any) => {
+    props.onUpdate(customerId, form.getFieldsValue());
   };
 
-  const handleDelete = async (unitId: any) => {
+  const handleDelete = async (customerId: any) => {
     Modal.confirm({
       title: "Bạn có muốn xóa ?",
       okText: "Yes",
       okType: "danger",
       width: "600px",
       onOk: () => {
-        props.onDelete(unitId);
+        props.onDelete(customerId);
       },
     });
-    
   };
   const RemovePOP = (
     <div>
-      <p>Nhấp vào Edit để xóa "Loại" với ID!</p>
+      <p>Nhấp vào Edit để xóa khách hàng với ID!</p>
     </div>
   );
-  const handleClick = async (event: any) => {};
 
+  const handleClick = async (event: any) => {};
   return (
     <Card>
       <Form
@@ -75,25 +78,92 @@ const TableUnit: React.FC<IProps> = (props) => {
       >
         <Form.Item style={{ textAlign: "center" }}>
           {editing ? (
-            <h1>Cập nhật đơn vị sản phẩm</h1>
+            <h1>Cập nhật khách hàng</h1>
           ) : (
-            <h1>Tạo thêm đơn vị sản phẩm</h1>
+            <h1>Tạo thêm khách hàng</h1>
           )}
         </Form.Item>
         <Form.Item
           name="name"
-          label="Tên đơn vị sản phẩm"
+          label="Tên khách hàng"
           rules={[
             {
               required: true,
-              message: "Tên đơn vị không được để trống!",
+              message: "Tên khách hàng không được để trống!",
+            },
+          ]}
+        >
+          <Input name="name" type="text" placeholder="Nhập tên khách hàng" />
+        </Form.Item>
+
+        <Form.Item
+          name="email"
+          label="E-mail"
+          rules={[
+            {
+              required: true,
+              message: "Email không được để trống!",
+            },
+            {
+              type: "email",
+              message: "Không đúng định dạng Email!",
             },
           ]}
         >
           <Input
-            name="name"
+            name="email"
+            type="email"
+            placeholder="Nhập E-mail khách hàng"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="phone"
+          label="Số điện thoại"
+          rules={[
+            {
+              required: true,
+              message: "Số điện thoại không được để trống!",
+            },
+            {
+              min: 10,
+              max: 11,
+              message: "Số điện thoại từ 10-11 số!",
+            },
+            {
+              pattern: new RegExp(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g),
+              message: "Không đúng định dạng số điện thoại!",
+            },
+          ]}
+        >
+          <Input
+            name="phone"
             type="text"
-            placeholder="Nhập tên đơn vị sản phẩm"
+            minLength={10}
+            maxLength={11}
+            placeholder="Nhập Số điện thoại khách hàng"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="discount"
+          label="Giảm giá"
+          rules={[
+            {
+              required: true,
+              message: "Giảm giá không được để trống!",
+            },
+            {
+              type: "number",
+              message: "Giảm giá phải là số!",
+            },
+          ]}
+        >
+          <InputNumber
+            formatter={(value) => `${value}%`}
+            name="discount"
+            min={0}
+            max={100}
           />
         </Form.Item>
 
@@ -134,7 +204,7 @@ const TableUnit: React.FC<IProps> = (props) => {
                         size="large"
                         block
                         onClick={() => {
-                          handleUpdate(props.unit?.id);
+                          handleUpdate(props.customer?.id);
                         }}
                       >
                         Sửa
@@ -164,7 +234,7 @@ const TableUnit: React.FC<IProps> = (props) => {
                   danger
                   block
                   onClick={() => {
-                    handleDelete(props.unit?.id);
+                    handleDelete(props.customer?.id);
                   }}
                 >
                   Xóa
@@ -177,4 +247,4 @@ const TableUnit: React.FC<IProps> = (props) => {
     </Card>
   );
 };
-export default TableUnit;
+export default TableCustomer;
