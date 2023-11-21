@@ -34,7 +34,6 @@ export interface IOrderDetail {
   id: number;
   product: IProduct;
   quantity: number;
-  startTime: string;
   createdAt: string;
   updatedAt: string;
   // endTime: string;

@@ -14,40 +14,53 @@ import {
 const AppUnitCTRL: React.FC = () => {
   const [editUnit, setEditUnit] = useState<IUnit>();
   const [data, setData] = useState<IUnit[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const response = await findAllUnit();
-    //@ts-ignore
-    setData(response);
+    try {
+      const response = await findAllUnit();
+      //@ts-ignore
+      setData(response);
+      setLoading(false);
+    } catch (error) {}
   };
   const onCurrentUnit = (unit: IUnit) => {
     setEditUnit(unit);
   };
   const onSubmmit = async (unit: UnitDetail, resetFormData: () => void) => {
-    const res = await addUnit(unit);
-    if (res) {
-      message.success("Thêm loại thành công!");
-      resetFormData();
-      fetchData();
-    }
+    try {
+      const res = await addUnit(unit);
+      if (res) {
+        message.success("Thêm loại thành công!");
+        resetFormData();
+        fetchData();
+      }
+    } catch (error) {}
   };
 
   const onUpdate = async (unitId: number, unit: UnitDetail) => {
-    const res = await updateUnit(unitId, unit);
-    if (res) {
-      message.success("Cập nhật loại thành công!");
-      fetchData();
-    }
+    try {
+      const res = await updateUnit(unitId, unit);
+      if (res) {
+        message.success("Cập nhật loại thành công!");
+        fetchData();
+      }
+    } catch (error) {}
   };
 
   const onDelete = async (unitId: number) => {
-    const res = await deleteUnit(unitId);
-    if (res) {
-      message.success("Xóa thành công!");
-      fetchData();
+    try {
+      const res = await deleteUnit(unitId);
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
@@ -71,6 +84,7 @@ const AppUnitCTRL: React.FC = () => {
             onEdit={onCurrentUnit}
             data={data}
             onDelete={onDelete}
+            loading={loading}
           />
         </Col>
       </Row>

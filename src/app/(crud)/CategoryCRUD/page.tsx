@@ -14,13 +14,18 @@ import {
 const AppCategoryCTRL: React.FC = () => {
   const [editCategory, setEditCategory] = useState<ICategory>();
   const [data, setData] = useState<ICategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     fetchData();
   }, []);
   const fetchData = async () => {
-    const response = await findAllCategory();
-    //@ts-ignore
-    setData(response);
+    try {
+      const response = await findAllCategory();
+      //@ts-ignore
+      setData(response);
+      setLoading(false);
+    } catch (error) {}
   };
   const onCurrentCategory = (category: ICategory) => {
     setEditCategory(category);
@@ -29,28 +34,34 @@ const AppCategoryCTRL: React.FC = () => {
     category: CategoryDetail,
     resetFormData: () => void
   ) => {
-    const res = await addCategory(category);
-    if (res) {
-      message.success("Thêm danh mục thành công!");
-      resetFormData();
-      fetchData();
-    }
+    try {
+      const res = await addCategory(category);
+      if (res) {
+        message.success("Thêm danh mục thành công!");
+        resetFormData();
+        fetchData();
+      }
+    } catch (error) {}
   };
 
   const onUpdate = async (categoryId: number, category: CategoryDetail) => {
-    const res = await updateCategory(categoryId, category);
-    if (res) {
-      message.success("Cập nhật danh mục thành công!");
-      fetchData();
-    }
+    try {
+      const res = await updateCategory(categoryId, category);
+      if (res) {
+        message.success("Cập nhật danh mục thành công!");
+        fetchData();
+      }
+    } catch (error) {}
   };
 
   const onDelete = async (categoryId: number) => {
-    const res = await deleteCategory(categoryId);
-    if (res) {
-      message.success("Xóa thành công!");
-      fetchData();
-    }
+    try {
+      const res = await deleteCategory(categoryId);
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchData();
+      }
+    } catch (error) {}
   };
   return (
     <>
@@ -73,6 +84,7 @@ const AppCategoryCTRL: React.FC = () => {
             onEdit={onCurrentCategory}
             data={data}
             onDelete={onDelete}
+            loading={loading}
           />
         </Col>
       </Row>

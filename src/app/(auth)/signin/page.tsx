@@ -1,5 +1,5 @@
 "use client";
-import { login } from "@/app/services/userService";
+import { login } from "@/app/services/authService";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Button, Form, Input, message, Card } from "antd";
@@ -35,7 +35,7 @@ const Signin = () => {
   };
 
   return (
-    <Card style={{ width: 700}}>
+    <Card style={{ width: 600}}>
       <Form
         form={form}
         layout="vertical"
@@ -65,7 +65,7 @@ const Signin = () => {
             },
           ]}
         >
-          <Input type="password" placeholder="Nhập mật khẩu" />
+          <Input.Password  type="password" placeholder="Nhập mật khẩu" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">

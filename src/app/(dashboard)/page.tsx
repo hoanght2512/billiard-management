@@ -85,7 +85,7 @@ const App: React.FC = () => {
             {
               key: "4",
               icon: <WalletOutlined />,
-              label: "Quản lý loại sản phẩm",
+              label: "Quản lý đơn vị sản phẩm",
             },
             {
               key: "5",

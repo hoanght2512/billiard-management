@@ -14,14 +14,19 @@ import {
 const AppCustomerCTRL: React.FC = () => {
   const [editCustomer, setEditCustomer] = useState<ICustomer>();
   const [data, setData] = useState<ICustomer[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const response = await findAllCustomer();
-    //@ts-ignore
-    setData(response);
+    try {
+      const response = await findAllCustomer();
+      //@ts-ignore
+      setData(response);
+      setLoading(false);
+    } catch (error) {}
   };
   const onCurrentCustomer = (customer: ICustomer) => {
     setEditCustomer(customer);
@@ -30,34 +35,40 @@ const AppCustomerCTRL: React.FC = () => {
     customer: CustomerDetail,
     resetFormData: () => void
   ) => {
-    const res = await addCustomer(customer);
-    if (res) {
-      message.success("Thêm khách hàng thành công!");
-      resetFormData();
-      fetchData();
-    } else {
-      message.error(res);
-    }
+    try {
+      const res = await addCustomer(customer);
+      if (res) {
+        message.success("Thêm khách hàng thành công!");
+        resetFormData();
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
   };
 
   const onUpdate = async (customerId: number, customer: CustomerDetail) => {
-    const res = await updateCustomer(customerId, customer);
-    if (res) {
-      message.success("Cập nhật khách hàng thành công!");
-      fetchData();
-    }else{
-      message.error(res)
-    }
+    try {
+      const res = await updateCustomer(customerId, customer);
+      if (res) {
+        message.success("Cập nhật khách hàng thành công!");
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
   };
 
   const onDelete = async (customerId: number) => {
-    const res = await deleteCustomer(customerId);
-    if (res) {
-      message.success("Xóa thành công!");
-      fetchData();
-    }else{
-      message.error(res)
-    }
+    try {
+      const res = await deleteCustomer(customerId);
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
   };
   return (
     <>
@@ -80,6 +91,7 @@ const AppCustomerCTRL: React.FC = () => {
             onEdit={onCurrentCustomer}
             data={data}
             onDelete={onDelete}
+            loading={loading}
           />
         </Col>
       </Row>

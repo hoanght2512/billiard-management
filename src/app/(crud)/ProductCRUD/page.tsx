@@ -14,15 +14,19 @@ import {
 const AppProductCTRL: React.FC = () => {
   const [editProduct, setEditProduct] = useState<IProduct>();
   const [data, setData] = useState<IProduct[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const response = await findAll();
-    //@ts-ignore
-    setData(response);
+    try {
+      const response = await findAll();
+      //@ts-ignore
+      setData(response);
+      setLoading(false);
+    } catch (error) {}
   };
 
   const onCurrentProduct = (product: IProduct) => {
@@ -33,27 +37,39 @@ const AppProductCTRL: React.FC = () => {
     product: ProductDetail,
     resetFormData: () => void
   ) => {
-    const res = await addProduct(product);
-    if (res) {
-      message.success("Thêm sản phẩm thành công!");
-      resetFormData();
-      fetchData();
+    try {
+      const res = await addProduct(product);
+      if (res) {
+        message.success("Thêm sản phẩm thành công!");
+        resetFormData();
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const onUpdate = async (productId: number, product: ProductDetail) => {
-    const res = await updateProduct(productId, product);
-    if (res) {
-      message.success("Cập nhật sản phẩm thành công!");
-      fetchData();
+    try {
+      const res = await updateProduct(productId, product);
+      if (res) {
+        message.success("Cập nhật sản phẩm thành công!");
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const onDelete = async (productId: number) => {
-    const res = await deleteProduct(productId);
-    if (res) {
-      message.success("Xóa thành công!");
-      fetchData();
+    try {
+      const res = await deleteProduct(productId);
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -78,6 +94,7 @@ const AppProductCTRL: React.FC = () => {
             onEdit={onCurrentProduct}
             data={data}
             onDelete={onDelete}
+            loading={loading}
           />
         </Col>
       </Row>
