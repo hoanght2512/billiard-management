@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card, Modal, Space, Table } from "antd";
+import { Card, Modal, Space, Spin, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IRoom } from "@/lib/interfaceBase";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -8,8 +8,9 @@ interface IProps {
   onEdit: (room: IRoom) => void;
   onDelete: (roomId: number) => void;
   data: IRoom[];
+  loading: boolean
 }
-const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
+const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) => {
   const handleEdit = (record: IRoom) => {
     onEdit(record);
   };
@@ -60,13 +61,25 @@ const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
     },
   ];
 
+  const pageSizeOptions = ["5", "10", "20"];
+  
   return (
     <Card>
+      <Spin spinning={loading} tip="Loading..." size="large">
       <Table
-        pagination={{defaultPageSize:5}}
+        pagination={{
+          showSizeChanger: true,
+          pageSizeOptions: pageSizeOptions,
+          defaultPageSize: Number(pageSizeOptions[0]),
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`,
+          showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+        }}
         columns={columns}
+        scroll={{ x: 600 }}
         dataSource={data.map((room) => ({ ...room, key: room.id }))}
       />
+      </Spin>
     </Card>
   );
 };

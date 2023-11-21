@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card, Image, Modal, Space, Table } from "antd";
+import { Card, Image, Modal, Space, Spin, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IProduct } from "@/lib/interfaceBase";
 import Paragraph from "antd/es/typography/Paragraph";
@@ -10,9 +10,10 @@ interface IProps {
   onEdit: (product: IProduct) => void;
   onDelete: (productId: number) => void;
   data: IProduct[];
+  loading: boolean
 }
 
-const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
+const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) => {
   const handleEdit = (record: IProduct) => {
     onEdit(record);
   };
@@ -83,16 +84,28 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
     },
   ];
 
+  const pageSizeOptions = ["5", "10", "20"];
+  
   return (
     <Card>
+      <Spin spinning={loading} tip="Loading..." size="large">
       <Table
-        pagination={{defaultPageSize:5}}
+        pagination={{
+          showSizeChanger: true,
+          pageSizeOptions: pageSizeOptions,
+          defaultPageSize: Number(pageSizeOptions[0]),
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`,
+          showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+        }}
         columns={columns}
+        scroll={{ x: 600 }}
         dataSource={data.map((product) => ({
           ...product,
           key: product.id,
         }))}
       />
+      </Spin>
     </Card>
   );
 };

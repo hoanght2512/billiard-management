@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card, Modal, Space, Table } from "antd";
+import { Card, Modal, Space, Spin, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ICategory } from "@/lib/interfaceBase";
@@ -9,9 +9,10 @@ interface IProps {
   onEdit: (category: ICategory) => void;
   onDelete: (categoryId: number) => void;
   data: ICategory[];
+  loading: boolean
 }
 
-const CategoryController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
+const CategoryController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) => {
   const handleEdit = (record: ICategory) => {
     onEdit(record);
   };
@@ -50,17 +51,28 @@ const CategoryController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
       ),
     },
   ];
-
+  const pageSizeOptions = ["5", "10", "20"];
+  
   return (
     <Card>
+      <Spin spinning={loading} tip="Loading..." size="large">
       <Table
-        pagination={{defaultPageSize:5}}
+        pagination={{
+          showSizeChanger: true,
+          pageSizeOptions: pageSizeOptions,
+          defaultPageSize: Number(pageSizeOptions[0]),
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`,
+          showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+        }}
         columns={columns}
+        scroll={{ x: 600 }}
         dataSource={data.map((category) => ({
           ...category,
           key: category.id,
         }))}
       />
+      </Spin>
     </Card>
   );
 };

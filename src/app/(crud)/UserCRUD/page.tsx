@@ -14,14 +14,19 @@ import {
 const AppUserCTRL: React.FC = () => {
   const [editUser, setEditUser] = useState<IUser>();
   const [data, setData] = useState<IUser[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const response = await findAllUser();
-    //@ts-ignore
-    setData(response);
+    try {
+      const response = await findAllUser();
+      //@ts-ignore
+      setData(response);
+      setLoading(false);
+    } catch (error) {}
   };
   const onCurrentUser = (user: IUser) => {
     setEditUser(user);
@@ -37,29 +42,33 @@ const AppUserCTRL: React.FC = () => {
         message.error(res);
       }
     } catch (error) {
-      //@ts-ignore
-      message.error(error.response.data.message);
+      message.error("Thêm thất bại");
+      console.log(error)
     }
   };
 
   const onUpdate = async (userId: number, user: UserDetail) => {
-    const res = await updateUser(userId, user);
-    if (res) {
-      message.success("Cập nhật tài khoản thành công!");
-      fetchData();
-    } else {
-      message.error(res);
-    }
+    try {
+      const res = await updateUser(userId, user);
+      if (res) {
+        message.success("Cập nhật tài khoản thành công!");
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
   };
 
   const onDelete = async (userId: number) => {
-    const res = await deleteUser(userId);
-    if (res) {
-      message.success("Xóa thành công!");
-      fetchData();
-    } else {
-      message.error(res);
-    }
+    try {
+      const res = await deleteUser(userId);
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
   };
   return (
     <>
@@ -82,6 +91,7 @@ const AppUserCTRL: React.FC = () => {
             onEdit={onCurrentUser}
             data={data}
             onDelete={onDelete}
+            loading={loading}
           />
         </Col>
       </Row>

@@ -11,6 +11,7 @@ import {
   Card,
   Popover,
   Radio,
+  Modal,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { IRoom, DataTypeArea, RoomDetail } from "@/lib/interfaceBase";
@@ -58,7 +59,15 @@ const TableCRUD: React.FC<IProps> = (props) => {
   };
 
   const handleDelete = async (roomId: any) => {
-    props.onDelete(roomId);
+    Modal.confirm({
+      title: "Bạn có muốn xóa ?",
+      okText: "Yes",
+      okType: "danger",
+      width: "600px",
+      onOk: () => {
+        props.onDelete(roomId);
+      },
+    });
   };
   const RemovePOP = (
     <div>

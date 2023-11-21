@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card, Modal, Space, Table } from "antd";
+import { Card, Modal, Space, Spin, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IUser } from "@/lib/interfaceBase";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -9,9 +9,10 @@ interface IProps {
   onEdit: (user: IUser) => void;
   onDelete: (userId: number) => void;
   data: IUser[];
+  loading: boolean
 }
 
-const UserController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
+const UserController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) => {
   const handleEdit = (record: IUser) => {
     onEdit(record);
   };
@@ -35,7 +36,7 @@ const UserController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "Username",
+      title: "Tên đăng nhập",
       dataIndex: "username",
       key: "username",
     },
@@ -45,7 +46,7 @@ const UserController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
       key: "email",
     },
     {
-      title: "Fullname",
+      title: "Họ và tên",
       dataIndex: "fullname",
       key: "fullname",
     },
@@ -71,17 +72,27 @@ const UserController: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
       ),
     },
   ];
-
+  const pageSizeOptions = ["5", "10", "20"];
   return (
-    <Card>
+    <Card >
+      <Spin spinning={loading} tip="Loading..." size="large">
       <Table
-        pagination={{ defaultPageSize: 5 }}
+        pagination={{
+          showSizeChanger: true,
+          pageSizeOptions: pageSizeOptions,
+          defaultPageSize: Number(pageSizeOptions[0]),
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`,
+          showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+        }}
         columns={columns}
+        scroll={{ x: 600 }}
         dataSource={data.map((user) => ({
           ...user,
           key: user.id,
         }))}
       />
+      </Spin>
     </Card>
   );
 };
