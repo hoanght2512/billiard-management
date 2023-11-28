@@ -41,7 +41,7 @@ const App: React.FC = () => {
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  });
   useEffect(() => {
     fetchRoomList();
   }, []);
@@ -67,6 +67,8 @@ const App: React.FC = () => {
     }
   };
   const onSubmmit = async (roomOrder: RoomOrderDetail) => {
+    console.log(roomOrder)
+
     try {
       const res = await addRoomOrder(roomOrder);
     if (res) {

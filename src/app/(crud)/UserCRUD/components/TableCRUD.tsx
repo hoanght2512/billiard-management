@@ -10,6 +10,7 @@ import {
   Popover,
   InputNumber,
   Modal,
+  Radio,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { UserDetail, IUser } from "@/lib/interfaceBase";
@@ -25,7 +26,7 @@ const initialValues: UserDetail = {
   password: "",
   email: "",
   fullname: "",
-  roles: []
+  roles: [],
 };
 const fullwidth: React.CSSProperties = {
   width: "100%",
@@ -78,11 +79,7 @@ const TableUser: React.FC<IProps> = (props) => {
         initialValues={initialValues}
       >
         <Form.Item style={{ textAlign: "center" }}>
-          {editing ? (
-            <h1>Cập nhật tài khoản</h1>
-          ) : (
-            <h1>Tạo thêm tài khoản</h1>
-          )}
+          {editing ? <h1>Cập nhật tài khoản</h1> : <h1>Tạo thêm tài khoản</h1>}
         </Form.Item>
         <Form.Item
           label="Họ và tên"
@@ -117,12 +114,26 @@ const TableUser: React.FC<IProps> = (props) => {
         <Form.Item
           label="Mật khẩu"
           name="password"
-          rules={[{ required: true, message: "Vui lòng nhập mật khẩu!"},
-          { min: 8, max: 20, message: "Mật khẩu từ 8-20 kí tự!" }]}
+          rules={[
+            { required: true, message: "Vui lòng nhập mật khẩu!" },
+            { min: 8, max: 20, message: "Mật khẩu từ 8-20 kí tự!" },
+          ]}
         >
           <Input.Password placeholder="Mật khẩu" />
         </Form.Item>
-
+        <Form.Item
+          label="Roles"
+          name="roles"
+          rules={[
+            { required: true, message: "Vui lòng chọn ít nhất một vai trò!" },
+          ]}
+        >
+          <Radio.Group>
+            <Radio value="ROLE_ADMIN">Admin</Radio>
+            <Radio value="ROLE_USER">User</Radio>
+            {/* Add more roles as needed */}
+          </Radio.Group>
+        </Form.Item>
         <Row gutter={32} justify={"center"}>
           <Col span={16}>
             <Space direction="vertical" style={fullwidth}>

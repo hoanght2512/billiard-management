@@ -45,7 +45,7 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
       title: "Ảnh",
       dataIndex: "image",
       key: "image",
-      render: (_, record) => <Image width={80} src={record.image} />,
+      render: (_, record) => <Image width={80} src={record.image} alt="image"/>,
     },
     // {
     //   title: "Image",
@@ -100,7 +100,8 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
         }}
         columns={columns}
         scroll={{ x: 600 }}
-        dataSource={data.map((product) => ({
+        //@ts-ignore
+        dataSource={data?.content?.map((product) => ({
           ...product,
           key: product.id,
         }))}

@@ -113,11 +113,14 @@ const TableCRUD: React.FC<IProps> = (props) => {
           ]}
         >
           <Select>
-            {dataArea.map((roomArea) => (
-              <Select.Option key={roomArea.id} value={roomArea.id}>
-                {roomArea.name}
-              </Select.Option>
-            ))}
+            {
+              //@ts-ignore
+              dataArea?.content?.map((roomArea) => (
+                <Select.Option key={roomArea.id} value={roomArea.id}>
+                  {roomArea.name}
+                </Select.Option>
+              ))
+            }
             ;
           </Select>
         </Form.Item>

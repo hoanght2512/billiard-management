@@ -4,7 +4,7 @@ interface roomOrderPayload {
     [x: string]: any
   }
   export const findRoomOrderID = async (roomOrderID: any) => {
-    const response = await axiosClient.get(`http://localhost:8080/api/v1/restaurant/${roomOrderID}`)
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/restaurant/findbyroomid?roomId=${roomOrderID}`)
     return response;
   }
   export const addRoomOrder = async (roomOrderDetail: roomOrderPayload) => {
@@ -20,7 +20,7 @@ interface roomOrderPayload {
     return response;
   }
   export const changeRoomOrder = async (roomId:any,newRoomId: any) => {
-    const response = await axiosClient.put(`http://localhost:8080/api/v1/restaurant/change/${roomId}/${newRoomId}`);
+    const response = await axiosClient.put(`http://localhost:8080/api/v1/restaurant/changeroom?currentRoomId=${roomId}&toRoomId=${newRoomId}`);
     return response;
   }
   export const checkoutRoomOrder = async (roomId:any) => {

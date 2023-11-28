@@ -20,11 +20,13 @@ const Signin = () => {
         //@ts-ignore
         message.error(jwtTokenData.message);
       };
-      if (JSON.parse(JSON.stringify(jwtTokenData.status)) === true) {
+      //@ts-ignore
+      if (JSON.parse(JSON.stringify(jwtTokenData?.tokenType)) === "Bearer") {
         window.location.reload();
       }
-      console.log(jwtTokenData.status);
-      if (jwtTokenData.status) {
+      // console.log(jwtTokenData.status);
+      //@ts-ignore
+      if (JSON.parse(JSON.stringify(jwtTokenData?.tokenType)) === "Bearer") {
         success();
       } else {
         error();

@@ -5,6 +5,7 @@ import { IRoom, IRoomOrder } from "@/lib/interfaceBase";
 import {
   Card,
   Col,
+  Image,
   List,
   Radio,
   RadioChangeEvent,
@@ -31,10 +32,6 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
   const [valueRadioButton, setValueRadioButton] = useState(0);
   const [usedTablesCount, setUsedTablesCount] = useState<number>(0);
   const [availableTablesCount, setAvailableTablesCount] = useState<number>(0);
-const { Text } = Typography
-
-const ListRoom = () => {
-  const [data, setData] = useState<[]>([]);
 
   const handleEdit = async (id: number) => {
     const roomOrder = await findRoomOrderID(id);
@@ -45,21 +42,22 @@ const ListRoom = () => {
     onEditRoom(room);
     setSelectedRoom(id);
   };
-  
+
   const onChangeRoomArea = async (e: RadioChangeEvent) => {
     const areaId = e.target.value as number;
     setSelectedArea(areaId);
-    setValueRadioButton(areaId)
+    setValueRadioButton(areaId);
 
     setSelectedStatus(11);
     setValueRadio(11);
 
     if (areaId === 0) {
-      setFilteredData(data);
+      //@ts-ignore
+      setFilteredData(data.content);
     } else {
       const responses = await roomByAreaId(areaId);
       //@ts-ignore
-      setFilteredData(responses);
+      setFilteredData(responses.content);
     }
   };
 
@@ -69,9 +67,11 @@ const ListRoom = () => {
     setValueRadio(statusId);
   };
   useEffect(() => {
-    const filteredRooms = data?.filter((room) => {
+    //@ts-ignore
+    const filteredRooms = data?.content?.filter((room) => {
       //@ts-ignore
-      const areaCondition = selectedArea === 0 || room.area?.id === selectedArea;
+      const areaCondition =
+        selectedArea === 0 || room.area.id === selectedArea;
       const statusCondition =
         selectedStatus === 11 ||
         (selectedStatus === 12 && room.status) ||
@@ -81,20 +81,22 @@ const ListRoom = () => {
       }
       return areaCondition && statusCondition;
     });
-  
+
     setFilteredData(filteredRooms);
-  
+    //@ts-ignore
     const usedTables = filteredRooms?.filter((room) => room.status) || [];
+    //@ts-ignore
     const availableTables = filteredRooms?.filter((room) => !room.status) || [];
-  
-    setUsedTablesCount((prevCount) => (usedTables.length > 0? usedTables.length : prevCount ));
-    setAvailableTablesCount((prevCount) => (availableTables.length > 0  ? availableTables.length : prevCount));
+    setUsedTablesCount((prevCount) =>
+      usedTables.length > 0 ? usedTables.length : prevCount
+    );
+    setAvailableTablesCount((prevCount) =>
+      availableTables.length > 0 ? availableTables.length : prevCount
+    );
   }, [data, selectedArea, selectedStatus]);
-    listData();
-  }, []);
   return (
     <>
-      <div style={{ padding: "10px", minHeight: "80vh"}}>
+      <div style={{ padding: "10px", minHeight: "80vh" }}>
         <Radio.Group
           onChange={onChangeRoomArea}
           buttonStyle="solid"
@@ -121,7 +123,7 @@ const ListRoom = () => {
           <Radio value={13}>{`Còn trống (${availableTablesCount})`}</Radio>
         </Radio.Group>
         <List
-          grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }}  // Adjust the grid settings
+          grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }} // Adjust the grid settings
           dataSource={filteredData}
           renderItem={(item) => {
             const { name, id, status } = item;
@@ -131,7 +133,14 @@ const ListRoom = () => {
                   <Card
                     size="small"
                     hoverable
-                    cover
+                    cover={
+                      <Image
+                        src="https://firebasestorage.googleapis.com/v0/b/leafy-emblem-385311.appspot.com/o/image%2Fdining-room%20(3).png?alt=media&token=116a175e-7315-41ac-ab29-98b477fbc032"
+                        alt="product"
+                        style={{ width: "68px" }}
+                        preview={false}
+                      />
+                    }
                     style={{
                       // width: "100px",
                       textAlign: "center",
@@ -140,12 +149,17 @@ const ListRoom = () => {
                         selectedRoom === id
                           ? "1px solid red"
                           : "1px solid #e8e8e8",
-                      backgroundColor: status ? "#0958d9" : "",
+                      backgroundColor: status ? "#307DC7" : "",
                     }}
                   >
-                    <Text strong style={{color: status ? "white" : ""}}>{name}</Text>
+                    <Text strong style={{ color: status ? "white" : "" }}>
+                      {name}
+                    </Text>
                     <br />
-                    <Text type="secondary" style={{color: status ? "white" : ""}}>
+                    <Text
+                      type="secondary"
+                      style={{ color: status ? "white" : "" }}
+                    >
                       {status ? "Đang sử dụng" : "Trống"}
                     </Text>
                   </Card>

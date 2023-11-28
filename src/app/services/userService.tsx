@@ -9,7 +9,7 @@ interface userPayload{
   return response;
 }
 export const userById = async (editId: any) => {
-  const response = await axiosClient.get(`http://localhost:8080/api/v1/users/${editId}`);
+  const response = await axiosClient.get(`http://localhost:8080/api/v1/users/findbyid?userId=${editId}`);
   return response;
 }
 export const addUser = async (userDetail: userPayload) => {

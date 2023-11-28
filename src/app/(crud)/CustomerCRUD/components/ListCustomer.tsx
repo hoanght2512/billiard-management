@@ -9,10 +9,15 @@ interface IProps {
   onEdit: (customer: ICustomer) => void;
   onDelete: (customerId: number) => void;
   data: ICustomer[];
-  loading: boolean
+  loading: boolean;
 }
 
-const CustomerController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) => {
+const CustomerController: React.FC<IProps> = ({
+  onEdit,
+  onDelete,
+  data,
+  loading,
+}) => {
   const handleEdit = (record: ICustomer) => {
     onEdit(record);
   };
@@ -74,22 +79,23 @@ const CustomerController: React.FC<IProps> = ({ onEdit, onDelete, data, loading 
   return (
     <Card>
       <Spin spinning={loading} tip="Loading..." size="large">
-      <Table
-        pagination={{
-          showSizeChanger: true,
-          pageSizeOptions: pageSizeOptions,
-          defaultPageSize: Number(pageSizeOptions[0]),
-          showTotal: (total, range) =>
-            `${range[0]}-${range[1]} of ${total} items`,
-          showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
-        }}
-        columns={columns}
-        scroll={{ x: 600 }}
-        dataSource={data.map((customer) => ({
-          ...customer,
-          key: customer.id,
-        }))}
-      />
+        <Table
+          pagination={{
+            showSizeChanger: true,
+            pageSizeOptions: pageSizeOptions,
+            defaultPageSize: Number(pageSizeOptions[0]),
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`,
+            showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+          }}
+          columns={columns}
+          scroll={{ x: 600 }}
+          //@ts-ignore
+          dataSource={data?.content?.map((customer) => ({
+            ...customer,
+            key: customer.id,
+          }))}
+        />
       </Spin>
     </Card>
   );

@@ -17,6 +17,7 @@ import {
   Progress,
   Modal,
   Spin,
+  Image,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import {
@@ -41,6 +42,8 @@ const initialValues: ProductDetail = {
   name: "",
   image: "",
   price: 0,
+  hourly: false,
+  active: false,
   productCategory: {
     id: "",
   },
@@ -242,14 +245,26 @@ const TableCRUD: React.FC<IProps> = (props) => {
               footer={null}
               onCancel={handleCancel}
             >
-              <img
+              <Image
                 alt="viewPicture"
                 style={{ width: "100%" }}
                 src={previewImage}
               />
             </Modal>
           </Form.Item>
+          <Form.Item name="hourly" label="Hourly">
+            <Select>
+              <Select.Option value={true}>Yes</Select.Option>
+              <Select.Option value={false}>No</Select.Option>
+            </Select>
+          </Form.Item>
 
+          <Form.Item name="active" label="Active">
+            <Select>
+              <Select.Option value={true}>Yes</Select.Option>
+              <Select.Option value={false}>No</Select.Option>
+            </Select>
+          </Form.Item>
           <Form.Item name="price" label="Giá sản phẩm">
             <InputNumber addonAfter="VNĐ" name="price" min={0} />
           </Form.Item>
@@ -265,14 +280,17 @@ const TableCRUD: React.FC<IProps> = (props) => {
             ]}
           >
             <Select>
-              {dataCategory.map((productCategory) => (
-                <Select.Option
-                  key={productCategory.id}
-                  value={productCategory.id}
-                >
-                  {productCategory.name}
-                </Select.Option>
-              ))}
+              {
+                //@ts-ignore
+                dataCategory?.content?.map((productCategory) => (
+                  <Select.Option
+                    key={productCategory.id}
+                    value={productCategory.id}
+                  >
+                    {productCategory.name}
+                  </Select.Option>
+                ))
+              }
               ;
             </Select>
           </Form.Item>
@@ -288,11 +306,14 @@ const TableCRUD: React.FC<IProps> = (props) => {
             ]}
           >
             <Select>
-              {dataUnit.map((productUnit) => (
-                <Select.Option key={productUnit.id} value={productUnit.id}>
-                  {productUnit.name}
-                </Select.Option>
-              ))}
+              {
+                //@ts-ignore
+                dataUnit?.content?.map((productUnit) => (
+                  <Select.Option key={productUnit.id} value={productUnit.id}>
+                    {productUnit.name}
+                  </Select.Option>
+                ))
+              }
               ;
             </Select>
           </Form.Item>

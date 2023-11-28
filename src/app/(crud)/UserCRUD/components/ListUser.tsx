@@ -9,15 +9,21 @@ interface IProps {
   onEdit: (user: IUser) => void;
   onDelete: (userId: number) => void;
   data: IUser[];
-  loading: boolean
+  loading: boolean;
 }
 
-const UserController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) => {
+const UserController: React.FC<IProps> = ({
+  onEdit,
+  onDelete,
+  data,
+  loading,
+}) => {
   const handleEdit = (record: IUser) => {
     onEdit(record);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: any) => {
+    console.log(id)
     Modal.confirm({
       title: "Bạn có muốn xóa ?",
       okText: "Yes",
@@ -54,8 +60,16 @@ const UserController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) =
       title: "Role",
       dataIndex: "roles",
       key: "roles",
-      //@ts-ignore
-      render: (roles) => <p style={{width: "90px"}}>{roles.map(role => role.name).join()}</p>
+      render: (roles) => (
+        <div style={{ width: "90px" }}>
+          {
+            //@ts-ignore
+            roles?.map((role) => (
+              <p key={role.name}>{role.name}</p>
+            ))
+          }
+        </div>
+      ),
     },
     {
       title: "Action",
@@ -74,24 +88,25 @@ const UserController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) =
   ];
   const pageSizeOptions = ["5", "10", "20"];
   return (
-    <Card >
+    <Card>
       <Spin spinning={loading} tip="Loading..." size="large">
-      <Table
-        pagination={{
-          showSizeChanger: true,
-          pageSizeOptions: pageSizeOptions,
-          defaultPageSize: Number(pageSizeOptions[0]),
-          showTotal: (total, range) =>
-            `${range[0]}-${range[1]} of ${total} items`,
-          showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
-        }}
-        columns={columns}
-        scroll={{ x: 600 }}
-        dataSource={data.map((user) => ({
-          ...user,
-          key: user.id,
-        }))}
-      />
+        <Table
+          pagination={{
+            showSizeChanger: true,
+            pageSizeOptions: pageSizeOptions,
+            defaultPageSize: Number(pageSizeOptions[0]),
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`,
+            showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+          }}
+          columns={columns}
+          scroll={{ x: 600 }}
+          //@ts-ignore
+          dataSource={data?.content?.map((user) => ({
+            ...user,
+            key: user?.id,
+          }))}
+        />
       </Spin>
     </Card>
   );

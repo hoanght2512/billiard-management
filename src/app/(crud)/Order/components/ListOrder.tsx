@@ -19,17 +19,30 @@ import { IOrder, IOrderDetail } from "../interfaceOrder";
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 import dayjs from "dayjs";
+import { findAllByOrderId } from "@/app/services/orderDetailService";
 
 interface IProps {
   onDelete: (orderId: number) => void;
   data: IOrder[];
   loading: boolean;
 }
-
+const formatCurrency = (value: number | undefined) => {
+  if (typeof value !== "number") {
+    return "N/A";
+  }
+  return value.toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+};
 const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
   const [order, setOrder] = useState<IOrder>();
-
-  const handleEdit = (record: IOrder) => {
+  const [orderDetails, setOrderDetails] = useState<IOrderDetail>();
+  console.log(orderDetails)
+  const handleEdit = async (record: IOrder) => {
+    const response = await findAllByOrderId(record.id);
+    //@ts-ignore
+    setOrderDetails(response?.content)
     setOrder({ ...record });
     // onEdit(record);
   };
@@ -45,7 +58,6 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
       },
     });
   };
-
   const columns: ColumnsType<IOrder> = [
     {
       title: "ID",
@@ -121,13 +133,14 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
   const pageSizeOptions = ["5", "10", "20"];
 
   const footer = () => {
-    const totalCost = order?.orderDetails.reduce((acc, detail) => {
+    //@ts-ignore
+    const totalCost = orderDetails?.reduce((acc, detail) => {
       return acc + detail.quantity * detail.product.price;
     }, 0);
 
     return (
       <div>
-        <strong>Thành tiền:</strong> {totalCost?.toFixed(2)} VNĐ
+        <strong>Thành tiền:</strong> {formatCurrency(totalCost)}
       </div>
     );
   };
@@ -147,7 +160,8 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
           }}
           columns={columns}
           scroll={{ x: 1000 }}
-          dataSource={data.map((order) => ({
+          //@ts-ignore
+          dataSource={data?.content?.map((order) => ({
             ...order,
             key: order.id,
           }))}
@@ -200,15 +214,19 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
         </Row>
         <Row justify={"space-between"}>
           <Table
-            dataSource={order?.orderDetails}
+          //@ts-ignore
+            dataSource={orderDetails?.map((product) => ({
+              ...product,
+              key: product.id,
+            }))}
             style={{ width: "100%" }}
             footer={footer}
           >
             <Table.Column title="ID" dataIndex={"id"} key={"id"} />
             <Table.Column
               title="Sản phẩm"
-              dataIndex={["product", "name"]}
-              key={"product.name"}
+              dataIndex="name"
+              key="name"
             />
             <Table.Column
               title="Giá"
@@ -252,7 +270,7 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
               key={"total"}
               render={(text: any, record: IOrderDetail) => {
                 const total = record.quantity * record.product.price;
-                return `${total.toFixed(2)} VND`;
+                return `${formatCurrency(total)}`;
               }}
             />
           </Table>

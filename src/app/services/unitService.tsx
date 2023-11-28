@@ -7,8 +7,8 @@ interface unitPayload {
     const response = await axiosClient.get("http://localhost:8080/api/v1/units")
     return response;
   }
-  export const unitById = async (editId: any) => {
-    const response = await axiosClient.get(`http://localhost:8080/api/v1/units/${editId}`);
+  export const unitById = async (unitId: any) => {
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/units/findbyid?unitId=${unitId}`);
     return response;
   }
   export const addUnit = async (unitDetail: unitPayload) => {

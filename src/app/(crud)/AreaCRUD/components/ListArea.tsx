@@ -68,7 +68,8 @@ const AreaController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) =
         }}
         columns={columns}
         scroll={{ x: 600 }}
-        dataSource={data.map((area) => ({ ...area, key: area.id }))}
+        //@ts-ignore
+        dataSource={data?.content?.map((area) => ({ ...area, key: area.id }))}
       />
       </Spin>
     </Card>

@@ -24,7 +24,7 @@ const ListProduct: React.FC<IProps> = (props) => {
   const listData = async () => {
     const response = await findAll();
     //@ts-ignore
-    setData(response);
+    setData(response.content);
   };
   useEffect(() => {
     listData();
@@ -44,7 +44,7 @@ const ListProduct: React.FC<IProps> = (props) => {
     try {
       //@ts-ignore
       const roomOrderDetail: RoomOrderDetail = {
-        room: { id: roomId},
+        room: { id: roomId },
         product: { id: item.id }, 
         // orderTime: getCurrentTime(),
         // quantity: 1,
@@ -54,22 +54,20 @@ const ListProduct: React.FC<IProps> = (props) => {
       console.error("Error adding to RoomOrder:", error);
     }
   };
-  }, []);
-
   return (
     <List
     grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 5 }}  // Adjust the grid settings
     style={{ padding: "10px", minHeight: "80vh" }}
       dataSource={data}
       renderItem={(item) => {
-        const { name} = item;
+        const { name, id} = item;
         //@ts-ignore
         const price = item.price;
         //@ts-ignore
         const image = item.image;
 
         return (
-          <List.Item>
+          <List.Item key={id}>
             <a onClick={() => {handleAddToRoomOrder(props.room?.id , item)}}>
             <Card
               size="small"
