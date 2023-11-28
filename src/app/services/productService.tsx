@@ -8,8 +8,8 @@ interface productPayload {
     const response = await axiosClient.get("http://localhost:8080/api/v1/products")
     return response;
   }
-  export const productById = async (editId: any) => {
-    const response = await axiosClient.get(`http://localhost:8080/api/v1/products/${editId}`);
+  export const productById = async (productId: any) => {
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/products?productId=${productId}`);
     return response;
   }
   export const addProduct = async (productDetail: productPayload) => {

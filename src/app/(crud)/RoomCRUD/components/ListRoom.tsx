@@ -77,7 +77,8 @@ const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) =
         }}
         columns={columns}
         scroll={{ x: 600 }}
-        dataSource={data.map((room) => ({ ...room, key: room.id }))}
+        //@ts-ignore
+        dataSource={data?.content?.map((room) => ({ ...room, key: room.id }))}
       />
       </Spin>
     </Card>

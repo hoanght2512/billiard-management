@@ -57,7 +57,7 @@ const TableUnit: React.FC<IProps> = (props) => {
   };
   const RemovePOP = (
     <div>
-      <p>Nhấp vào Edit để xóa "Loại" với ID!</p>
+      <p>Nhấp vào Edit để xóa Loại với ID!</p>
     </div>
   );
   const handleClick = async (event: any) => {};

@@ -7,8 +7,8 @@ interface areaPayload {
     const response = await axiosClient.get("http://localhost:8080/api/v1/areas")
     return response;
   }
-  export const areaById = async (editId: any) => {
-    const response = await axiosClient.get(`http://localhost:8080/api/v1/areas/${editId}`);
+  export const areaById = async (areaId: any) => {
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/areas/findbyid?areaId=${areaId}`);
     return response;
   }
   export const addArea = async (areaDetail: areaPayload) => {

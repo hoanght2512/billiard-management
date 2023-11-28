@@ -65,7 +65,8 @@ const UnitController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) =
         }}
         columns={columns}
         scroll={{ x: 600 }}
-        dataSource={data.map((unit) => ({ ...unit, key: unit.id }))}
+        //@ts-ignore
+        dataSource={data?.content?.map((unit) => ({ ...unit, key: unit.id }))}
       />
       </Spin>
     </Card>

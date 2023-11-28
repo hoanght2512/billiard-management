@@ -67,7 +67,8 @@ const CategoryController: React.FC<IProps> = ({ onEdit, onDelete, data, loading 
         }}
         columns={columns}
         scroll={{ x: 600 }}
-        dataSource={data.map((category) => ({
+        //@ts-ignore
+        dataSource={data?.content?.map((category) => ({
           ...category,
           key: category.id,
         }))}

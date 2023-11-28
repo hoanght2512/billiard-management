@@ -7,8 +7,8 @@ interface categoryPayload {
     const response = await axiosClient.get("http://localhost:8080/api/v1/categories")
     return response;
   }
-  export const categoryById = async (editId: any) => {
-    const response = await axiosClient.get(`http://localhost:8080/api/v1/categories/${editId}`);
+  export const categoryById = async (categoryId: any) => {
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/categories/findbyid?categoryId=${categoryId}`);
     return response;
   }
   export const addCategory = async (categoryDetail: categoryPayload) => {

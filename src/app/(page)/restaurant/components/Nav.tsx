@@ -13,7 +13,9 @@ const Nav = () => {
   };
   const { data } = useAuth();
   //@ts-ignore
-  const username = data?.username;
+  const username = data?.user?.username;
+  console.log(username)
+  // console.log(data/)
   const items: MenuProps["items"] = [
     {
       label: username ? (

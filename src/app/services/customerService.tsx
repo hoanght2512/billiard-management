@@ -7,8 +7,8 @@ interface customerPayload {
     const response = await axiosClient.get("http://localhost:8080/api/v1/customers")
     return response;
   }
-  export const customerById = async (editId: any) => {
-    const response = await axiosClient.get(`http://localhost:8080/api/v1/customers/${editId}`);
+  export const customerById = async (customerId: any) => {
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/customers/findbyid?customerId=${customerId}`);
     return response;
   }
   export const addCustomer = async (customerDetail: customerPayload) => {

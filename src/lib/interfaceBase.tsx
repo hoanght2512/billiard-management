@@ -117,9 +117,9 @@ export interface RoomOrderDetail {
   // price: number;
   created_at: any;
 }
-//
-    id: number;
-    name: string;
+export interface IArea {
+  id: number;
+  name: string;
 }
   export interface AreaDetail {
     name: string;
@@ -160,6 +160,8 @@ export interface RoomOrderDetail {
   export interface ProductDetail {
     name: string;
     image: string;
+    hourly: boolean;
+    active: boolean;
     price: number;
     productCategory: Pick<DataTypeCategory, 'id'>;
     productUnit: Pick<DataTypeUnit, 'id'>;

@@ -101,7 +101,7 @@ const Footer: React.FC<IProps> = (props) => {
                   title={
                     <span>
                       Chuyển từ
-                      <span style={{ fontWeight: 750 }}> "{props.room?.name}" </span>
+                      <span style={{ fontWeight: 750 }}> {props.room?.name} </span>
                       sang
                     </span>
                   }
