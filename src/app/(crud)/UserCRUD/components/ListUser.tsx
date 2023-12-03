@@ -40,21 +40,30 @@ const UserController: React.FC<IProps> = ({
       dataIndex: "id",
       key: "id",
       render: (text) => <a>{text}</a>,
+      sorter: (a, b) => a.id - b.id,
     },
     {
       title: "Tên đăng nhập",
       dataIndex: "username",
       key: "username",
+      sorter: (a, b) => a.username.length - b.username.length,
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      sorter: (a, b) => {
+        if(a.email === null || b.email === null){
+          return a.email === null ? 1 : -1;
+        }
+        return a.email.length - b.email.length
+      },
     },
     {
       title: "Họ và tên",
       dataIndex: "fullname",
       key: "fullname",
+      sorter: (a, b) => a.fullname.length - b.fullname.length,
     },
     {
       title: "Role",
@@ -70,6 +79,7 @@ const UserController: React.FC<IProps> = ({
           }
         </div>
       ),
+      sorter: (a, b) => a.roles.length - b.roles.length
     },
     {
       title: "Action",
