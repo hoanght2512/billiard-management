@@ -103,7 +103,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
         </Form.Item>
 
         <Form.Item
-          name={["area", "id"]}
+          name="areaId"
           label="Khu vực"
           rules={[
             {

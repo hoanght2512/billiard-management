@@ -46,7 +46,7 @@ const formatCurrency = (value: number | undefined) => {
 const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
   const [order, setOrder] = useState<IOrder>();
   const [orderDetails, setOrderDetails] = useState<IOrderDetail>();
-
+  console.log(order)
   const handleEdit = async (record: IOrder) => {
     const response = await findAllByOrderId(record.id);
     //@ts-ignore

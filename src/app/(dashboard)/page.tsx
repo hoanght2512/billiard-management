@@ -25,6 +25,7 @@ import AppProductCTRL from "../(crud)/ProductCRUD/page";
 import AppCustomerCTRL from "../(crud)/CustomerCRUD/page";
 import AppOrderCTRL from "../(crud)/Order/page";
 import AppUserCTRL from "../(crud)/UserCRUD/page";
+import Dashboard from "@/app/dashboard/page";
 const { Header, Sider, Content } = Layout;
 const App: React.FC = () => {
   // const [editing, setEdit] = useState(false);
@@ -34,7 +35,7 @@ const App: React.FC = () => {
   const {
     token: { colorBgContainer, colorBgContainerDisabled },
   } = theme.useToken();
-  const [tabType, setTabType] = useState("1");
+  const [tabType, setTabType] = useState("0");
   // const params = useParams();
   // const location = useLocation();
   const navigate = useNavigate();
@@ -66,7 +67,10 @@ const App: React.FC = () => {
             navigate(e.key);
           }}
           items={[
-            
+            {
+              key: "0",
+              label: "Dashboard",
+            },
             {
               key: "1",
               icon: <TableOutlined />,
@@ -144,6 +148,7 @@ const App: React.FC = () => {
             // background: colorBgContainerDisabled,
           }}
         >
+          {+tabType === 0 && <Dashboard />}
           {+tabType === 1 && <AppRoomCTRL />}
           {+tabType === 2 && <AppAreaCTRL />}
           {+tabType === 3 && <AppProductCTRL />}

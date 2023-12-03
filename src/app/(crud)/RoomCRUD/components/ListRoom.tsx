@@ -14,7 +14,6 @@ const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) =
   const handleEdit = (record: IRoom) => {
     onEdit(record);
   };
-
   const handleDelete = (id: number) => {
     Modal.confirm({
       title: "Bạn có muốn xóa ?",
@@ -42,9 +41,10 @@ const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) =
     },
     {
       title: "Khu vực",
-      dataIndex: ["area", "name"],
-      key: "area.name",
-      sorter: (a, b) => a.area.name.length - b.area.name.length,
+      dataIndex: "areaName",
+      key: "areaName",
+      //@ts-ignore
+      sorter: (a, b) => a.areaName.length - b.areaName.length,
     },
     {
       title: "Trạng thái",

@@ -30,8 +30,6 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [valueRadio, setValueRadio] = useState(1);
   const [valueRadioButton, setValueRadioButton] = useState(0);
-  const [usedTablesCount, setUsedTablesCount] = useState<number>(0);
-  const [availableTablesCount, setAvailableTablesCount] = useState<number>(0);
 
   const handleEdit = async (id: number) => {
     const roomOrder = await findRoomOrderID(id);
@@ -71,7 +69,7 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
     const filteredRooms = data?.content?.filter((room) => {
       //@ts-ignore
       const areaCondition =
-        selectedArea === 0 || room.area.id === selectedArea;
+        selectedArea === 0 || room.areaId === selectedArea;
       const statusCondition =
         selectedStatus === 11 ||
         (selectedStatus === 12 && room.status) ||
@@ -83,16 +81,6 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
     });
 
     setFilteredData(filteredRooms);
-    //@ts-ignore
-    const usedTables = filteredRooms?.filter((room) => room.status) || [];
-    //@ts-ignore
-    const availableTables = filteredRooms?.filter((room) => !room.status) || [];
-    setUsedTablesCount((prevCount) =>
-      usedTables.length > 0 ? usedTables.length : prevCount
-    );
-    setAvailableTablesCount((prevCount) =>
-      availableTables.length > 0 ? availableTables.length : prevCount
-    );
   }, [data, selectedArea, selectedStatus]);
   return (
     <>
@@ -119,8 +107,8 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
           style={{ padding: "10px" }}
         >
           <Radio value={11}>Tất cả</Radio>
-          <Radio value={12}>{`Sử dụng (${usedTablesCount})`}</Radio>
-          <Radio value={13}>{`Còn trống (${availableTablesCount})`}</Radio>
+          <Radio value={12}>{`Sử dụng`}</Radio>
+          <Radio value={13}>{`Còn trống`}</Radio>
         </Radio.Group>
         <List
           grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }} // Adjust the grid settings

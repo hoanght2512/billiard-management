@@ -270,7 +270,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
           </Form.Item>
 
           <Form.Item
-            name={["category", "id"]}
+            name="categoryId"
             label="Danh mục"
             rules={[
               {
@@ -296,7 +296,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
           </Form.Item>
 
           <Form.Item
-            name={["unit", "id"]}
+            name="unitId"
             label="Đơn vị"
             rules={[
               {

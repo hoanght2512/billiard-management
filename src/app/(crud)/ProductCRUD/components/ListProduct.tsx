@@ -18,7 +18,6 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
   const handleEdit = (record: IProduct) => {
     onEdit(record);
   };
-
   const handleDelete = (id: number) => {
     Modal.confirm({
       title: "Bạn có muốn xóa ?",
@@ -79,15 +78,17 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
     },
     {
       title: "Category",
-      dataIndex: ["category", "name"],
-      key: "category.name",
-      sorter: (a, b) => a.productCategory.name.length - b.productCategory.name.length,
+      dataIndex: "categoryName",
+      key: "categoryName",
+      //@ts-ignore
+      sorter: (a, b) => a.categoryName.length - b.categoryName.length,
     },
     {
       title: "Unit",
-      dataIndex: ["unit", "name"],
-      key: "unit.name",
-      sorter: (a, b) => a.productCategory.name.length - b.productCategory.name.length,
+      dataIndex: "unitName",
+      key: "unitName",
+      //@ts-ignore
+      sorter: (a, b) => a.unitName.length - b.unitName.length,
     },
     {
       title: "Action",
