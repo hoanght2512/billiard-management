@@ -41,7 +41,8 @@ const App: React.FC = () => {
   };
   useEffect(() => {
     fetchData();
-  });
+    //Debug -> Thêm [] tránh loops
+  },[]);
   useEffect(() => {
     fetchRoomList();
   }, []);

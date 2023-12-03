@@ -15,7 +15,6 @@ const AppProductCTRL: React.FC = () => {
   const [editProduct, setEditProduct] = useState<IProduct>();
   const [data, setData] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -38,6 +37,7 @@ const AppProductCTRL: React.FC = () => {
     resetFormData: () => void
   ) => {
     try {
+      console.log(product)
       const res = await addProduct(product);
       if (res) {
         message.success("Thêm sản phẩm thành công!");

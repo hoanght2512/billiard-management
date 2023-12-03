@@ -44,8 +44,11 @@ const ListProduct: React.FC<IProps> = (props) => {
     try {
       //@ts-ignore
       const roomOrderDetail: RoomOrderDetail = {
-        room: { id: roomId },
-        product: { id: item.id }, 
+        //@ts-ignore
+        roomId: roomId,
+        productId: item.id
+        // room: { id: roomId },
+        // product: { id: item.id }, 
         // orderTime: getCurrentTime(),
         // quantity: 1,
       };

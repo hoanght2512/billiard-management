@@ -17,7 +17,6 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
   const handleEdit = (record: IProduct) => {
     onEdit(record);
   };
-
   const handleDelete = (id: number) => {
     Modal.confirm({
       title: "Bạn có muốn xóa ?",
@@ -64,13 +63,13 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
     },
     {
       title: "Category",
-      dataIndex: ["category", "name"],
-      key: "category.name",
+      dataIndex: "categoryName",
+      key: "categoryName",
     },
     {
       title: "Unit",
-      dataIndex: ["unit", "name"],
-      key: "unit.name",
+      dataIndex: "unitName",
+      key: "unitName",
     },
     {
       title: "Action",
