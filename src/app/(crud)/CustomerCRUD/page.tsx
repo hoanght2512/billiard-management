@@ -26,7 +26,10 @@ const AppCustomerCTRL: React.FC = () => {
       //@ts-ignore
       setData(response);
       setLoading(false);
-    } catch (error) {}
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
   };
   const onCurrentCustomer = (customer: ICustomer) => {
     setEditCustomer(customer);
@@ -86,7 +89,7 @@ const AppCustomerCTRL: React.FC = () => {
           </Flex> */}
           </Flex>
         </Col>
-        <Col span={13}>
+        <Col span={13} >
           <CustomerController
             onEdit={onCurrentCustomer}
             data={data}

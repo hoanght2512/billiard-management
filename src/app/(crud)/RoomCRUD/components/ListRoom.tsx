@@ -32,22 +32,29 @@ const RoomController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) =
       dataIndex: "id",
       key: "id",
       render: (text) => <a>{text}</a>,
+      sorter: (a, b) => a.id - b.id,
     },
     {
       title: "Tên bàn",
       dataIndex: "name",
       key: "name",
+      sorter: (a, b) => a.name.length - b.name.length,
     },
     {
       title: "Khu vực",
       dataIndex: ["area", "name"],
       key: "area.name",
+      sorter: (a, b) => a.area.name.length - b.area.name.length,
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status : boolean) => <>{status ? "Mở" : "Đóng"}</>
+      render: (status : boolean) => <>{status ? "Mở" : "Đóng"}</>,
+      sorter: (a, b) => Number(a.status) - Number(b.status),
+      filters: [{text: "Mở", value : true}, {text: "Đóng", value: false}],
+       //@ts-ignore
+      onFilter: (value: boolean , record) => record.status === value,
     },
     {
       title: "Action",
