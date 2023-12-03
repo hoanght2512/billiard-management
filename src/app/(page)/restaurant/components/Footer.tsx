@@ -20,7 +20,7 @@ const Footer: React.FC<IProps> = (props) => {
   const [data, setData] = useState<[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { confirm } = Modal;
-
+  console.log(props.room)
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -121,7 +121,7 @@ const Footer: React.FC<IProps> = (props) => {
                       xxl: 3,
                     }}
                     style={{ padding: "10px" }}
-                    dataSource={data}
+                    dataSource={data.content}
                     renderItem={(item) => {
                       const { name, id } = item;
                       const roomInUse = props.room?.id === id; 

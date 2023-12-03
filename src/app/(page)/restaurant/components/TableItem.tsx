@@ -40,8 +40,16 @@ const TableItem: React.FC<IProps> = ({
   onUpdateTotal,
 }) => {
   dayjs.extend(customParseFormat);
+  const [realTime, setRealTime] = useState(dayjs()); // Thời gian thực tế
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRealTime(dayjs());
+    }, 1000);
 
-  console.log(roomOrder);
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
+  // console.log(roomOrder);
   const handleDelete = (roomOrderId: number) => () => {
     onDelete(roomOrderId);
   };
@@ -74,10 +82,10 @@ const TableItem: React.FC<IProps> = ({
   useEffect(() => {
     const sum =
       roomOrder?.reduce((acc, record) => {
-        const { quantity, product } = record;
-        const { price } = product || {};
-        if (quantity && price) {
-          return acc + quantity * price;
+        const { quantity, productPrice } = record;
+        // const { price } = product || {};
+        if (quantity && productPrice) {
+          return acc + quantity * productPrice;
         }
         return acc;
       }, 0) || 0;
@@ -92,27 +100,39 @@ const TableItem: React.FC<IProps> = ({
       key: "id",
       render: (_, record) => (
         <>
-          {record.product?.hourly && (
+          {record.productHourly && (
             <>
               <Tag color="#f50">
                 <FontAwesomeIcon icon={faClock} />
               </Tag>
             </>
           )}
-          <Text strong>{record.product?.name} </Text>
-          {record.product?.hourly && (
+          <Text strong>{record.productName} </Text>
+          {record.productHourly && (
+            // <Tag color="blue" style={{ borderRadius: "24px" }}>
+            <>
+             <Text style={{marginLeft:"20px"}}>Từ</Text>
             <TimePicker
-              defaultValue={dayjs(record.created_at)}
-              format="HH:mm"
+              bordered={false}
+              // value={dayjs(record.created_at).add(realTime.diff(dayjs()), 'ms')}
+              suffixIcon={false}
+              defaultValue={dayjs(record.createdAt)}
+              format="HH:mm:ss"
             />
+            </>
+            //  </Tag>
           )}
+          {/* <TimePicker
+              value={dayjs(record.created_at).add(realTime.diff(dayjs()), 'ms')}
+              format="HH:mm:ss"
+            /> */}
         </>
       ),
     },
     {
       title: "Đơn vị",
-      dataIndex: ["product", "unit"],
-      key: "product.unit.name",
+      dataIndex: "unitName",
+      key: "unitName",
       width: "10%",
       render: (unit) => <Tag color="#f50">{unit?.name}</Tag>,
     },
@@ -123,7 +143,7 @@ const TableItem: React.FC<IProps> = ({
       key: "quantity",
       width: "10%",
       render(value, record, index) {
-        const hourly = record.product.hourly;
+        const hourly = record.productHourly;
         //@ts-ignore
         const name = record.product?.unit?.name;
         const step = name === "Tiền giờ" ? 0.1 : 1;
@@ -142,8 +162,8 @@ const TableItem: React.FC<IProps> = ({
     },
     {
       title: "Đơn giá",
-      dataIndex: ["product", "price"],
-      key: "price",
+      dataIndex: "productPrice",
+      key: "productPrice",
       width: "10%",
       render: (price) => formatCurrency(price),
     },
@@ -153,9 +173,8 @@ const TableItem: React.FC<IProps> = ({
       key: "total",
       width: "10%",
       render: (_, record) => {
-        const { quantity } = record;
-        const { price } = record.product;
-        const total = quantity * price || 0;
+        const { quantity, productPrice } = record;
+        const total = quantity * productPrice || 0;
 
         return formatCurrency(total);
       },
@@ -190,7 +209,7 @@ const TableItem: React.FC<IProps> = ({
     >
       <Space style={{ margin: "10px" }}>
         <Tag color="blue" style={{ borderRadius: "24px", padding: "5px" }}>
-          {room?.name} - {room?.area.name}
+          {room?.name} - {room?.areaName}
         </Tag>
         <Search
           placeholder="Tìm khách hàng"

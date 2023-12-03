@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
-import { Card, Modal, Space, Spin, Table } from "antd";
+import { Button, Card, Input, Modal, Space, Spin, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { ICustomer } from "@/lib/interfaceBase";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
+import { text } from "stream/consumers";
 
 interface IProps {
   onEdit: (customer: ICustomer) => void;
@@ -39,26 +40,32 @@ const CustomerController: React.FC<IProps> = ({
       dataIndex: "id",
       key: "id",
       render: (text) => <a>{text}</a>,
+      sorter: (a, b) => a.id - b.id,
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      sorter: (a, b) => a.name.length - b.name.length,
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      sorter: (a, b) => a.email.length - b.email.length,
     },
     {
       title: "Phone",
       dataIndex: "phone",
       key: "phone",
+      sorter: (a, b) => a.phone.length - b.phone.length,
     },
     {
       title: "Discount",
       dataIndex: "discount",
       key: "discount",
+      render:(text) => <>{text}%</>,
+      sorter: (a, b) => a.discount - b.discount,
     },
     {
       title: "Action",

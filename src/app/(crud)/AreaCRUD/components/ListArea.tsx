@@ -35,12 +35,14 @@ const AreaController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }) =
       dataIndex: "id",
       key: "id",
       render: (text) => <a>{text}</a>,
-    },
+      sorter: (a, b) => a.id - b.id,
+      },
     {
       title: "Tên khu vực",
       dataIndex: "name",
       key: "name",
-    },
+      sorter:(a, b) => a.name.length - b.name.length,
+      },
     {
       title: "Action",
       key: "action",

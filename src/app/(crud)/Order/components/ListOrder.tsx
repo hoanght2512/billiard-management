@@ -13,10 +13,17 @@ import {
   Spin,
   Descriptions,
   Popconfirm,
+  DatePicker,
+  Checkbox,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IOrder, IOrderDetail } from "../interfaceOrder";
-import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 
 import dayjs from "dayjs";
 import { findAllByOrderId } from "@/app/services/orderDetailService";
@@ -26,6 +33,7 @@ interface IProps {
   data: IOrder[];
   loading: boolean;
 }
+
 const formatCurrency = (value: number | undefined) => {
   if (typeof value !== "number") {
     return "N/A";
@@ -38,11 +46,11 @@ const formatCurrency = (value: number | undefined) => {
 const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
   const [order, setOrder] = useState<IOrder>();
   const [orderDetails, setOrderDetails] = useState<IOrderDetail>();
-  console.log(orderDetails)
+  console.log(order)
   const handleEdit = async (record: IOrder) => {
     const response = await findAllByOrderId(record.id);
     //@ts-ignore
-    setOrderDetails(response?.content)
+    setOrderDetails(response?.content);
     setOrder({ ...record });
     // onEdit(record);
   };
@@ -58,43 +66,92 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
       },
     });
   };
+
   const columns: ColumnsType<IOrder> = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
+      sorter: (a, b) => a.id - b.id,
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }: any) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            placeholder="Search ID"
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() => confirm()}
+            style={{ width: 188, marginBottom: 8, display: "block" }}
+          />
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90, marginRight: 8 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters()}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+        </div>
+      ),
+      onFilter: (value: any, record: any) =>
+        record.id.toString().toLowerCase().includes(value.toLowerCase()),
       render: (text) => <a>{text}</a>,
     },
     {
       title: "Bàn",
       dataIndex: ["room", "name"],
       key: "room.name",
+      sorter: (a, b) => a.room.name.length - b.room.name.length,
     },
     {
       title: "Khu vực",
       dataIndex: ["room", "area", "name"],
       key: "room.area.name",
+      sorter: (a, b) => a.room.name.length - b.room.name.length,
     },
     // {
     //   title: "User",
     //   dataIndex: ["user", "username"],
     //   key: "user.username",
+    //   sorter: (a, b) => a.user.username.length - b.user.username.length,
+    // },
+    // {
+    //   title: "Khách hàng",
+    //   dataIndex: ["customer", "name"],
+    //   key: "customer.name",
+    //   sorter: (a, b) => a.customer.name.length - b.customer.name.length,
     // },
     {
-      title: "Bắt đầu",
+      title: "Thời gian bắt đầu",
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => (
         <>{dayjs(date).format("YYYY-MM-DD HH:mm:ss")}</>
       ),
+      sorter: (a, b) => dayjs(a.createdAt).valueOf() - dayjs(b.createdAt).valueOf(),
     },
     {
-      title: "Kết thúc",
+      title: "Thời gian kết thúc",
       dataIndex: "updatedAt",
       key: "updatedAt",
       render: (date: string) => (
         <>{dayjs(date).format("YYYY-MM-DD HH:mm:ss")}</>
       ),
+      sorter: (a, b) => dayjs(a.updatedAt).valueOf() - dayjs(b.updatedAt).valueOf(),
     },
     // {
     //   title: "CreatedBy",
@@ -108,13 +165,17 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
     // },
     {
       title: "isCanceled",
-      dataIndex: "isCanceled",
-      key: "isCanceled",
-      render: (isCanceled: boolean) => <>{isCanceled ? "True" : "False"}</>,
+      dataIndex: "canceled",
+      key: "canceled",
+      sorter: (a, b) => Number(a.canceled) - Number(b.canceled),
+      filters: [{text: "True", value : true}, {text: "False", value: false}],
+       //@ts-ignore
+      onFilter: (value: boolean , record) => record.canceled === value,
+      render: (canceled: boolean) => (canceled ? "True" : "False"),
     },
     {
       title: "Action",
-      key: "action",
+      key: "action",  
       render: (_, record) => (
         <Space size="middle">
           <a onClick={() => handleEdit(record)}>
@@ -200,7 +261,7 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
               {order?.room.name}
             </Descriptions.Item>
             <Descriptions.Item label="IsCanceled">
-              {order?.isCanceled ? "True" : "False"}
+              {order?.canceled ? "True" : "False"}
             </Descriptions.Item>
             <Descriptions.Item label="Bắt đầu">
               {dayjs(order?.createdAt).format("YYYY-MM-DD HH:mm:ss")}
@@ -214,7 +275,7 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
         </Row>
         <Row justify={"space-between"}>
           <Table
-          //@ts-ignore
+            //@ts-ignore
             dataSource={orderDetails?.map((product) => ({
               ...product,
               key: product.id,
@@ -225,8 +286,8 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
             <Table.Column title="ID" dataIndex={"id"} key={"id"} />
             <Table.Column
               title="Sản phẩm"
-              dataIndex="name"
-              key="name"
+              dataIndex={["product", "name"]}
+              key={"product.name"}
             />
             <Table.Column
               title="Giá"

@@ -29,24 +29,30 @@ export interface IProduct extends IRole {
   category: ICategory;
   unit: IUnit;
 }
+export interface ICustomer extends IRole {
+  email: string
+  phone: string
+  discount: number
+}
 
 export interface IOrderDetail {
   id: number;
   product: IProduct;
   quantity: number;
-  createdAt: string;
-  updatedAt: string;
+  // createdAt: string;
+  // updatedAt: string;
   // endTime: string;
 }
 
 export interface IOrder {
   id: number;
-  isCanceled: boolean;
+  canceled: boolean;
   createdAt: string;
   updatedAt: string;
   createdBy: number;
   updatedBy: number;
-  // user: IUser;
+  user: IUser;
   room: IRoom;
+  customer: ICustomer;
   orderDetails: IOrderDetail[];
 }

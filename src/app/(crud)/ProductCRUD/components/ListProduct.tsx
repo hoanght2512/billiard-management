@@ -5,6 +5,7 @@ import type { ColumnsType } from "antd/es/table";
 import { IProduct } from "@/lib/interfaceBase";
 import Paragraph from "antd/es/typography/Paragraph";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { text } from "stream/consumers";
 
 interface IProps {
   onEdit: (product: IProduct) => void;
@@ -17,7 +18,6 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
   const handleEdit = (record: IProduct) => {
     onEdit(record);
   };
-
   const handleDelete = (id: number) => {
     Modal.confirm({
       title: "Bạn có muốn xóa ?",
@@ -29,17 +29,30 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
       },
     });
   };
+
+  const formatCurrency = (value: number | undefined) => {
+    if (typeof value !== "number") {
+      return "N/A";
+    }
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
+
   const columns: ColumnsType<IProduct> = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
       render: (text) => <a>{text}</a>,
+      sorter: (a, b) => a.id - b.id,
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      sorter: (a, b) => a.name.length - b.name.length,
     },
     {
       title: "Ảnh",
@@ -61,16 +74,21 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
       title: "Price",
       dataIndex: "price",
       key: "price",
+      sorter: (a, b) => a.price - b.price,
     },
     {
       title: "Category",
-      dataIndex: ["category", "name"],
-      key: "category.name",
+      dataIndex: "categoryName",
+      key: "categoryName",
+      //@ts-ignore
+      sorter: (a, b) => a.categoryName.length - b.categoryName.length,
     },
     {
       title: "Unit",
-      dataIndex: ["unit", "name"],
-      key: "unit.name",
+      dataIndex: "unitName",
+      key: "unitName",
+      //@ts-ignore
+      sorter: (a, b) => a.unitName.length - b.unitName.length,
     },
     {
       title: "Action",
