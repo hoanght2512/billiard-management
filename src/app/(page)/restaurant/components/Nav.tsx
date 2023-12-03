@@ -13,8 +13,7 @@ const Nav = () => {
   };
   const { data } = useAuth();
   //@ts-ignore
-  const username = data?.user?.username;
-  console.log(username)
+  const username = data?.username;
   // console.log(data/)
   const items: MenuProps["items"] = [
     {

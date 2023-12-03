@@ -29,8 +29,8 @@ export interface IProduct {
   hourly: boolean;
   image: string;
   price: number;
-  productCategory: DataTypeCategory;
-  productUnit: DataTypeUnit;
+  categoryId: string;
+  unitId: string;
 }
 export interface DataTypeCategory {
   id: string;
@@ -107,7 +107,7 @@ export interface IRoomOrder {
   // orderTime: string;
   quantity: number;
   // price: number;
-  created_at: Date;
+  created_at: string;
 }
 export interface RoomOrderDetail {
   room: Pick<IRoom, "id">;
