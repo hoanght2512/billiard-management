@@ -44,7 +44,8 @@ const ProductController: React.FC<IProps> = ({ onEdit, onDelete, data, loading }
       title: "Ảnh",
       dataIndex: "image",
       key: "image",
-      render: (_, record) => <Image width={80} src={record.image} alt="image"/>,
+      //@ts-ignore
+      render: (_, record) => <Image width={80} src={record.imageUrl} alt="image"/>,
     },
     // {
     //   title: "Image",

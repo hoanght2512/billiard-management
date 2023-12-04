@@ -152,7 +152,8 @@ const TableCRUD: React.FC<IProps> = (props) => {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
             setDownloadURL(url);
-            data.image = url;
+            //@ts-ignore
+            data.imageUrl = url;
             props.onSubmit(data, () => {
               form.resetFields();
               setImageFile(undefined);
