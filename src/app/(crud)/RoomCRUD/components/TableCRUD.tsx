@@ -26,7 +26,7 @@ const initialValues: RoomDetail = {
   area: {
     id: "",
   },
-  status: false,
+  active: false,
 };
 const fullwidth: React.CSSProperties = {
   width: "100%",
@@ -125,7 +125,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
           </Select>
         </Form.Item>
         <Form.Item
-          name="status"
+          name="active"
           label="Trạng thái"
           rules={[
             {

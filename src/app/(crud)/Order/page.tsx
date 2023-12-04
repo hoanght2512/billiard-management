@@ -15,7 +15,7 @@ const AppOrderCTRL: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const response = await findAllOrder();
+      const response = await findAllOrder(null, null);
       //@ts-ignore
       setData(response);
       setLoading(false);
