@@ -2,8 +2,9 @@
 import { login } from "@/app/services/authService";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { Button, Form, Input, message, Card } from "antd";
+import { Button, Form, Input, message, Card, Checkbox } from "antd";
 import { LoginDetail } from "@/lib/interfaceBase";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 
 const Signin = () => {
   const [form] = Form.useForm<LoginDetail>();
@@ -37,12 +38,8 @@ const Signin = () => {
   };
 
   return (
-    <Card style={{ width: 600}}>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-      >
+    <Card style={{ width: 600 }}>
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <h1>Đăng nhập</h1>
         <Form.Item
           name="username"
@@ -54,7 +51,11 @@ const Signin = () => {
             },
           ]}
         >
-          <Input type="username" placeholder="Nhập tên đăng nhập" />
+          <Input
+            prefix={<UserOutlined className="site-form-item-icon" />}
+            type="username"
+            placeholder="Nhập tên đăng nhập"
+          />
         </Form.Item>
 
         <Form.Item
@@ -67,7 +68,11 @@ const Signin = () => {
             },
           ]}
         >
-          <Input.Password  type="password" placeholder="Nhập mật khẩu" />
+          <Input.Password
+            prefix={<LockOutlined className="site-form-item-icon" />}
+            type="password"
+            placeholder="Nhập mật khẩu"
+          />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
