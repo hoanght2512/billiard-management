@@ -12,9 +12,10 @@ import {
   checkoutRoomOrder,
   deleteRoomOrder,
   findRoomOrderID,
+  startRoomProduct,
   updateRoomOrder,
 } from "@/app/services/roomOrderService";
-import { findAll } from "@/app/services/roomService";
+import { findAll, roomById } from "@/app/services/roomService";
 
 const footer: React.CSSProperties = {
   padding: "15px 0",
@@ -22,8 +23,7 @@ const footer: React.CSSProperties = {
   width: "100%",
   backgroundColor: "#f0f0f0",
   borderBottomLeftRadius: "30px",
-  borderBottomRightRadius: "30px"
-
+  borderBottomRightRadius: "30px",
 };
 
 const App: React.FC = () => {
@@ -32,9 +32,8 @@ const App: React.FC = () => {
   const [editRoomOrder, setEditRoomOrder] = useState<IRoomOrder[]>();
   const [total, setTotal] = useState<number>(0);
 
-  const handleUpdateTotal = (total:number) => {
+  const handleUpdateTotal = (total: number) => {
     setTotal(total);
-
   };
   const onCurrentRoomOrder = (roomOrder: IRoomOrder[]) => {
     setEditRoomOrder(roomOrder);
@@ -42,7 +41,7 @@ const App: React.FC = () => {
   useEffect(() => {
     fetchData();
     //Debug -> Thêm [] tránh loops
-  },[]);
+  }, []);
   useEffect(() => {
     fetchRoomList();
   }, []);
@@ -67,49 +66,81 @@ const App: React.FC = () => {
       console.error("Error: ", error);
     }
   };
+  const onStartRoom = async (roomId: any) => {
+    const response = await startRoomProduct(roomId);
+    //@ts-ignore
+    setEditRoomOrder(response);
+    fetchData();
+    fetchRoomList();
+    const dataRoom = await roomById(roomId);
+    //@ts-ignore
+    setEditRoom(dataRoom);
+    console.log(editRoom);
+  };
   const onSubmmit = async (roomOrder: RoomOrderDetail) => {
-    console.log(roomOrder)
+    console.log(roomOrder);
 
     try {
       const res = await addRoomOrder(roomOrder);
-    if (res) {
-      message.success("Order thành công!");
-      fetchData();
-    }
+      if (res) {
+        message.success("Order thành công!");
+        //@ts-ignore
+        const dataRoom = await roomById(editRoom.id);
+        //@ts-ignore
+        setEditRoom(dataRoom);
+        fetchData();
+        fetchRoomList();
+      }
     } catch (error) {
       message.config({
-        maxCount: 1
-      })
-      message.error("Không thể Order lớn hơn 1 sản phẩm tính giờ!")
+        maxCount: 1,
+      });
+      message.error("Không thể Order lớn hơn 1 sản phẩm tính giờ!");
     }
   };
   const onDelete = async (roomOrderId: number) => {
     const res = await deleteRoomOrder(roomOrderId);
     if (res) {
       message.success("Xóa Order thành công!");
+      //@ts-ignore
+      const dataRoom = await roomById(editRoom.id);
+      //@ts-ignore
+      setEditRoom(dataRoom);
       fetchData();
+      fetchRoomList();
     }
   };
-  const handleQuantityChange = async (roomOrderId: number, roomOrder:RoomOrderDetail) => {
-        //@ts-ignore
-     await updateRoomOrder(roomOrderId, roomOrder)
+  const handleQuantityChange = async (
+    roomOrderId: number,
+    roomOrder: RoomOrderDetail
+  ) => {
+    //@ts-ignore
+    await updateRoomOrder(roomOrderId, roomOrder);
     fetchData();
-  }
+  };
   const onChangeRoomOrder = async (roomId: any, newRoomId: any) => {
     const res = await changeRoomOrder(roomId, newRoomId);
     console.log(res);
     if (res) {
       message.success("Đổi bàn thành công!");
+      const dataRoom = await roomById(roomId);
+      //@ts-ignore
+      setEditRoom(dataRoom);
       fetchData();
+      fetchRoomList();
     }
   };
   const onCheckoutRoomOrder = async (roomId: any) => {
     const res = await checkoutRoomOrder(roomId);
     if (res) {
       message.success("Thanh toán thành công!");
+      const dataRoom = await roomById(roomId);
+      //@ts-ignore
+      setEditRoom(dataRoom);
       fetchData();
+      fetchRoomList();
     }
-  }
+  };
   const onCurrentRoom = (room: IRoom) => {
     setEditRoom(room);
     console.log(room);
@@ -117,16 +148,31 @@ const App: React.FC = () => {
   return (
     <>
       <Nav />
-      <Row justify={"space-between"} style={{backgroundColor: "#003a8c", padding:"30px"}}>
-        <Col span={11} >
-          <Flex vertical >
-            <TableItem room={editRoom} onUpdate={handleQuantityChange} onDelete={onDelete} roomOrder={editRoomOrder} onUpdateTotal={handleUpdateTotal}/>
+      <Row
+        justify={"space-between"}
+        style={{ backgroundColor: "#003a8c", padding: "30px" }}
+      >
+        <Col span={11}>
+          <Flex vertical>
+            <TableItem
+              room={editRoom}
+              onUpdate={handleQuantityChange}
+              onDelete={onDelete}
+              roomOrder={editRoomOrder}
+              onUpdateTotal={handleUpdateTotal}
+            />
             <Flex vertical style={footer}>
-              <Footer checkoutRoomOrder={onCheckoutRoomOrder} room={editRoom} changeRoom={onChangeRoomOrder} totalPrice={total}/>
+              <Footer
+                checkoutRoomOrder={onCheckoutRoomOrder}
+                onStartRoom={onStartRoom}
+                room={editRoom}
+                changeRoom={onChangeRoomOrder}
+                totalPrice={total}
+              />
             </Flex>
           </Flex>
         </Col>
-        <Col span={12} >
+        <Col span={12}>
           <TabList
             onSubmit={onSubmmit}
             roomList={editRoomList}
