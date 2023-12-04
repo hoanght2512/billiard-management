@@ -27,3 +27,7 @@ interface roomOrderPayload {
     const response = await axiosClient.delete(`http://localhost:8080/api/v1/restaurant/checkout/${roomId}`);
     return response;
   }
+  export const startRoomProduct = async (roomId:any) => {
+    const response = await axiosClient.post(`http://localhost:8080/api/v1/restaurant/start?roomId=${roomId}`);
+    return response;
+  }

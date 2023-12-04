@@ -41,6 +41,7 @@ const TabList: React.FC<IProps> = ({
   };
 
   const onSubmmit = async (roomOrder: RoomOrderDetail) => {
+    console.log(roomOrder)
     onSubmit(roomOrder);
   };
   

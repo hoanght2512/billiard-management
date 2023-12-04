@@ -20,7 +20,6 @@ interface IProps {
 const ListProduct: React.FC<IProps> = (props) => {
   // console.log(room)
   const [data, setData] = useState<[]>([]);
-
   const listData = async () => {
     const response = await findAll();
     //@ts-ignore
@@ -67,7 +66,7 @@ const ListProduct: React.FC<IProps> = (props) => {
         //@ts-ignore
         const price = item.price;
         //@ts-ignore
-        const image = item.image;
+        const image = item.imageUrl;
 
         return (
           <List.Item key={id}>

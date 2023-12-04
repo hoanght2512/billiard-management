@@ -50,25 +50,29 @@ const TableItem: React.FC<IProps> = ({
     return () => clearInterval(interval);
   }, []);
   // console.log(roomOrder);
+  const startRoom = () => {
+  }
   const handleDelete = (roomOrderId: number) => () => {
     onDelete(roomOrderId);
   };
   const handleQuantityChange = (
-    roomOrderId: number,
-    newQuantity: RoomOrderDetail
+    roomOrderId: any,
+    newQuantity: any
   ) => {
     const serializableQuantity = {
-      room: {
-        id: newQuantity?.room?.id,
-      },
-      product: {
-        id: newQuantity?.product?.id,
-      },
+      roomId: roomOrderId?.roomId,
+      productId: roomOrderId?.productId,
       quantity: newQuantity,
+      //@ts-ignore
+      orderTime: dayjs(roomOrderId?.orderTime).format("YYYY-MM-DD HH:mm:ss")
+      
     };
     const jsonString = serializableQuantity;
+    console.log(jsonString)
     //@ts-ignore
-    onUpdate(roomOrderId, jsonString);
+    onUpdate(roomOrderId?.id, jsonString);
+    console.log(newQuantity)
+    console.log(roomOrderId)
   };
   const formatCurrency = (value: number | undefined) => {
     if (typeof value !== "number") {
@@ -81,7 +85,7 @@ const TableItem: React.FC<IProps> = ({
   };
   useEffect(() => {
     const sum =
-      roomOrder?.reduce((acc, record) => {
+      roomOrder?.reduce((acc, record) => {//@ts-ignore
         const { quantity, productPrice } = record;
         // const { price } = product || {};
         if (quantity && productPrice) {
@@ -100,25 +104,29 @@ const TableItem: React.FC<IProps> = ({
       key: "id",
       render: (_, record) => (
         <>
-          {record.productHourly && (
+          {//@ts-ignore
+          record.productHourly && (
             <>
               <Tag color="#f50">
                 <FontAwesomeIcon icon={faClock} />
               </Tag>
             </>
           )}
-          <Text strong>{record.productName} </Text>
-          {record.productHourly && (
+          <Text strong>{//@ts-ignore
+          record.productName} </Text>
+          {//@ts-ignore
+          record.productHourly && (
             // <Tag color="blue" style={{ borderRadius: "24px" }}>
             <>
-             <Text style={{marginLeft:"20px"}}>Từ</Text>
-            <TimePicker
-              bordered={false}
-              // value={dayjs(record.created_at).add(realTime.diff(dayjs()), 'ms')}
-              suffixIcon={false}
-              defaultValue={dayjs(record.createdAt)}
-              format="HH:mm:ss"
-            />
+              <Text style={{ marginLeft: "20px" }}>Từ</Text>
+              <TimePicker
+                bordered={false}
+                // value={dayjs(record.created_at).add(realTime.diff(dayjs()), 'ms')}
+                suffixIcon={false}
+                defaultValue=//@ts-ignore
+                {dayjs(record.createdAt)}
+                format="HH:mm:ss"
+              />
             </>
             //  </Tag>
           )}
@@ -131,10 +139,10 @@ const TableItem: React.FC<IProps> = ({
     },
     {
       title: "Đơn vị",
-      dataIndex: "unitName",
-      key: "unitName",
+      dataIndex: "productUnitName",
+      key: "productUnitName",
       width: "10%",
-      render: (unit) => <Tag color="#f50">{unit?.name}</Tag>,
+      render: (unit) => <Tag color="#f50">{unit}</Tag>,
     },
 
     {
@@ -143,9 +151,9 @@ const TableItem: React.FC<IProps> = ({
       key: "quantity",
       width: "10%",
       render(value, record, index) {
-        const hourly = record.productHourly;
+        // const hourly = record.productHourly;
         //@ts-ignore
-        const name = record.product?.unit?.name;
+        const name = record.productUnitName;
         const step = name === "Tiền giờ" ? 0.1 : 1;
         const min = name === "Tiền giờ" ? 0.1 : 1;
         return (
@@ -155,7 +163,7 @@ const TableItem: React.FC<IProps> = ({
             defaultValue={value}
             value={record.quantity}
             disabled={name === "Tiền giờ" ? index === 0 : false}
-            onChange={(newValue) => handleQuantityChange(record.id, newValue)}
+            onChange={(newValue) => handleQuantityChange(record, newValue)}
           />
         );
       },
@@ -173,6 +181,7 @@ const TableItem: React.FC<IProps> = ({
       key: "total",
       width: "10%",
       render: (_, record) => {
+        //@ts-ignore
         const { quantity, productPrice } = record;
         const total = quantity * productPrice || 0;
 
@@ -209,7 +218,8 @@ const TableItem: React.FC<IProps> = ({
     >
       <Space style={{ margin: "10px" }}>
         <Tag color="blue" style={{ borderRadius: "24px", padding: "5px" }}>
-          {room?.name} - {room?.areaName}
+          {room?.name} - {//@ts-ignore
+          room?.areaName}
         </Tag>
         <Search
           placeholder="Tìm khách hàng"
