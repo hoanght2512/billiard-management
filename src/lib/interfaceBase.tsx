@@ -51,7 +51,7 @@ export interface IRoom {
   id: number;
   name: string;
   area: DataTypeArea;
-  status: boolean;
+  active: boolean;
 }
 export interface DataTypeArea {
   id: string;
@@ -60,7 +60,7 @@ export interface DataTypeArea {
 export interface RoomDetail {
   name: string;
   area: Pick<DataTypeArea, "id">;
-  status: boolean;
+  active: boolean;
 }
 //
 export interface LoginDetail {
@@ -171,7 +171,7 @@ export interface IArea {
     id: number;
     name: string;
     area: DataTypeArea;
-    status: boolean;
+    active: boolean;
   }
   export interface DataTypeArea {
     id: string;
@@ -180,7 +180,7 @@ export interface IArea {
   export interface RoomDetail {
     name: string;
     area: Pick<DataTypeArea, 'id'>;
-    status: boolean;
+    active: boolean;
   }
   //
   export interface LoginDetail{

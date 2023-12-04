@@ -37,7 +37,8 @@ export interface ICustomer extends IRole {
 
 export interface IOrderDetail {
   id: number;
-  product: IProduct;
+  productName: string;
+  productPrice: number;
   quantity: number;
   // createdAt: string;
   // updatedAt: string;
@@ -49,8 +50,8 @@ export interface IOrder {
   canceled: boolean;
   createdAt: string;
   updatedAt: string;
-  createdBy: number;
-  updatedBy: number;
+  createdBy: string;
+  updatedBy: string;
   user: IUser;
   room: IRoom;
   customer: ICustomer;
