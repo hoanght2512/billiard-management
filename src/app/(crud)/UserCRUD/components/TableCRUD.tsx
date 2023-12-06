@@ -11,6 +11,7 @@ import {
   InputNumber,
   Modal,
   Radio,
+  Typography,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { UserDetail, IUser } from "@/lib/interfaceBase";
@@ -41,12 +42,22 @@ const TableUser: React.FC<IProps> = (props) => {
       form.setFieldsValue(props.user);
     }
   }, [form, props.user]);
-  const handleSubmit = (data: UserDetail) => {
-    props.onSubmit(data, () => form.resetFields());
+  const handleSubmit = () => {
+    const data = form.getFieldsValue() as UserDetail;
+    const selectedRole = data.roles;
+    //@ts-ignore
+    data.roles = [{ id: selectedRole }];
+    props.onSubmit(data, () => {
+      form.resetFields();
+    });
   };
 
   const handleUpdate = async (userId: any) => {
-    props.onUpdate(userId, form.getFieldsValue());
+    const data = form.getFieldsValue() as UserDetail;
+    const selectedRole = data.roles;
+    //@ts-ignore
+    data.roles = [{ id: selectedRole }];
+    props.onUpdate(userId, data);
   };
 
   const handleDelete = async (userId: any) => {
@@ -122,15 +133,18 @@ const TableUser: React.FC<IProps> = (props) => {
           <Input.Password placeholder="Mật khẩu" />
         </Form.Item>
         <Form.Item
-          label="Roles"
+          label="Role"
           name="roles"
-          rules={[
-            { required: true, message: "Vui lòng chọn ít nhất một vai trò!" },
-          ]}
+          // rules={[
+          //   { required: true, message: "Vui lòng chọn ít nhất một vai trò!" },
+          // ]}
         >
+          <Typography style={{ color: "red", marginBottom: "10px" }}>
+            Lưu ý: Khi "Thêm mới" mà chưa chọn Role thì sẽ tự động SET ROLE USER
+          </Typography>
           <Radio.Group>
-            <Radio value="ROLE_ADMIN">Admin</Radio>
-            <Radio value="ROLE_USER">User</Radio>
+            <Radio value="1">Admin</Radio>
+            <Radio value="2">User</Radio>
             {/* Add more roles as needed */}
           </Radio.Group>
         </Form.Item>
