@@ -161,7 +161,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
               setIsUploading(false);
             });
           });
-        }
+        } 
       );
     } else {
       message.error("File not found");
@@ -220,7 +220,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
 
           <Form.Item label="Ảnh sản phẩm ( Chỉ thêm được 1 )">
             <Upload
-              name="image"
+              name="imageUrl"
               accept="image/png, image/jpg"
               action={"localhost:3000"}
               listType="picture-card"

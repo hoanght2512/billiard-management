@@ -29,7 +29,9 @@ import Dashboard from "@/app/dashboard/page";
 const { Header, Sider, Content } = Layout;
 const App: React.FC = () => {
   // const [editing, setEdit] = useState(false);
-  
+  const handleTabChange = (key: string) => {
+    setTabType(key);
+  };
 
   const [collapsed, setCollapsed] = useState(false);
   const {
@@ -60,12 +62,14 @@ const App: React.FC = () => {
         <Menu
           mode="inline"
           defaultSelectedKeys={["1"]}
-          onClick={(e) => {
-            console.log(e);
-            setTabType(e.key);
-            // navigate(`/${e.key}`);
-            navigate(e.key);
-          }}
+          // onClick={(e) => {
+          //   console.log(e);
+          //   setTabType(e.key);
+          //   // navigate(`/${e.key}`);
+          //   navigate(e.key);
+          // }}
+          onClick={(e) => handleTabChange(e.key)}
+
           items={[
             {
               key: "0",

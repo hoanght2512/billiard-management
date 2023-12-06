@@ -7,6 +7,10 @@ export default function Middleware(request: NextRequest) {
   if (token != "access_token") {
     if (request.nextUrl.pathname.startsWith("/signin")) {
       return NextResponse.rewrite(new URL("/signin", request.url));
+    } else if (url.pathname === "/") {
+      url.pathname = "/signin";
+
+      return NextResponse.redirect(url);
     }
   } else {
     if (url.pathname === "/signin") {
