@@ -85,7 +85,7 @@ const TableUser: React.FC<IProps> = (props) => {
         layout="vertical"
         onFinish={handleSubmit}
         onSubmitCapture={(e) => {
-          e.preventDefault;
+          e.preventDefault();
         }}
         initialValues={initialValues}
       >

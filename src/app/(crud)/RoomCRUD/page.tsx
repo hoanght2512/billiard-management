@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Col, Flex, Row, message } from "antd";
 import RoomMain from "./components/TableCRUD";
-import { IRoom, RoomDetail } from "@/lib/interfaceBase";
+import { IRoom, RoomDetail, RoomProduct } from "@/lib/interfaceBase";
 import {
   addRoom,
   deleteRoom,
@@ -10,15 +10,15 @@ import {
   updateRoom,
 } from "@/app/services/roomService";
 import RoomController from "./components/ListRoom";
+import ListRoomProduct from "./components/ListRoomProduct";
 const AppRoomCTRL: React.FC = () => {
   const [editRoom, setEditRoom] = useState<IRoom>();
   const [data, setData] = useState<IRoom[]>([]);
   const [loading, setLoading] = useState(true);
-
+  // console.log(dataRoomProduct)
   useEffect(() => {
     fetchData();
   }, []);
-
   const fetchData = async () => {
     try {
       const response = await findAll();
@@ -31,6 +31,12 @@ const AppRoomCTRL: React.FC = () => {
   const onCurrentRoom = (room: IRoom) => {
     setEditRoom(room);
   };
+  // const onEditRoomProduct = async () => {
+
+  // }
+  // const onDeleteRoomProduct = async () => {
+
+  // }
 
   const onSubmmit = async (room: RoomDetail, resetFormData: () => void) => {
     try {
@@ -94,8 +100,10 @@ const AppRoomCTRL: React.FC = () => {
             onDelete={onDelete}
             loading={loading}
           />
+          
         </Col>
       </Row>
+      <ListRoomProduct data={data}/>
     </>
   );
 };
