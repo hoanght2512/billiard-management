@@ -3,13 +3,16 @@ import React, { useRef, useState } from "react";
 import {
   Button,
   Card,
+  Image,
   Input,
   InputRef,
+  List,
   Modal,
   Space,
   Spin,
   Table,
   Tag,
+  Typography,
 } from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
 import { IRoom } from "@/lib/interfaceBase";
@@ -20,6 +23,8 @@ import {
 } from "@ant-design/icons";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
+const { Text } = Typography;
+
 interface IProps {
   onEdit: (room: IRoom) => void;
   onDelete: (roomId: number) => void;
@@ -32,6 +37,9 @@ const RoomController: React.FC<IProps> = ({
   data,
   loading,
 }) => {
+  // const roomsWithProducts = data?.content?.filter((room) => room.roomProducts?.length > 0) || [];
+  // const roomsWithoutProducts = data?.content?.filter((room) => !room.roomProducts || room.roomProducts.length === 0) || [];
+// console.log(roomsWithoutProducts)
   const handleEdit = (record: IRoom) => {
     onEdit(record);
   };
@@ -157,13 +165,20 @@ const RoomController: React.FC<IProps> = ({
   });
 
   const columns: ColumnsType<IRoom> = [
+    // {
+    //   title: "ID",
+    //   dataIndex: "id",
+    //   key: "id",
+    //   render: (text) => <a>{text}</a>,
+    //   sorter: (a, b) => a.id - b.id,
+    //   ...getColumnSearchProps("id"),
+    // },
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text) => <a>{text}</a>,
-      sorter: (a, b) => a.id - b.id,
-      ...getColumnSearchProps("id"),
+      title: "STT",
+      dataIndex: "index",
+      key: "index",
+      //@ts-ignore
+      render: (_, __, index) => <span>{data.pageable.offset + index + 1}</span>,
     },
     {
       title: "Tên bàn",
@@ -186,9 +201,7 @@ const RoomController: React.FC<IProps> = ({
       dataIndex: "active",
       key: "active",
       render: (active: boolean) => (
-        <Tag color={active ? "green" : "red"}>
-          {active ? "Mở" : "Đóng"}
-        </Tag>
+        <Tag color={active ? "green" : "red"}>{active ? "Mở" : "Đóng"}</Tag>
       ),
       sorter: (a, b) => Number(a.active) - Number(b.active),
       filters: [
@@ -222,24 +235,140 @@ const RoomController: React.FC<IProps> = ({
   const pageSizeOptions = ["5", "10", "20"];
 
   return (
-    <Card>
-      <Spin spinning={loading} tip="Loading..." size="large">
-        <Table
-          pagination={{
-            showSizeChanger: true,
-            pageSizeOptions: pageSizeOptions,
-            defaultPageSize: Number(pageSizeOptions[0]),
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`,
-            showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+    <>
+        <Spin spinning={loading} tip="Loading..." size="large">
+          <Table
+            // pagination={{
+            //   showSizeChanger: true,
+            //   pageSizeOptions: pageSizeOptions,
+            //   defaultPageSize: Number(pageSizeOptions[0]),
+            //   showTotal: (total, range) =>
+            //     `${range[0]}-${range[1]} of ${total} items`,
+            //   showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+            // }}
+            pagination={false}
+            columns={columns}
+            scroll={{ x: 600 }}
+            //@ts-ignore
+            dataSource={data?.content?.map((room) => ({
+              ...room,
+              key: room.id,
+            }))}
+          />
+        </Spin>
+      {/* <Card style={{ marginTop: "20px" }}>
+        <Text>Danh sách BÀN có sản phẩm mặc định</Text>
+        <List
+          style={{ marginTop: "20px" }}
+          grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }} // Adjust the grid settings
+          dataSource={roomsWithProducts.map((room) => ({
+            ...room,
+            key: room.id,
+          }))}
+          renderItem={(item) => {
+            //@ts-ignore
+            const { name, id, roomOrders } = item;
+            // const active = roomOrders.length > 0;
+            const isUsed = roomOrders && roomOrders.length;
+            return (
+              <List.Item>
+                <a>
+                  <Card
+                    size="small"
+                    hoverable
+                    cover={
+                      <Image
+                        src="https://firebasestorage.googleapis.com/v0/b/leafy-emblem-385311.appspot.com/o/image%2Fdining-room%20(3).png?alt=media&token=116a175e-7315-41ac-ab29-98b477fbc032"
+                        alt="product"
+                        style={{ width: "68px" }}
+                        preview={false}
+                      />
+                    }
+                    style={{
+                      // width: "100px",
+                      textAlign: "center",
+                      minHeight: "90px",
+                      // border:
+                      //   selectedRoom === id
+                      //     ? "1px solid red"
+                      //     : "1px solid #e8e8e8",
+                      backgroundColor: isUsed ? "#307DC7" : "",
+                    }}
+                  >
+                    <Text strong style={{ color: isUsed ? "white" : "" }}>
+                      {name}
+                    </Text>
+                    <br />
+                    <Text
+                      type="secondary"
+                      style={{ color: isUsed ? "white" : "" }}
+                    >
+                      {isUsed ? "Đang sử dụng" : "Trống"}
+                    </Text>
+                  </Card>
+                </a>
+              </List.Item>
+            );
           }}
-          columns={columns}
-          scroll={{ x: 600 }}
-          //@ts-ignore
-          dataSource={data?.content?.map((room) => ({ ...room, key: room.id }))}
         />
-      </Spin>
-    </Card>
+      </Card>
+      <Card style={{ marginTop: "20px" }}>
+        <Text>Danh sách BÀN không có sản phẩm mặc định</Text>
+        <List
+          style={{ marginTop: "20px" }}
+          grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }}
+          dataSource={roomsWithoutProducts.map((room) => ({
+            ...room,
+            key: room.id,
+          }))}
+          renderItem={(item) => {
+            //@ts-ignore
+            const { name, id, roomOrders } = item;
+            // const active = roomOrders.length > 0;
+            const isUsed = roomOrders && roomOrders.length;
+            return (
+              <List.Item>
+                <a>
+                  <Card
+                    size="small"
+                    hoverable
+                    cover={
+                      <Image
+                        src="https://firebasestorage.googleapis.com/v0/b/leafy-emblem-385311.appspot.com/o/image%2Fdining-room%20(3).png?alt=media&token=116a175e-7315-41ac-ab29-98b477fbc032"
+                        alt="product"
+                        style={{ width: "68px" }}
+                        preview={false}
+                      />
+                    }
+                    style={{
+                      // width: "100px",
+                      textAlign: "center",
+                      minHeight: "90px",
+                      // border:
+                      //   selectedRoom === id
+                      //     ? "1px solid red"
+                      //     : "1px solid #e8e8e8",
+                      backgroundColor: isUsed ? "#307DC7" : "",
+                    }}
+                  >
+                    <Text strong style={{ color: isUsed ? "white" : "" }}>
+                      {name}
+                    </Text>
+                    <br />
+                    <Text
+                      type="secondary"
+                      style={{ color: isUsed ? "white" : "" }}
+                    >
+                      {isUsed ? "Đang sử dụng" : "Trống"}
+                    </Text>
+                  </Card>
+                </a>
+              </List.Item>
+            );          }}
+        />
+      </Card>
+      <Button >Thêm sản phẩm mặc định</Button> */}
+    </>
   );
 };
 export default RoomController;

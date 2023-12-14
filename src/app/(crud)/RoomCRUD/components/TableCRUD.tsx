@@ -12,9 +12,14 @@ import {
   Popover,
   Radio,
   Modal,
+  List,
+  Image,
+  Typography,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { IRoom, DataTypeArea, RoomDetail } from "@/lib/interfaceBase";
+const { Text } = Typography;
+
 interface IProps {
   room?: IRoom;
   onSubmit: (room: RoomDetail, resetFormData: () => void) => void;
@@ -36,6 +41,20 @@ const TableCRUD: React.FC<IProps> = (props) => {
   const [editing, setEditing] = useState(false);
   const [dataArea, setDataArea] = useState<DataTypeArea[]>([]);
   const [form] = Form.useForm<RoomDetail>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [roomProduct, setRoomProduct] = useState<RoomDetail>()
+  console.log(roomProduct)
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   const fetchDataArea = async () => {
     const response = await findAllArea();
     //@ts-ignore
@@ -47,6 +66,8 @@ const TableCRUD: React.FC<IProps> = (props) => {
   useEffect(() => {
     if (props.room) {
       setEditing(true);
+
+      setRoomProduct(props.room)
       form.setFieldsValue(props.room);
     }
   }, [form, props.room]);
@@ -76,147 +97,150 @@ const TableCRUD: React.FC<IProps> = (props) => {
   );
   const handleClick = async (event: any) => {};
   return (
-    <Card>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        onSubmitCapture={(e) => {
-          e.preventDefault;
-        }}
-        initialValues={initialValues}
-      >
-        <Form.Item style={{ textAlign: "center" }}>
-          {editing ? <h1>Cập nhật bàn</h1> : <h1>Tạo thêm bàn</h1>}
-        </Form.Item>
-        <Form.Item
-          name="name"
-          label="Tên bàn"
-          rules={[
-            {
-              required: true,
-              message: "Tên bàn không được để trống!",
-            },
-          ]}
+    <>
+      <Card>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          onSubmitCapture={(e) => {
+            e.preventDefault;
+          }}
+          initialValues={initialValues}
         >
-          <Input name="name" type="text" placeholder="Nhập tên bàn" />
-        </Form.Item>
+          <Form.Item style={{ textAlign: "center"}}>
+            {editing ? <h1>Cập nhật bàn</h1> : <h1>Tạo thêm bàn</h1>}
+          </Form.Item>
+          <Form.Item
+            name="name"
+            label="Tên bàn"
+            rules={[
+              {
+                required: true,
+                message: "Tên bàn không được để trống!",
+              },
+            ]}
+          >
+            <Input name="name" type="text" placeholder="Nhập tên bàn" />
+          </Form.Item>
 
-        <Form.Item
-          name="areaId"
-          label="Khu vực"
-          rules={[
-            {
-              required: true,
-              message: "Vui lòng chọn khu vực",
-            },
-          ]}
-        >
-          <Select>
-            {
-              //@ts-ignore
-              dataArea?.content?.map((roomArea) => (
-                <Select.Option key={roomArea.id} value={roomArea.id}>
-                  {roomArea.name}
-                </Select.Option>
-              ))
-            }
-            ;
-          </Select>
-        </Form.Item>
-        <Form.Item
-          name="active"
-          label="Trạng thái"
-          rules={[
-            {
-              required: true,
-              message: "Please select the status",
-            },
-          ]}
-        >
-          <Radio.Group>
-            <Radio value={true}>Mở</Radio>
-            <Radio value={false}>Đóng</Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Row gutter={32} justify={"center"}>
-          <Col span={16}>
-            <Space direction="vertical" style={fullwidth}>
+          <Form.Item
+            name="areaId"
+            label="Khu vực"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn khu vực",
+              },
+            ]}
+          >
+            <Select>
+              {
+                //@ts-ignore
+                dataArea?.content?.map((roomArea) => (
+                  <Select.Option key={roomArea.id} value={roomArea.id}>
+                    {roomArea.name}
+                  </Select.Option>
+                ))
+              }
+              ;
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="active"
+            label="Trạng thái"
+            rules={[
+              {
+                required: true,
+                message: "Please select the status",
+              },
+            ]}
+          >
+            <Radio.Group>
+              <Radio value={true}>Mở</Radio>
+              <Radio value={false}>Đóng</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Row gutter={32} justify={"center"}>
+            <Col span={16}>
               <Space direction="vertical" style={fullwidth}>
-                <Row gutter={16}>
-                  <Col span={12}>
-                    {editing ? (
-                      <Button
-                        htmlType="button"
-                        onClick={(e) => {
-                          setEditing(false);
-                          handleClick(e.preventDefault());
-                          form.resetFields();
-                        }}
-                        size="large"
-                        block
-                      >
-                        Hủy
-                      </Button>
-                    ) : (
-                      <Button
-                        htmlType="submit"
-                        type="primary"
-                        size="large"
-                        block
-                      >
-                        Thêm
-                      </Button>
-                    )}
-                  </Col>
-                  <Col span={12}>
-                    {editing ? (
-                      <Button
-                        type="primary"
-                        size="large"
-                        block
-                        onClick={() => {
-                          handleUpdate(props.room?.id);
-                        }}
-                      >
-                        Sửa
-                      </Button>
-                    ) : (
-                      <Button type="primary" size="large" block disabled>
-                        Sửa
-                      </Button>
-                    )}
-                  </Col>
-                </Row>
+                <Space direction="vertical" style={fullwidth}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      {editing ? (
+                        <Button
+                          htmlType="button"
+                          onClick={(e) => {
+                            setEditing(false);
+                            handleClick(e.preventDefault());
+                            form.resetFields();
+                          }}
+                          size="large"
+                          block
+                        >
+                          Hủy
+                        </Button>
+                      ) : (
+                        <Button
+                          htmlType="submit"
+                          type="primary"
+                          size="large"
+                          block
+                        >
+                          Thêm
+                        </Button>
+                      )}
+                    </Col>
+                    <Col span={12}>
+                      {editing ? (
+                        <Button
+                          type="primary"
+                          size="large"
+                          block
+                          onClick={() => {
+                            handleUpdate(props.room?.id);
+                          }}
+                        >
+                          Sửa
+                        </Button>
+                      ) : (
+                        <Button type="primary" size="large" block disabled>
+                          Sửa
+                        </Button>
+                      )}
+                    </Col>
+                  </Row>
+                </Space>
               </Space>
-            </Space>
-          </Col>
-          <Col className="gutter-row" span={6}>
-            <Space direction="vertical" style={fullwidth}>
-              {!editing ? (
-                <Popover content={RemovePOP} title="Lưu ý!">
-                  <Button type="primary" size="large" danger block disabled>
+            </Col>
+            <Col className="gutter-row" span={6}>
+              <Space direction="vertical" style={fullwidth}>
+                {!editing ? (
+                  <Popover content={RemovePOP} title="Lưu ý!">
+                    <Button type="primary" size="large" danger block disabled>
+                      Xóa
+                    </Button>
+                  </Popover>
+                ) : (
+                  <Button
+                    type="primary"
+                    size="large"
+                    danger
+                    block
+                    onClick={() => {
+                      handleDelete(props.room?.id);
+                    }}
+                  >
                     Xóa
                   </Button>
-                </Popover>
-              ) : (
-                <Button
-                  type="primary"
-                  size="large"
-                  danger
-                  block
-                  onClick={() => {
-                    handleDelete(props.room?.id);
-                  }}
-                >
-                  Xóa
-                </Button>
-              )}
-            </Space>
-          </Col>
-        </Row>
-      </Form>
-    </Card>
+                )}
+              </Space>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+      
+    </>
   );
 };
 export default TableCRUD;

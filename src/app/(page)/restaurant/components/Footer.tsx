@@ -333,7 +333,7 @@ const Footer: React.FC<IProps> = (props) => {
   };
   useEffect(() => {
     listData();
-  }, [data]);
+  }, []);
   return (
     <Row gutter={32} justify={"center"}>
       <Col span={16}>

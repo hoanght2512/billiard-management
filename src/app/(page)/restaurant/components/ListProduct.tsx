@@ -27,7 +27,7 @@ const ListProduct: React.FC<IProps> = (props) => {
   };
   useEffect(() => {
     listData();
-  }, [data]);
+  }, []);
   
   // const getCurrentTime = () => {
   //   const currentTime = new Date().toLocaleTimeString('en-US', {
