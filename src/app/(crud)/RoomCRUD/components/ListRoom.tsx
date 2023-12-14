@@ -165,13 +165,20 @@ const RoomController: React.FC<IProps> = ({
   });
 
   const columns: ColumnsType<IRoom> = [
+    // {
+    //   title: "ID",
+    //   dataIndex: "id",
+    //   key: "id",
+    //   render: (text) => <a>{text}</a>,
+    //   sorter: (a, b) => a.id - b.id,
+    //   ...getColumnSearchProps("id"),
+    // },
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text) => <a>{text}</a>,
-      sorter: (a, b) => a.id - b.id,
-      ...getColumnSearchProps("id"),
+      title: "STT",
+      dataIndex: "index",
+      key: "index",
+      //@ts-ignore
+      render: (_, __, index) => <span>{data.pageable.offset + index + 1}</span>,
     },
     {
       title: "Tên bàn",
@@ -229,17 +236,17 @@ const RoomController: React.FC<IProps> = ({
 
   return (
     <>
-      <Card>
         <Spin spinning={loading} tip="Loading..." size="large">
           <Table
-            pagination={{
-              showSizeChanger: true,
-              pageSizeOptions: pageSizeOptions,
-              defaultPageSize: Number(pageSizeOptions[0]),
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} items`,
-              showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
-            }}
+            // pagination={{
+            //   showSizeChanger: true,
+            //   pageSizeOptions: pageSizeOptions,
+            //   defaultPageSize: Number(pageSizeOptions[0]),
+            //   showTotal: (total, range) =>
+            //     `${range[0]}-${range[1]} of ${total} items`,
+            //   showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+            // }}
+            pagination={false}
             columns={columns}
             scroll={{ x: 600 }}
             //@ts-ignore
@@ -249,7 +256,6 @@ const RoomController: React.FC<IProps> = ({
             }))}
           />
         </Spin>
-      </Card>
       {/* <Card style={{ marginTop: "20px" }}>
         <Text>Danh sách BÀN có sản phẩm mặc định</Text>
         <List

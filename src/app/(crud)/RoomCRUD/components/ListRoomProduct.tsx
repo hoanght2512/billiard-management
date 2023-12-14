@@ -1,7 +1,14 @@
+import { findAll, productById } from "@/app/services/productService";
+import {
+  deleteAllByRoom,
+  deleteRoomProduct,
+  findAllRoomProduct,
+} from "@/app/services/roomProductService";
 import { roomById } from "@/app/services/roomService";
-import { IRoom } from "@/lib/interfaceBase";
+import { IRoom, RoomDetail, RoomProduct } from "@/lib/interfaceBase";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import {
+  Badge,
   Button,
   Card,
   Col,
@@ -15,28 +22,81 @@ import {
   Typography,
 } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const { Text } = Typography;
 
 interface IProps {
   // onEditRoomProduct: (room: IRoom) => void;
-  // onDeleteRoomProduct: (roomId: number) => void;
+  onDeleteProductId: (id: number) => void;
   data: IRoom[];
+  onAddRoomProduct: (roomProduct: IRoom) => void;
   // loading: boolean;
 }
+
 const ListRoomProduct: React.FC<IProps> = ({
   // onEditRoomProduct,
-  // onDeleteRoomProduct,
+  onDeleteProductId,
   data,
+  onAddRoomProduct,
   // loading,
 }) => {
+  const [roomData, setRoomData] = useState<RoomDetail[]>();
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
+  const [selectedRoomName, setSelectedRoomName] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenWithProduct, setIsModalOpenWithProduct] = useState(false);
 
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [productData, setProductData] = useState<[]>([]);
+  const [roomProductData, setRoomProductData] = useState<[]>([]);
+  console.log(roomProductData);
+  const roomProductByRoomId = async () => {
+    const response = await findAllRoomProduct(selectedRoom);
+    //@ts-ignore
+    setRoomProductData(response);
+  };
+  const listData = async () => {
+    const response = await findAll();
+    //@ts-ignore
+    setProductData(response.content);
+  };
+  useEffect(() => {
+    roomProductByRoomId();
+  }, [selectedRoom]);
+  useEffect(() => {
+    listData();
+  }, []);
+  
+  const onDeleteAllByRoomId = async (id:number) => {
+    await deleteAllByRoom(id);
+  };
+  const roomsWithProducts =
+    //@ts-ignore
+    data?.content?.filter((room) => room.roomProducts?.length > 0) || [];
+  const roomsWithoutProducts =
+    //@ts-ignore
+    data?.content?.filter(
+      //@ts-ignore
+      (room) => !room.roomProducts || room.roomProducts.length === 0
+    ) || [];
+  const showModalIsProduct = () => {
+    if (roomsWithProducts) {
+      setIsModalOpenWithProduct(true);
+    }
+  };
   const showModal = () => {
-    setIsModalOpen(true);
+    if (selectedRoom !== null) {
+      setIsModalOpen(true);
+    }
   };
 
+  const handleOkWithProduct = () => {
+    setIsModalOpenWithProduct(false);
+  };
+
+  const handleCancelWithProduct = () => {
+    setIsModalOpenWithProduct(false);
+  };
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -44,22 +104,29 @@ const ListRoomProduct: React.FC<IProps> = ({
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const roomsWithProducts =
-    data?.content?.filter((room) => room.roomProducts?.length > 0) || [];
-  const roomsWithoutProducts =
-    data?.content?.filter(
-      (room) => !room.roomProducts || room.roomProducts.length === 0
-    ) || [];
   const handleEdit = async (id: number) => {
     // const roomOrder = await findRoomOrderID(id);
     const room = await roomById(id);
     //@ts-ignore
-    // onEdit(roomOrder);
-    //@ts-ignore
-    // onEditRoom(room);
+    setRoomData(room);
     setSelectedRoom(id);
+    //@ts-ignore
+    setSelectedRoomName(room.name);
+    setIsButtonDisabled(false);
   };
-
+  const handleAddRoomProduct = async (roomProduct: any) => {
+    const initialValues = {
+      roomId: selectedRoom,
+      productId: roomProduct.id,
+    };
+    //@ts-ignore
+    onAddRoomProduct(initialValues);
+    handleOk();
+  };
+  const handleDeleteProductId = async (id:number) => {
+    onDeleteProductId(id);
+    handleOkWithProduct();
+  }
   return (
     <>
       <Row justify={"space-between"}>
@@ -98,8 +165,8 @@ const ListRoomProduct: React.FC<IProps> = ({
             </Text>{" "}
             <List
               style={{ marginTop: "20px" }}
-              grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }} // Adjust the grid settings
-              dataSource={roomsWithProducts.map((room) => ({
+              grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 4 }} // Adjust the grid settings
+              dataSource={roomsWithProducts.map((room: RoomProduct) => ({
                 ...room,
                 key: room.id,
               }))}
@@ -110,7 +177,7 @@ const ListRoomProduct: React.FC<IProps> = ({
                 const isUsed = roomOrders && roomOrders.length;
                 return (
                   <List.Item>
-                    <a onClick={() => handleEdit(id)}>
+                    <a onClick={() => (handleEdit(id), showModalIsProduct())}>
                       <Card
                         size="small"
                         hoverable
@@ -150,6 +217,73 @@ const ListRoomProduct: React.FC<IProps> = ({
               }}
             />
           </Card>
+          <Modal
+            title={
+              <>
+                Sản phẩm mặc định của bàn hiện có{" "}
+                <span style={{ color: "red" }}>{selectedRoomName}</span>
+              </>
+            }
+            open={isModalOpenWithProduct}
+            onOk={handleOkWithProduct}
+            onCancel={handleCancelWithProduct}
+            width={1000}
+          >
+            <List
+              grid={{
+                gutter: 16,
+                xs: 1,
+                sm: 2,
+                md: 3,
+                lg: 4,
+                xl: 5,
+                xxl: 5,
+              }} // Adjust the grid settings
+              style={{ padding: "10px" }}
+              dataSource={roomProductData}
+              renderItem={(item) => {
+                const { productName, id } = item;
+                //@ts-ignore
+                const price = item.price;
+                //@ts-ignore
+                const image = item.productImageUrl;
+
+                return (
+                  <List.Item key={id}>
+                    <Badge.Ribbon
+                      text={
+                        <a style={{color:"#fff"}} onClick={() => handleDeleteProductId(id)}>
+                          Xóa
+                        </a>
+                      }
+                      color="red"
+                    >
+                      {" "}
+                      <Card
+                        size="small"
+                        hoverable
+                        cover={
+                          <Image src={image} alt="product" preview={false} />
+                        }
+                      >
+                        <Text
+                          style={{
+                            display: "block",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {productName}
+                        </Text>
+                      </Card>
+                    </Badge.Ribbon>
+                  </List.Item>
+                );
+              }}
+            />
+            {/* <Button onClick={() => onDeleteAllByRoomId(selectedRoom)}>Xóa toàn bộ</Button> */}
+          </Modal>
         </Col>
         <Col span={13}>
           <Card style={{ marginTop: "20px" }}>
@@ -187,7 +321,7 @@ const ListRoomProduct: React.FC<IProps> = ({
             <List
               style={{ marginTop: "20px" }}
               grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 5 }}
-              dataSource={roomsWithoutProducts.map((room) => ({
+              dataSource={roomsWithoutProducts.map((room: RoomProduct) => ({
                 ...room,
                 key: room.id,
               }))}
@@ -240,18 +374,67 @@ const ListRoomProduct: React.FC<IProps> = ({
             <Text style={{ color: "red" }}>
               Lưu ý: Hãy chọn bàn trước khi thêm sản phẩm mặc định cho bàn
             </Text>
-            <Button onClick={showModal} style={{ float: "right" }}>
+            <Button
+              onClick={showModal}
+              style={{ float: "right" }}
+              disabled={isButtonDisabled}
+            >
               Thêm sản phẩm mặc định
             </Button>
             <Modal
-              title="Basic Modal"
+              title={
+                <>
+                  Thêm sản phẩm mặc định cho bàn{" "}
+                  <span style={{ color: "red" }}>{selectedRoomName}</span>
+                </>
+              }
               open={isModalOpen}
               onOk={handleOk}
               onCancel={handleCancel}
+              width={1000}
             >
-              <p>Some contents...</p>
-              <p>Some contents...</p>
-              <p>Some contents...</p>
+              <List
+                grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 5 }} // Adjust the grid settings
+                style={{ padding: "10px" }}
+                dataSource={productData}
+                renderItem={(item) => {
+                  const { name, id } = item;
+                  //@ts-ignore
+                  const price = item.price;
+                  //@ts-ignore
+                  const image = item.imageUrl;
+
+                  return (
+                    <List.Item key={id}>
+                      <a
+                        onClick={() => {
+                          handleAddRoomProduct(item);
+                        }}
+                      >
+                        <Card
+                          size="small"
+                          hoverable
+                          cover={
+                            <Image src={image} alt="product" preview={false} />
+                          }
+                        >
+                          <Text
+                            style={{
+                              display: "block",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {name}
+                          </Text>
+                        </Card>
+                      </a>
+                    </List.Item>
+                  );
+                }}
+              />
+             
             </Modal>
           </Card>
         </Col>

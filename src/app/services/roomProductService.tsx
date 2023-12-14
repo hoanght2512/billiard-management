@@ -3,8 +3,8 @@ import { axiosClient } from "@/lib/http/axios-client";
 interface roomPayload {
     [x: string]: any
   }
-  export const findAllRoomProduct = async () => {
-    const response = await axiosClient.get("http://localhost:8080/api/v1/roomproducts")
+  export const findAllRoomProduct = async (roomId: any) => {
+    const response = await axiosClient.get(`http://localhost:8080/api/v1/roomproducts?roomId=${roomId}`)
     return response;
   }
 //   export const roomById = async (roomId: any) => {
