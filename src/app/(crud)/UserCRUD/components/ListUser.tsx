@@ -1,31 +1,51 @@
 "use client";
-import React, { useRef, useState } from "react";
-import { Button, Card, Input, InputRef, Modal, Space, Spin, Table, Tag } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  InputRef,
+  Modal,
+  Row,
+  Space,
+  Spin,
+  Table,
+  Tag,
+  Typography,
+  message,
+} from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
-import { IUser } from "@/lib/interfaceBase";
+import { IUser, UserDetail } from "@/lib/interfaceBase";
 import {
   DeleteOutlined,
   EditOutlined,
+  PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
+import TableUser from "./TableCRUD";
+import {
+  addUser,
+  deleteUser,
+  findAllUser,
+  updateUser,
+} from "@/app/services/userService";
 
-interface IProps {
-  onEdit: (user: IUser) => void;
-  onDelete: (userId: number) => void;
-  data: IUser[];
-  loading: boolean;
-}
+// interface IProps {
+//   // onEdit: (user: IUser) => void;
+//   // onDelete: (userId: number) => void;
+//   // data: IUser[];
+//   // loading: boolean;
+// }
 
-const UserController: React.FC<IProps> = ({
-  onEdit,
-  onDelete,
-  data,
-  loading,
-}) => {
+const UserController = () => {
+  const [editUser, setEditUser] = useState<IUser>();
+  const [dataUser, setDataUser] = useState<IUser[]>([]);
+  const [loading, setLoading] = useState(true);
   const handleEdit = (record: IUser) => {
-    onEdit(record);
+    setEditUser(record);
   };
 
   const handleDelete = (id: any) => {
@@ -36,7 +56,7 @@ const UserController: React.FC<IProps> = ({
       okType: "danger",
       width: "600px",
       onOk: () => {
-        onDelete(id);
+        onDeleteUser(id);
       },
     });
   };
@@ -151,13 +171,26 @@ const UserController: React.FC<IProps> = ({
   });
 
   const columns: ColumnsType<IUser> = [
+    // {
+    //   title: "ID",
+    //   dataIndex: "id",
+    //   key: "id",
+    //   render: (text) => <a>{text}</a>,
+    //   sorter: (a, b) => a.id - b.id,
+    //   ...getColumnSearchProps("id"),
+    // },
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text) => <a>{text}</a>,
-      sorter: (a, b) => a.id - b.id,
-      ...getColumnSearchProps("id"),
+      title: "STT",
+      dataIndex: "index",
+      key: "index",
+      render: (_, __, index) => (
+        <span>
+          {
+            //@ts-ignore
+            dataUser.pageable?.offset + index + 1
+          }
+        </span>
+      ),
     },
     {
       title: "Tên đăng nhập",
@@ -229,8 +262,103 @@ const UserController: React.FC<IProps> = ({
     },
   ];
   const pageSizeOptions = ["5", "10", "20"];
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+  const onSubmmit = async (user: UserDetail, resetFormData: () => void) => {
+    try {
+      const res = await addUser(user);
+      if (res) {
+        message.success("Thêm tài khoản thành công!");
+        resetFormData();
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {
+      message.error("Thêm thất bại");
+      console.log(error);
+    }
+  };
+
+  const onUpdate = async (userId: number, user: UserDetail) => {
+    try {
+      const res = await updateUser(userId, user);
+      if (res) {
+        message.success("Cập nhật tài khoản thành công!");
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
+  };
+
+  const onDeleteUser = async (userId: number) => {
+    try {
+      const res = await deleteUser(userId);
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
+  };
+  // const onCurrentUser = (user: IUser) => {
+  //   setEditUser(user);
+  // };
+  
+  console.log(dataUser);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await findAllUser();
+      //@ts-ignore
+      setDataUser(response);
+      setLoading(false);
+    } catch (error) {}
+  };
   return (
     <Card>
+      <Row
+        style={{
+          marginBottom: "15px",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <Typography style={{ fontWeight: "500", fontSize: "23px", flex: 1 }}>
+          Người dùng
+        </Typography>
+        <Col>
+          <Button type="primary" onClick={showModal}>
+            <PlusOutlined />
+            Tạo tài khoản
+          </Button>
+        </Col>
+      </Row>{" "}
+      <Modal // title="Thêm Bàn"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <TableUser
+          user={editUser}
+          onSubmit={onSubmmit}
+          onDelete={onDeleteUser}
+          onUpdate={onUpdate}
+        />
+      </Modal>
       <Spin spinning={loading} tip="Loading..." size="large">
         <Table
           pagination={{
@@ -244,7 +372,7 @@ const UserController: React.FC<IProps> = ({
           columns={columns}
           scroll={{ x: 600 }}
           //@ts-ignore
-          dataSource={data?.content?.map((user) => ({
+          dataSource={dataUser?.content?.map((user) => ({
             ...user,
             key: user?.id,
           }))}

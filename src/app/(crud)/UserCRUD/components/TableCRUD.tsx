@@ -27,7 +27,8 @@ const initialValues: UserDetail = {
   password: "",
   email: "",
   fullname: "",
-  roles: [],
+  //@ts-ignore
+  role: [],
 };
 const fullwidth: React.CSSProperties = {
   width: "100%",
@@ -44,9 +45,9 @@ const TableUser: React.FC<IProps> = (props) => {
   }, [form, props.user]);
   const handleSubmit = () => {
     const data = form.getFieldsValue() as UserDetail;
-    const selectedRole = data.roles;
+    // const selectedRole = data.roles;
     //@ts-ignore
-    data.roles = [{ id: selectedRole }];
+    // data.roles = [{ id: selectedRole }];
     props.onSubmit(data, () => {
       form.resetFields();
     });
@@ -133,14 +134,14 @@ const TableUser: React.FC<IProps> = (props) => {
           <Input.Password placeholder="Mật khẩu" />
         </Form.Item>
         <Form.Item
-          label="Role"
-          name="roles"
+          label="Roles"
+          name="role"
           // rules={[
           //   { required: true, message: "Vui lòng chọn ít nhất một vai trò!" },
           // ]}
         >
           <Typography style={{ color: "red", marginBottom: "10px" }}>
-            Lưu ý: Khi "Thêm mới" mà chưa chọn Role thì sẽ tự động SET ROLE USER
+            Lưu ý: Khi Thêm mới mà chưa chọn Role thì sẽ tự động SET ROLE USER
           </Typography>
           <Radio.Group>
             <Radio value="1">Admin</Radio>

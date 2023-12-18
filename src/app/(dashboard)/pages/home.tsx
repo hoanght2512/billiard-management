@@ -9,19 +9,32 @@
   =========================================================
   * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-'use client'
+"use client";
 import {
+  Button,
   Card,
   Col,
+  DatePicker,
+  Form,
   Row,
+  Space,
   Typography,
 } from "antd";
-import Echart from "@/app/dashboard/components/chart/EChart";
-import LineChart from "@/app/dashboard/components/chart/LineChart";
+import Echart from "@/app/(dashboard)/components/chart/EChart";
+import LineChart from "@/app/(dashboard)/components/chart/LineChart";
 import "@/lib/assets/styles/main.css";
 import "@/lib/assets/styles/responsive.css";
+import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import { IOrder, IOrderDetail } from "@/app/(crud)/Order/interfaceOrder";
+import { IArea, IRoom } from "@/lib/interfaceBase";
+import { findAll } from "@/app/services/roomService";
+import { findAllArea } from "@/app/services/areaService";
+import { findOrderDetailByDate } from "@/app/services/orderDetailService";
+import { findAllOrder } from "@/app/services/orderService";
 
-function dashboard() {
+
+const Home = () => {
   const { Title, Text } = Typography;
 
   const dollor = [
@@ -110,39 +123,154 @@ function dashboard() {
       ></path>
     </svg>,
   ];
+  const formatCurrency = (value: number | undefined) => {
+    if (typeof value !== "number") {
+      return "N/A";
+    }
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
+
+  const [dataOrderDetail, setDataOrderDetail] = useState<IOrderDetail[]>([]);
+  const [dataOrder, setDataOrder] = useState<IOrder[]>([]);
+  const [dataRoom, setDataRoom] = useState<IRoom[]>([]);
+  const [dataArea, setDataArea] = useState<IArea[]>([]);
+
+  const [fromDate, setFromDate] = useState<string | null>(null);
+  const [toDate, setToDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchData();
+  }, [fromDate, toDate]);
+  useEffect(() => {
+    fetchDataRoom();
+    fetchDataArea();
+  }, []);
+  const fetchDataRoom = async () => {
+    try {
+      const responseRoom = await findAll();
+      //@ts-ignore
+      setDataRoom(responseRoom);
+    } catch (error) {
+      
+    }
+  }
+
+  const fetchDataArea = async () => {
+    try {
+      const responseArea= await findAllArea();
+      //@ts-ignore
+      setDataArea(responseArea);
+    } catch (error) {
+      
+    }
+  }
+
+  const fetchData = async () => {
+    if (!fromDate || !toDate) {
+      try {
+        const responseOrderDetail = await findOrderDetailByDate(
+          dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+          dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss")
+        );
+        const responseOrder = await findAllOrder(
+          dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+          dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss")
+        );
+        //@ts-ignore
+        setDataOrderDetail(responseOrderDetail);
+        //@ts-ignore
+        setDataOrder(responseOrder);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    try {
+      const responseOrderDetail = await findOrderDetailByDate(fromDate, toDate);
+      const responseOrder = await findAllOrder(fromDate, toDate);
+      //@ts-ignore
+      setDataOrderDetail(responseOrderDetail);
+      //@ts-ignore
+      setDataOrder(responseOrder);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const totalPrice = dataOrderDetail?.reduce((acc, detail) => {
+    return acc + detail.productPrice * detail.quantity;
+  }, 0);
+
+  const totalOrder = dataOrder?.length;
+
+  const { RangePicker } = DatePicker;
+
   const count = [
     {
-      today: "Today’s Sales",
-      title: "$53,000",
-      persent: "+30%",
+      today: "Tổng Doanh Thu",
+      title: formatCurrency(totalPrice),
+      // persent: "+30%",
       icon: dollor,
       bnb: "bnb2",
     },
     {
-      today: "Today’s Users",
-      title: "3,200",
-      persent: "+20%",
-      icon: profile,
+      today: "Tổng Hoá Đơn",
+      title: totalOrder,
+      // persent: "+20%",
+      icon: cart,
       bnb: "bnb2",
     },
     {
-      today: "New Clients",
-      title: "+1,200",
-      persent: "-20%",
+      today: "Tổng Bàn",
+      //@ts-ignore
+      title: dataRoom?.totalElements,
+      // persent: "-20%",
       icon: heart,
       bnb: "redtext",
     },
     {
-      today: "New Orders",
-      title: "$13,200",
-      persent: "10%",
-      icon: cart,
+      today: "Tổng khu vực",
+      //@ts-ignore
+      title: dataArea?.totalElements,
+      // persent: "10%",
+      icon: profile,
       bnb: "bnb2",
     },
   ];
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    console.log(fromDate, toDate);
+    setFromDate(dateStrings[0]);
+    setToDate(dateStrings[1]);
+  };
+  const [form] = Form.useForm();
+
+  const handleResetDate = () => {
+    setFromDate(null);
+    setToDate(null);
+    form.resetFields();
+  };
   return (
     <>
       <div className="layout-content">
+        <Row style={{ marginBottom: "20px" }}>
+          <Space>
+            <Form form={form} layout="inline">
+              <Form.Item name="searchDate" label={"Tìm kiếm"}>
+                <RangePicker
+                  showTime
+                  format="YYYY-MM-DD HH:mm:ss"
+                  onChange={handleDateChange}
+                />
+              </Form.Item>
+            </Form>
+            {/* <Button type="primary" onClick={SearchFromToDate}>
+          Search
+        </Button> */}
+            <Button onClick={handleResetDate}>Reset</Button>
+          </Space>
+        </Row>
         <Row className="rowgap-vbox" gutter={[24, 0]}>
           {count.map((c, index) => (
             <Col
@@ -159,8 +287,11 @@ function dashboard() {
                   <Row align="middle" gutter={[24, 0]}>
                     <Col xs={18}>
                       <span>{c.today}</span>
-                      <Title level={3}>
+                      {/* <Title level={3}>
                         {c.title} <small className={c.bnb}>{c.persent}</small>
+                      </Title> */}
+                      <Title level={3}>
+                        {c.title} <small className={c.bnb}></small>
                       </Title>
                     </Col>
                     <Col xs={6}>
@@ -188,6 +319,6 @@ function dashboard() {
       </div>
     </>
   );
-}
+};
 
-export default dashboard;
+export default Home;

@@ -18,6 +18,7 @@ import {
   Modal,
   Spin,
   Image,
+  Checkbox,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import {
@@ -30,12 +31,19 @@ import { PlusOutlined } from "@ant-design/icons";
 import { RcFile, UploadFile } from "antd/es/upload";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "@/firebaseConfig";
-
+import styled from "styled-components";
+const FormInputLabel = styled.div`
+  .ant-form-item-label {
+    width: 120px; /* Set the width you want for the labels */
+    text-align: left; /* Adjust text alignment if needed */
+  }
+`;
 interface IProps {
   product?: IProduct;
   onSubmit: (product: ProductDetail, resetFormData: () => void) => void;
   onDelete: (productId: number) => void;
   onUpdate: (productId: number, product: ProductDetail) => void;
+  editing: boolean;
 }
 
 const initialValues: ProductDetail = {
@@ -44,12 +52,10 @@ const initialValues: ProductDetail = {
   price: 0,
   hourly: false,
   active: false,
-  productCategory: {
-    id: "",
-  },
-  productUnit: {
-    id: "",
-  },
+  //@ts-ignore
+  categoryId: "1",
+  unit: "",
+  type: "Product",
 };
 
 const fullwidth: React.CSSProperties = {
@@ -63,7 +69,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 const TableCRUD: React.FC<IProps> = (props) => {
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(props.editing);
   const [dataCategory, setDataCategory] = useState<DataTypeCategory[]>([]);
   const [dataUnit, setDataUnit] = useState<DataTypeUnit[]>([]);
   const [imageFile, setImageFile] = useState<File>();
@@ -75,6 +81,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
   const [form] = Form.useForm<ProductDetail>();
+  console.log(props.product);
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -110,7 +117,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
     //@ts-ignore
     setDataUnit(response);
   };
-
+  console.log(dataCategory);
   useEffect(() => {
     fetchDataCategory();
     fetchDataUnit();
@@ -118,7 +125,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     if (props.product) {
-      setEditing(true);
+      // setEditing(false);
       form.setFieldsValue(props.product);
     }
   }, [form, props.product]);
@@ -161,7 +168,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
               setIsUploading(false);
             });
           });
-        } 
+        }
       );
     } else {
       message.error("File not found");
@@ -188,14 +195,22 @@ const TableCRUD: React.FC<IProps> = (props) => {
       <p>Nhấp vào Edit để xóa Product với Id!</p>
     </div>
   );
-
+  useEffect(() => {
+    if (props.product) {
+      // setRoomProduct(props.room);
+      form.setFieldsValue({
+        ...props.product,
+      });
+      // setEditing(props.editing);
+    }
+  }, [form, props.product]);
   const handleClick = async (event: any) => {};
   return (
     <Spin spinning={isUploading}>
       <Card>
         <Form
           form={form}
-          layout="vertical"
+          layout="horizontal"
           onFinish={handleSubmit}
           onSubmitCapture={(e) => {
             e.preventDefault;
@@ -203,121 +218,164 @@ const TableCRUD: React.FC<IProps> = (props) => {
           initialValues={initialValues}
         >
           <Form.Item style={{ textAlign: "center" }}>
-            {editing ? <h1>Cập nhật sản phẩm</h1> : <h1>Tạo thêm sản phẩm</h1>}
-          </Form.Item>
-          <Form.Item
-            name="name"
-            label="Tên sản phẩm"
-            rules={[
-              {
-                required: true,
-                message: "Tên sản phẩm không được để trống!",
-              },
-            ]}
-          >
-            <Input name="name" type="text" placeholder="Nhập tên sản phẩm" />
-          </Form.Item>
-
-          <Form.Item label="Ảnh sản phẩm ( Chỉ thêm được 1 )">
-            <Upload
-              name="imageUrl"
-              accept="image/png, image/jpg"
-              action={"localhost:3000"}
-              listType="picture-card"
-              showUploadList={{ showRemoveIcon: true }}
-              onPreview={handlePreview}
-              beforeUpload={(file) => {
-                handleSelectedFile(file);
-                return false;
-              }}
-              maxCount={1}
-            >
-              {uploadButton}
-            </Upload>
-            {imageFile && (
-              <>
-                {" "}
-                <Progress percent={progressUpload} />
-              </>
+            {props.editing ? (
+              <h1>Cập nhật hàng hóa</h1>
+            ) : (
+              <h1>Tạo thêm hàng hóa</h1>
             )}
-            <Modal
-              open={previewOpen}
-              title={previewTitle}
-              footer={null}
-              onCancel={handleCancel}
-            >
-              <Image
-                alt="viewPicture"
-                style={{ width: "100%" }}
-                src={previewImage}
-              />
-            </Modal>
           </Form.Item>
-          <Form.Item name="hourly" label="Hourly">
-            <Select>
-              <Select.Option value={true}>Yes</Select.Option>
-              <Select.Option value={false}>No</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="active" label="Active">
-            <Select>
-              <Select.Option value={true}>Yes</Select.Option>
-              <Select.Option value={false}>No</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="price" label="Giá sản phẩm">
-            <InputNumber addonAfter="VNĐ" name="price" min={0} />
-          </Form.Item>
-
-          <Form.Item
-            name="categoryId"
-            label="Danh mục"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng chọn danh mục sản phẩm",
-              },
-            ]}
-          >
-            <Select>
-              {
-                //@ts-ignore
-                dataCategory?.content?.map((productCategory) => (
-                  <Select.Option
-                    key={productCategory.id}
-                    value={productCategory.id}
+          <Row gutter={16}>
+            <Col span={14}>
+              <FormInputLabel>
+                <Form.Item
+                  name="name"
+                  label="Tên hàng hóa"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Tên hàng hóa không được để trống!",
+                    },
+                  ]}
+                >
+                  <Input
+                    name="name"
+                    type="text"
+                    placeholder="Nhập tên hàng hóa"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="type"
+                  label="Loại"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn loại sản phẩm",
+                    },
+                  ]}
+                >
+                  <Select size="large">
+                    <Select.Option value="Product">Sản phẩm</Select.Option>
+                    <Select.Option value="Service">Dịch vụ</Select.Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  name="categoryId"
+                  label="Danh mục"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn danh mục sản phẩm",
+                    },
+                  ]}
+                >
+                  <Select size="large">
+                    {
+                      //@ts-ignore
+                      dataCategory?.map((productCategory) => (
+                        <Select.Option
+                          key={productCategory.id}
+                          value={productCategory.id}
+                        >
+                          {productCategory.name}
+                        </Select.Option>
+                      ))
+                    }
+                    ;
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  name="unit"
+                  label="Đơn vị"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn đơn vị sản phẩm",
+                    },
+                  ]}
+                >
+                  <Input
+                    name="unit"
+                    type="text"
+                    placeholder="Nhập đơn vị hàng hóa"
+                  />
+                </Form.Item>
+              </FormInputLabel>
+              <FormInputLabel>
+                <Form.Item label="Ảnh sản phẩm">
+                  <Upload
+                    name="imageUrl"
+                    accept="image/png, image/jpg"
+                    action={"localhost:3000"}
+                    listType="picture-card"
+                    showUploadList={{
+                      showRemoveIcon: true,
+                    }}
+                    onPreview={handlePreview}
+                    beforeUpload={(file) => {
+                      handleSelectedFile(file);
+                      return false;
+                    }}
+                    maxCount={1}
                   >
-                    {productCategory.name}
-                  </Select.Option>
-                ))
-              }
-              ;
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="unitId"
-            label="Đơn vị"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng chọn đơn vị sản phẩm",
-              },
-            ]}
-          >
-            <Select>
-              {
-                //@ts-ignore
-                dataUnit?.content?.map((productUnit) => (
-                  <Select.Option key={productUnit.id} value={productUnit.id}>
-                    {productUnit.name}
-                  </Select.Option>
-                ))
-              }
-              ;
-            </Select>
-          </Form.Item>
+                    {uploadButton}
+                  </Upload>
+                  {imageFile && (
+                    <>
+                      {" "}
+                      <Progress percent={progressUpload} />
+                    </>
+                  )}
+                  <Modal
+                    open={previewOpen}
+                    title={previewTitle}
+                    footer={null}
+                    onCancel={handleCancel}
+                  >
+                    <Image
+                      alt="viewPicture"
+                      style={{ width: "100%" }}
+                      src={previewImage}
+                    />
+                  </Modal>
+                </Form.Item>
+              </FormInputLabel>
+            </Col>
+            <Col span={10}>
+              {/* <Form.Item
+                name="hourly"
+                label="Hourly"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Select>
+                  <Select.Option value={true}>Yes</Select.Option>
+                  <Select.Option value={false}>No</Select.Option>
+                </Select>
+              </Form.Item> */}
+              <FormInputLabel>
+                <Form.Item
+                  name="hourly"
+                  // label="Hourly"
+                  valuePropName="checked"
+                >
+                  <Checkbox>Số lượng tính theo thời gian GIỜ sử dụng</Checkbox>
+                </Form.Item>
+              </FormInputLabel>
+              <FormInputLabel>
+                <Form.Item name="active" label="Active">
+                  <Select>
+                    <Select.Option value={true}>Yes</Select.Option>
+                    <Select.Option value={false}>No</Select.Option>
+                  </Select>
+                </Form.Item>
+              </FormInputLabel>
+              <FormInputLabel>
+                <Form.Item name="price" label="Giá sản phẩm">
+                  <InputNumber addonAfter="VNĐ" name="price" min={0} />
+                </Form.Item>
+              </FormInputLabel>
+            </Col>
+          </Row>
 
           <Row gutter={32} justify={"center"}>
             <Col span={16}>
@@ -325,7 +383,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
                 <Space direction="vertical" style={fullwidth}>
                   <Row gutter={16}>
                     <Col span={12}>
-                      {editing ? (
+                      {props.editing ? (
                         <Button
                           htmlType="button"
                           onClick={(e) => {
@@ -353,7 +411,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
                       )}
                     </Col>
                     <Col span={12}>
-                      {editing ? (
+                      {props.editing ? (
                         <Button
                           type="primary"
                           size="large"
@@ -376,7 +434,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
             </Col>
             <Col className="gutter-row" span={6}>
               <Space direction="vertical" style={fullwidth}>
-                {!editing ? (
+                {!props.editing ? (
                   <Popover content={RemovePOP} title="Lưu ý!">
                     <Button type="primary" size="large" danger block disabled>
                       Xóa

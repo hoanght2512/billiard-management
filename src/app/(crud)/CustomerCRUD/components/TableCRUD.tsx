@@ -19,6 +19,7 @@ interface IProps {
   onSubmit: (customer: CustomerDetail, resetFormData: () => void) => void;
   onDelete: (customerId: number) => void;
   onUpdate: (customerId: number, area: CustomerDetail) => void;
+  editing: boolean;
 }
 const initialValues: CustomerDetail = {
   name: "",
@@ -30,15 +31,20 @@ const fullwidth: React.CSSProperties = {
   width: "100%",
 };
 const TableCustomer: React.FC<IProps> = (props) => {
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState<boolean>(false);
   const [form] = Form.useForm<CustomerDetail>();
-
+  console.log(props.editing);
   useEffect(() => {
-    if (props.customer) {
-      setEditing(true);
-      form.setFieldsValue(props.customer);
+    if (props.editing) {
+      if (props.customer) {
+        setEditing(props.editing);
+        form.setFieldsValue(props.customer);
+      }
+    } else {
+      setEditing(props.editing);
+      form.resetFields();
     }
-  }, [form, props.customer]);
+  }, [props.editing, form, props.customer]);
   const handleSubmit = (data: CustomerDetail) => {
     props.onSubmit(data, () => form.resetFields());
   };

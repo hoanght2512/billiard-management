@@ -38,11 +38,11 @@ const AppOrderCTRL: React.FC = () => {
   };
   return (
     <>
-      <Row justify={"center"}>
-        <Col span={22}>
+      {/* <Row justify={"center"}> */}
+        {/* <Col span={22}> */}
           <OrderController data={data} onDelete={onDelete} loading={loading}/>
-        </Col>
-      </Row>
+        {/* </Col> */}
+      {/* </Row> */}
     </>
   );
 };
