@@ -1,32 +1,71 @@
 "use client";
-import React, { useRef, useState } from "react";
-import { Button, Card, Input, InputRef, Modal, Space, Spin, Table, Tag } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  InputRef,
+  Modal,
+  Row,
+  Space,
+  Spin,
+  Table,
+  Tag,
+  Typography,
+  message,
+} from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
-import { ICustomer } from "@/lib/interfaceBase";
+import { CustomerDetail, ICustomer } from "@/lib/interfaceBase";
 import {
   DeleteOutlined,
   EditOutlined,
+  PlusCircleOutlined,
+  PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { text } from "stream/consumers";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
+import TableCustomer from "./TableCRUD";
+import {
+  addCustomer,
+  deleteCustomer,
+  findAllCustomer,
+  updateCustomer,
+} from "@/app/services/customerService";
 
-interface IProps {
-  onEdit: (customer: ICustomer) => void;
-  onDelete: (customerId: number) => void;
-  data: ICustomer[];
-  loading: boolean;
-}
+const CustomerController = () => {
+  const [editCustomer, setEditCustomer] = useState<ICustomer>();
+  const [data, setData] = useState<ICustomer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
 
-const CustomerController: React.FC<IProps> = ({
-  onEdit,
-  onDelete,
-  data,
-  loading,
-}) => {
+  type DataIndex = keyof ICustomer;
+
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef<InputRef>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await findAllCustomer();
+      //@ts-ignore
+      setData(response);
+      setLoading(false);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleEdit = (record: ICustomer) => {
-    onEdit(record);
+    setEditCustomer(record);
+    setEditing(true);
+    setIsModalVisible(true);
   };
 
   const handleDelete = (id: number) => {
@@ -36,15 +75,10 @@ const CustomerController: React.FC<IProps> = ({
       okType: "danger",
       width: "600px",
       onOk: () => {
-        onDelete(id);
+        onDeleteCustomer(id);
       },
     });
   };
-  type DataIndex = keyof ICustomer;
-
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (
     selectedKeys: string[],
@@ -211,8 +245,86 @@ const CustomerController: React.FC<IProps> = ({
     },
   ];
   const pageSizeOptions = ["5", "10", "20"];
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setEditing(false);
+    setIsModalVisible(false);
+  };
+  const onSubmmit = async (
+    customer: CustomerDetail,
+    resetFormData: () => void
+  ) => {
+    try {
+      const res = await addCustomer(customer);
+      if (res) {
+        message.success("Thêm khách hàng thành công!");
+        resetFormData();
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
+  };
+
+  const onUpdate = async (customerId: number, customer: CustomerDetail) => {
+    try {
+      const res = await updateCustomer(customerId, customer);
+      if (res) {
+        message.success("Cập nhật khách hàng thành công!");
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
+  };
+
+  const onDeleteCustomer = async (customerId: number) => {
+    try {
+      const res = await deleteCustomer(customerId);
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchData();
+      } else {
+        message.error(res);
+      }
+    } catch (error) {}
+  };
   return (
     <Card>
+      <Row
+        style={{
+          marginBottom: "15px",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <Typography style={{ fontWeight: "500", fontSize: "23px", flex: 1 }}>
+          Khách hàng
+        </Typography>
+        <Col>
+          <Button type="primary" onClick={showModal}>
+            <PlusOutlined />
+            Thêm khách hàng
+          </Button>
+        </Col>
+      </Row>
+      <Modal // title="Thêm Bàn"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <TableCustomer
+          customer={editCustomer}
+          onSubmit={onSubmmit}
+          onDelete={onDeleteCustomer}
+          onUpdate={onUpdate}
+          editing={editing}
+        />
+      </Modal>
       <Spin spinning={loading} tip="Loading..." size="large">
         <Table
           pagination={{

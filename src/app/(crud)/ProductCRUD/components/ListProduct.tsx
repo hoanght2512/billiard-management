@@ -1,28 +1,45 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   Card,
+  Col,
+  Form,
   Image,
   Input,
   InputRef,
   Modal,
+  Row,
+  Select,
   Space,
   Spin,
   Table,
   Tag,
+  Typography,
+  message,
 } from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
-import { IProduct } from "@/lib/interfaceBase";
+import { CategoryDetail, DataTypeCategory, ICategory, IProduct, ProductDetail } from "@/lib/interfaceBase";
 import Paragraph from "antd/es/typography/Paragraph";
 import {
   DeleteOutlined,
   EditOutlined,
+  PlusCircleOutlined,
+  PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { text } from "stream/consumers";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
+import TableProduct from "../../ProductCRUD/components/TableCRUD";
+import {
+  addProduct,
+  deleteProduct,
+  findAll,
+  updateProduct,
+} from "@/app/services/productService";
+import TableCategory from "../../CategoryCRUD/components/TableCRUD";
+import { addCategory, deleteCategory, findAllCategory, updateCategory } from "@/app/services/categoryService";
 
 interface IProps {
   onEdit: (product: IProduct) => void;
@@ -39,6 +56,9 @@ const ProductController: React.FC<IProps> = ({
 }) => {
   const handleEdit = (record: IProduct) => {
     onEdit(record);
+    setEditing(true);
+    setIsModalVisible(true);
+    setEditProduct(record);
   };
   const handleDelete = (id: number) => {
     Modal.confirm({
@@ -66,7 +86,25 @@ const ProductController: React.FC<IProps> = ({
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
+  const [loadingProduct, setLoadingProduct] = useState(true);
+  const [editProduct, setEditProduct] = useState<IProduct>();
+  const [dataProduct, setDataProduct] = useState<IProduct[]>([]);
+  const [editing, setEditing] = useState(false);
+  const [isModalVisibleCategory, setIsModalVisibleCategory] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<ICategory | undefined>(
+    undefined
+  );
+  const [dataCategory, setDataCategory] = useState<DataTypeCategory[]>([]);
 
+  const showModalCategory = (category?: ICategory) => {
+    setSelectedCategory(category);
+    setIsModalVisibleCategory(true);
+  };
+
+  const handleCancelCategory = () => {
+    setIsModalVisibleCategory(false);
+  };
+  console.log(dataProduct);
   const handleSearch = (
     selectedKeys: string[],
     confirm: (param?: FilterConfirmProps) => void,
@@ -224,12 +262,12 @@ const ProductController: React.FC<IProps> = ({
     },
     {
       title: "Unit",
-      dataIndex: "unitName",
-      key: "unitName",
+      dataIndex: "unit",
+      key: "unit",
       //@ts-ignore
-      sorter: (a, b) => a.unitName.length - b.unitName.length,
+      sorter: (a, b) => a.unit.length - b.unit.length,
       //@ts-ignore
-      ...getColumnSearchProps("unitName"),
+      ...getColumnSearchProps("unit"),
     },
     {
       title: "Action",
@@ -254,29 +292,252 @@ const ProductController: React.FC<IProps> = ({
   ];
 
   const pageSizeOptions = ["5", "10", "20"];
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    const initialValues: IProduct = {
+      name: "",
+      image: "",
+      price: 0,
+      hourly: false,
+      //@ts-ignore
+      active: false,
+      categoryId: "1",
+      unit: "",
+      type: "Product",
+    };
+    setEditing(false);
+    setEditProduct(initialValues);
+    setIsModalVisible(false);
+  };
+
+  const onSubmmit = async (
+    product: ProductDetail,
+    resetFormData: () => void
+  ) => {
+    try {
+      console.log(product);
+      const res = await addProduct(product);
+      if (res) {
+        message.success("Thêm sản phẩm thành công!");
+        resetFormData();
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onUpdate = async (productId: number, product: ProductDetail) => {
+    try {
+      const res = await updateProduct(productId, product);
+      if (res) {
+        message.success("Cập nhật sản phẩm thành công!");
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onDeleteProduct = async (productId: number) => {
+    try {
+      const res = await deleteProduct(productId);
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchDataCategory = async () => {
+    const response = await findAllCategory();
+    //@ts-ignore
+    setDataCategory(response);
+  };
+  useEffect(() => {
+    fetchDataCategory();
+  }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await findAll();
+      //@ts-ignore
+      setDataProduct(response);
+      setLoadingProduct(false);
+    } catch (error) {}
+  };
+  const [defaultCategoryId, setDefaultCategoryId] = useState(
+    dataCategory?.[0]?.id || 0
+  );
+  useEffect(() => {
+    //@ts-ignore
+    setDefaultCategoryId(dataCategory?.[0]?.id || 0);
+  }, [dataCategory]);
+  const onSubmmitCategory = async (category: CategoryDetail, resetFormData: () => void) => {
+    try {
+      const res = await addCategory(category);
+      if (res) {
+        message.success("Thêm danh mục thành công!");
+        resetFormData();
+        fetchDataCategory();
+      }
+    } catch (error) {
+      message.error("Thêm danh mục thất bại!");
+    }
+  };
+
+  const onUpdateCategory = async (categoryId: number, category: CategoryDetail) => {
+    try {
+      const res = await updateCategory(categoryId, category);
+      if (res) {
+        message.success("Cập nhật danh mục thành công!");
+        fetchDataCategory();
+      }
+    } catch (error) {}
+  };
+
+  const onDeleteCategory = async (categoryId: number) => {
+    try {
+      const res = await deleteCategory(categoryId);
+      // console.log(res?.data)
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchDataCategory();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <Card>
-      <Spin spinning={loading} tip="Loading..." size="large">
-        <Table
-          pagination={{
-            showSizeChanger: true,
-            pageSizeOptions: pageSizeOptions,
-            defaultPageSize: Number(pageSizeOptions[0]),
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`,
-            showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
-          }}
-          columns={columns}
-          scroll={{ x: 600 }}
-          //@ts-ignore
-          dataSource={data?.content?.map((product) => ({
-            ...product,
-            key: product.id,
-          }))}
-        />
-      </Spin>
-    </Card>
+    <>
+      <Row>
+        <Col span={4} style={{ marginRight: "20px" }}>
+          <Card>
+            <Row
+              style={{
+                marginBottom: "15px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography style={{ fontWeight: "500", flex: 1 }}>
+                danh mục
+              </Typography>
+
+              <Col>
+                <PlusCircleOutlined onClick={() => showModalCategory()} />
+              </Col>
+            </Row>
+            <Modal
+              visible={isModalVisibleCategory}
+              onCancel={handleCancelCategory}
+              footer={null}
+            >
+              <TableCategory
+                category={selectedCategory}
+                onSubmit={onSubmmitCategory}
+                onDelete={onDeleteCategory}
+                onUpdate={onUpdateCategory}
+              />
+            </Modal>
+            <Form.Item
+              name="categoryId"
+              // label="danh mục"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Vui lòng chọn danh mục",
+              //   },
+              // ]}
+            >
+              {" "}
+              <Select
+                bordered={false}
+                value={defaultCategoryId}
+                onChange={(value) => setDefaultCategoryId(value)}
+              >
+                {
+                  //@ts-ignore
+                  dataCategory.map((category) => (
+                    <>
+                      <Select.Option key={category.id} value={category.id}>
+                        {category.name}
+                      </Select.Option>
+                    </>
+                  ))
+                }
+              </Select>
+              <hr />
+            </Form.Item>
+          </Card>
+        </Col>
+        <Col span={19}>
+          <Card>
+            <Spin spinning={loading} tip="Loading..." size="large">
+              <Row
+                style={{
+                  marginBottom: "15px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  style={{ fontWeight: "500", fontSize: "23px", flex: 1 }}
+                >
+                  Hàng hóa
+                </Typography>
+                <Col>
+                  <Button type="primary" onClick={showModal}>
+                    <PlusOutlined />
+                    Thêm mới
+                  </Button>
+                </Col>
+              </Row>
+              <Modal
+                width={1000}
+                visible={isModalVisible}
+                onCancel={handleCancel}
+                footer={null}
+              >
+                <TableProduct
+                  product={editProduct}
+                  onSubmit={onSubmmit}
+                  onDelete={onDeleteProduct}
+                  onUpdate={onUpdate}
+                  editing={editing}
+                />
+              </Modal>
+              <Table
+                pagination={{
+                  showSizeChanger: true,
+                  pageSizeOptions: pageSizeOptions,
+                  defaultPageSize: Number(pageSizeOptions[0]),
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} of ${total} items`,
+                  showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
+                }}
+                columns={columns}
+                scroll={{ x: 600 }}
+                //@ts-ignore
+                dataSource={dataProduct?.content?.map((product) => ({
+                  ...product,
+                  key: product.id,
+                }))}
+              />
+            </Spin>
+          </Card>
+        </Col>
+      </Row>
+    </>
   );
 };
 

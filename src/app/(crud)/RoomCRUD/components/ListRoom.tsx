@@ -1,47 +1,128 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   Card,
+  Col,
+  Form,
   Image,
   Input,
   InputRef,
   List,
   Modal,
+  Pagination,
+  Row,
+  Select,
   Space,
   Spin,
   Table,
   Tag,
   Typography,
+  message,
 } from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
-import { IRoom } from "@/lib/interfaceBase";
+import {
+  AreaDetail,
+  DataTypeArea,
+  IArea,
+  IRoom,
+  RoomDetail,
+} from "@/lib/interfaceBase";
 import {
   DeleteOutlined,
   EditOutlined,
+  PlusCircleOutlined,
+  PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
+import TableCRUD from "./TableCRUD";
+import {
+  addRoom,
+  deleteRoom,
+  findAll,
+  findAllInPage,
+  updateRoom,
+} from "@/app/services/roomService";
+import {
+  addArea,
+  deleteArea,
+  findAllArea,
+  updateArea,
+} from "@/app/services/areaService";
+import TableArea from "../../AreaCRUD/components/TableCRUD";
 const { Text } = Typography;
+const RoomController = () => {
+  // const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingRoom, setEditingRoom] = useState<IRoom | undefined>(undefined);
+  const [editing, setEditing] = useState(false);
+  const [dataRoom, setDataRoom] = useState<IRoom[]>([]);
+  const [dataArea, setDataArea] = useState<DataTypeArea[]>([]);
+  const [isModalVisibleArea, setIsModalVisibleArea] = useState(false);
+  const [selectedArea, setSelectedArea] = useState<IArea | undefined>(
+    undefined
+  );
+  const [showCheckbox, setShowCheckbox] = useState(false);
+  // const [newRoomId, setNewRoomId] = useState(Number);
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
+    useState(false);
+  const handleConfirmationCancel = () => {
+    setIsConfirmationModalVisible(false);
+  };
+  const handleConfirmationOk = () => {
+    setIsConfirmationModalVisible(false);
+    setIsModalVisible(true);
+    setEditing(true);
+    setShowCheckbox(true);
+  };
 
-interface IProps {
-  onEdit: (room: IRoom) => void;
-  onDelete: (roomId: number) => void;
-  data: IRoom[];
-  loading: boolean;
-}
-const RoomController: React.FC<IProps> = ({
-  onEdit,
-  onDelete,
-  data,
-  loading,
-}) => {
-  // const roomsWithProducts = data?.content?.filter((room) => room.roomProducts?.length > 0) || [];
-  // const roomsWithoutProducts = data?.content?.filter((room) => !room.roomProducts || room.roomProducts.length === 0) || [];
-// console.log(roomsWithoutProducts)
+  const showModalArea = (area?: IArea) => {
+    setSelectedArea(area);
+    setIsModalVisibleArea(true);
+  };
+
+  const handleCancelArea = () => {
+    setIsModalVisibleArea(false);
+  };
+  const [pageInfo, setPageInfo] = useState({
+    totalPages: 0,
+    currentPage: 0,
+    pageSize: 5, // adjust based on your API response
+    totalElements: 0,
+  });
+  console.log(dataRoom);
+  const fetchData = async (page: number = 0) => {
+    const response = await findAllInPage(page, pageInfo.pageSize);
+    //@ts-ignore
+    setDataRoom(response);
+    setPageInfo({
+      //@ts-ignore
+      totalPages: response?.totalPages,
+      //@ts-ignore
+      currentPage: response?.number,
+      //@ts-ignore
+      pageSize: response?.size,
+      //@ts-ignore
+      totalElements: response?.totalElements,
+    });
+  };
+  const fetchDataArea = async () => {
+    const response = await findAllArea();
+    //@ts-ignore
+    setDataArea(response);
+  };
+  useEffect(() => {
+    fetchDataArea();
+  }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
   const handleEdit = (record: IRoom) => {
-    onEdit(record);
+    setEditingRoom(record);
+    setEditing(true);
+    setShowCheckbox(true);
+    setIsModalVisible(true);
   };
   const handleDelete = (id: number) => {
     Modal.confirm({
@@ -50,7 +131,8 @@ const RoomController: React.FC<IProps> = ({
       okType: "danger",
       width: "600px",
       onOk: () => {
-        onDelete(id);
+        // onDelete(id);
+        onDeleteRoom(id);
       },
     });
   };
@@ -177,8 +259,14 @@ const RoomController: React.FC<IProps> = ({
       title: "STT",
       dataIndex: "index",
       key: "index",
-      //@ts-ignore
-      render: (_, __, index) => <span>{data.pageable.offset + index + 1}</span>,
+      render: (_, __, index) => (
+        <span>
+          {
+            //@ts-ignore
+            dataRoom.pageable?.offset + index + 1
+          }
+        </span>
+      ),
     },
     {
       title: "Tên bàn",
@@ -232,142 +320,373 @@ const RoomController: React.FC<IProps> = ({
     },
   ];
 
-  const pageSizeOptions = ["5", "10", "20"];
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    const initialValues: IRoom = {
+      name: "",
+      //@ts-ignore
+      areaId: defaultAreaId,
+
+      active: false,
+    };
+    setIsModalVisible(false);
+    setShowCheckbox(false);
+    setEditing(false);
+    setEditingRoom(initialValues);
+  };
+  const onSubmmitArea = async (area: AreaDetail, resetFormData: () => void) => {
+    try {
+      const res = await addArea(area);
+      if (res) {
+        message.success("Thêm khu vực thành công!");
+        resetFormData();
+        fetchDataArea();
+      }
+    } catch (error) {
+      message.error("Thêm khu vực thất bại!");
+    }
+  };
+
+  const onUpdateArea = async (areaId: number, area: AreaDetail) => {
+    try {
+      const res = await updateArea(areaId, area);
+      if (res) {
+        message.success("Cập nhật khu vực thành công!");
+        fetchDataArea();
+      }
+    } catch (error) {}
+  };
+
+  const onDeleteArea = async (areaId: number) => {
+    try {
+      const res = await deleteArea(areaId);
+      // console.log(res?.data)
+      if (res) {
+        message.success("Xóa thành công!");
+        fetchDataArea();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //
+  const onSubmmit = async (room: RoomDetail, resetFormData: () => void) => {
+    try {
+      const res = await addRoom(room);
+
+      if (res) {
+        message.success("Thêm bàn thành công!");
+        console.log(res);
+        //@ts-ignore
+        setEditingRoom(res);
+        // handleCancel();
+        setIsConfirmationModalVisible(true);
+        setIsModalVisible(false);
+        // setEditing(true);
+        // const newRoomId = res.id;
+        // setNewRoomId(newRoomId);
+        // resetFormData();
+        setShowCheckbox(true);
+        fetchData();
+      }
+    } catch (error) {
+      message.error("Thêm bàn thất bại!");
+      console.log(error);
+    }
+  };
+
+  const onUpdate = async (roomId: number, room: RoomDetail) => {
+    try {
+      const res = await updateRoom(roomId, room);
+      if (res) {
+        message.success("Cập nhật bàn thành công!");
+        //@ts-ignore
+        setEditingRoom(res);
+        fetchData();
+        // handleCancel();
+      }
+    } catch (error) {
+      message.error("Cập nhật bàn thất bại!");
+      console.log(error);
+    }
+  };
+
+  const onDeleteRoom = async (roomId: number) => {
+    try {
+      const res = await deleteRoom(roomId);
+      if (res) {
+        message.success("Xóa thành công!");
+        setIsModalVisible(false);
+        fetchData();
+      }
+    } catch (error) {
+      message.success("Xóa thất bại!");
+      console.log(error);
+    }
+  };
+  const [defaultAreaId, setDefaultAreaId] = useState(
+    //@ts-ignore
+    dataArea?.content?.[0]?.id || 0
+  );
+  useEffect(() => {
+    //@ts-ignore
+    setDefaultAreaId(dataArea?.content?.[0]?.id || 0);
+  }, [dataArea]);
 
   return (
     <>
-        <Spin spinning={loading} tip="Loading..." size="large">
-          <Table
-            // pagination={{
-            //   showSizeChanger: true,
-            //   pageSizeOptions: pageSizeOptions,
-            //   defaultPageSize: Number(pageSizeOptions[0]),
-            //   showTotal: (total, range) =>
-            //     `${range[0]}-${range[1]} of ${total} items`,
-            //   showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
-            // }}
-            pagination={false}
-            columns={columns}
-            scroll={{ x: 600 }}
-            //@ts-ignore
-            dataSource={data?.content?.map((room) => ({
+      <Row>
+        <Col span={4} style={{ marginRight: "20px" }}>
+          <Card>
+            <Row
+              style={{
+                marginBottom: "15px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography style={{ fontWeight: "500", flex: 1 }}>
+                Khu vực
+              </Typography>
+
+              <Col>
+                <PlusCircleOutlined onClick={() => showModalArea()} />
+              </Col>
+            </Row>
+            <Modal
+              visible={isModalVisibleArea}
+              onCancel={handleCancelArea}
+              footer={null}
+            >
+              <TableArea
+                area={selectedArea}
+                onSubmit={onSubmmitArea}
+                onDelete={onDeleteArea}
+                onUpdate={onUpdateArea}
+              />
+            </Modal>
+            <Form.Item
+              name="areaId"
+              // label="Khu vực"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Vui lòng chọn khu vực",
+              //   },
+              // ]}
+            >
+              {" "}
+              <Select
+                bordered={false}
+                value={defaultAreaId}
+                onChange={(value) => setDefaultAreaId(value)}
+              >
+                {
+                  //@ts-ignore
+                  dataArea?.content?.map((roomArea) => (
+                    <>
+                      <Select.Option key={roomArea.id} value={roomArea.id}>
+                        {roomArea.name}
+                      </Select.Option>
+                    </>
+                  ))
+                }
+              </Select>
+              <hr />
+            </Form.Item>
+          </Card>
+        </Col>
+        <Col span={19}>
+          <Card>
+            <Row
+              style={{
+                marginBottom: "15px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                style={{ fontWeight: "500", fontSize: "23px", flex: 1 }}
+              >
+                Phòng/Bàn
+              </Typography>
+              <Col>
+                <Button type="primary" onClick={showModal}>
+                  <PlusOutlined />
+                  Thêm Phòng/Bàn
+                </Button>
+              </Col>
+            </Row>
+            <Modal
+              // title="Thêm Bàn"
+              width={1000}
+              visible={isModalVisible}
+              onCancel={() => {
+                handleCancel();
+              }}
+              footer={null}
+            >
+              <TableCRUD
+                onSubmit={onSubmmit}
+                onDelete={onDeleteRoom}
+                onUpdate={onUpdate}
+                editing={editing}
+                room={editingRoom}
+                defaultAreaId={defaultAreaId}
+                onShowCheckbox={showCheckbox}
+                // RoomNewId={newRoomId}
+              />
+            </Modal>
+            <Modal
+              title="Thêm bàn thành công"
+              visible={isConfirmationModalVisible}
+              onCancel={handleConfirmationCancel}
+              onOk={handleConfirmationOk}
+            >
+              <p>Bạn có muốn thêm sản phẩm mặc định hay không?</p>
+            </Modal>
+            <Table
+              pagination={false}
+              columns={columns}
+              scroll={{ x: 600 }}
+              //@ts-ignore
+              dataSource={dataRoom?.content?.map((room) => ({
+                ...room,
+                key: room.id,
+              }))}
+            />
+            <Pagination
+              style={{ textAlign: "center", paddingTop: "20px" }}
+              current={pageInfo.currentPage + 1}
+              total={pageInfo.totalElements}
+              pageSize={pageInfo.pageSize}
+              onChange={(page) => fetchData(page - 1)}
+              showTotal={(total, range) =>
+                `${range[0]}-${range[1]} of ${total} items`
+              }
+              showLessItems={true}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* <Card style={{ marginTop: "20px" }}>
+          <Text>Danh sách BÀN có sản phẩm mặc định</Text>
+          <List
+            style={{ marginTop: "20px" }}
+            grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }} // Adjust the grid settings
+            dataSource={roomsWithProducts.map((room) => ({
               ...room,
               key: room.id,
             }))}
+            renderItem={(item) => {
+              //@ts-ignore
+              const { name, id, roomOrders } = item;
+              // const active = roomOrders.length > 0;
+              const isUsed = roomOrders && roomOrders.length;
+              return (
+                <List.Item>
+                  <a>
+                    <Card
+                      size="small"
+                      hoverable
+                      cover={
+                        <Image
+                          src="https://firebasestorage.googleapis.com/v0/b/leafy-emblem-385311.appspot.com/o/image%2Fdining-room%20(3).png?alt=media&token=116a175e-7315-41ac-ab29-98b477fbc032"
+                          alt="product"
+                          style={{ width: "68px" }}
+                          preview={false}
+                        />
+                      }
+                      style={{
+                        // width: "100px",
+                        textAlign: "center",
+                        minHeight: "90px",
+                        // border:
+                        //   selectedRoom === id
+                        //     ? "1px solid red"
+                        //     : "1px solid #e8e8e8",
+                        backgroundColor: isUsed ? "#307DC7" : "",
+                      }}
+                    >
+                      <Text strong style={{ color: isUsed ? "white" : "" }}>
+                        {name}
+                      </Text>
+                      <br />
+                      <Text
+                        type="secondary"
+                        style={{ color: isUsed ? "white" : "" }}
+                      >
+                        {isUsed ? "Đang sử dụng" : "Trống"}
+                      </Text>
+                    </Card>
+                  </a>
+                </List.Item>
+              );
+            }}
           />
-        </Spin>
-      {/* <Card style={{ marginTop: "20px" }}>
-        <Text>Danh sách BÀN có sản phẩm mặc định</Text>
-        <List
-          style={{ marginTop: "20px" }}
-          grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }} // Adjust the grid settings
-          dataSource={roomsWithProducts.map((room) => ({
-            ...room,
-            key: room.id,
-          }))}
-          renderItem={(item) => {
-            //@ts-ignore
-            const { name, id, roomOrders } = item;
-            // const active = roomOrders.length > 0;
-            const isUsed = roomOrders && roomOrders.length;
-            return (
-              <List.Item>
-                <a>
-                  <Card
-                    size="small"
-                    hoverable
-                    cover={
-                      <Image
-                        src="https://firebasestorage.googleapis.com/v0/b/leafy-emblem-385311.appspot.com/o/image%2Fdining-room%20(3).png?alt=media&token=116a175e-7315-41ac-ab29-98b477fbc032"
-                        alt="product"
-                        style={{ width: "68px" }}
-                        preview={false}
-                      />
-                    }
-                    style={{
-                      // width: "100px",
-                      textAlign: "center",
-                      minHeight: "90px",
-                      // border:
-                      //   selectedRoom === id
-                      //     ? "1px solid red"
-                      //     : "1px solid #e8e8e8",
-                      backgroundColor: isUsed ? "#307DC7" : "",
-                    }}
-                  >
-                    <Text strong style={{ color: isUsed ? "white" : "" }}>
-                      {name}
-                    </Text>
-                    <br />
-                    <Text
-                      type="secondary"
-                      style={{ color: isUsed ? "white" : "" }}
+        </Card>
+        <Card style={{ marginTop: "20px" }}>
+          <Text>Danh sách BÀN không có sản phẩm mặc định</Text>
+          <List
+            style={{ marginTop: "20px" }}
+            grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }}
+            dataSource={roomsWithoutProducts.map((room) => ({
+              ...room,
+              key: room.id,
+            }))}
+            renderItem={(item) => {
+              //@ts-ignore
+              const { name, id, roomOrders } = item;
+              // const active = roomOrders.length > 0;
+              const isUsed = roomOrders && roomOrders.length;
+              return (
+                <List.Item>
+                  <a>
+                    <Card
+                      size="small"
+                      hoverable
+                      cover={
+                        <Image
+                          src="https://firebasestorage.googleapis.com/v0/b/leafy-emblem-385311.appspot.com/o/image%2Fdining-room%20(3).png?alt=media&token=116a175e-7315-41ac-ab29-98b477fbc032"
+                          alt="product"
+                          style={{ width: "68px" }}
+                          preview={false}
+                        />
+                      }
+                      style={{
+                        // width: "100px",
+                        textAlign: "center",
+                        minHeight: "90px",
+                        // border:
+                        //   selectedRoom === id
+                        //     ? "1px solid red"
+                        //     : "1px solid #e8e8e8",
+                        backgroundColor: isUsed ? "#307DC7" : "",
+                      }}
                     >
-                      {isUsed ? "Đang sử dụng" : "Trống"}
-                    </Text>
-                  </Card>
-                </a>
-              </List.Item>
-            );
-          }}
-        />
-      </Card>
-      <Card style={{ marginTop: "20px" }}>
-        <Text>Danh sách BÀN không có sản phẩm mặc định</Text>
-        <List
-          style={{ marginTop: "20px" }}
-          grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }}
-          dataSource={roomsWithoutProducts.map((room) => ({
-            ...room,
-            key: room.id,
-          }))}
-          renderItem={(item) => {
-            //@ts-ignore
-            const { name, id, roomOrders } = item;
-            // const active = roomOrders.length > 0;
-            const isUsed = roomOrders && roomOrders.length;
-            return (
-              <List.Item>
-                <a>
-                  <Card
-                    size="small"
-                    hoverable
-                    cover={
-                      <Image
-                        src="https://firebasestorage.googleapis.com/v0/b/leafy-emblem-385311.appspot.com/o/image%2Fdining-room%20(3).png?alt=media&token=116a175e-7315-41ac-ab29-98b477fbc032"
-                        alt="product"
-                        style={{ width: "68px" }}
-                        preview={false}
-                      />
-                    }
-                    style={{
-                      // width: "100px",
-                      textAlign: "center",
-                      minHeight: "90px",
-                      // border:
-                      //   selectedRoom === id
-                      //     ? "1px solid red"
-                      //     : "1px solid #e8e8e8",
-                      backgroundColor: isUsed ? "#307DC7" : "",
-                    }}
-                  >
-                    <Text strong style={{ color: isUsed ? "white" : "" }}>
-                      {name}
-                    </Text>
-                    <br />
-                    <Text
-                      type="secondary"
-                      style={{ color: isUsed ? "white" : "" }}
-                    >
-                      {isUsed ? "Đang sử dụng" : "Trống"}
-                    </Text>
-                  </Card>
-                </a>
-              </List.Item>
-            );          }}
-        />
-      </Card>
-      <Button >Thêm sản phẩm mặc định</Button> */}
+                      <Text strong style={{ color: isUsed ? "white" : "" }}>
+                        {name}
+                      </Text>
+                      <br />
+                      <Text
+                        type="secondary"
+                        style={{ color: isUsed ? "white" : "" }}
+                      >
+                        {isUsed ? "Đang sử dụng" : "Trống"}
+                      </Text>
+                    </Card>
+                  </a>
+                </List.Item>
+              );          }}
+          />
+        </Card>
+        <Button >Thêm sản phẩm mặc định</Button> */}
     </>
   );
 };

@@ -75,7 +75,7 @@ const AppProductCTRL: React.FC = () => {
 
   return (
     <>
-      <Row justify={"space-between"}>
+      {/* <Row justify={"space-between"}>
         <Col span={10}>
           <Flex vertical>
             <ProductMain
@@ -84,20 +84,17 @@ const AppProductCTRL: React.FC = () => {
               onDelete={onDelete}
               onUpdate={onUpdate}
             />
-            {/* <Flex vertical style={footer}>
-            <Footer />
-          </Flex> */}
           </Flex>
         </Col>
-        <Col span={13} style={{ padding: 0, background: "" }}>
+        <Col span={13} style={{ padding: 0, background: "" }}> */}
           <ProductController
             onEdit={onCurrentProduct}
             data={data}
             onDelete={onDelete}
             loading={loading}
           />
-        </Col>
-      </Row>
+        {/* </Col>
+      </Row> */}
     </>
   );
 };

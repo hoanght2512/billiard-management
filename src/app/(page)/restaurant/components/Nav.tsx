@@ -32,6 +32,10 @@ const Nav = () => {
             },
             {
               key: "2",
+              label: <a onClick={() => router.push("/")}>Về Dashboard</a>,
+            },
+            {
+              key: "3",
               danger: true,
               label: <a onClick={() => logOut()}>Đăng xuất</a>,
             },

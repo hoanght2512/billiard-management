@@ -37,6 +37,7 @@ function LineChart() {
 
       <ReactApexChart
         className="full-width"
+        //@ts-ignore
         options={lineChart.options}
         series={lineChart.series}
         type="area"

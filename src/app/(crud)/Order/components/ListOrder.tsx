@@ -407,8 +407,9 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
             {/* <Descriptions.Item label="Khu vực">
               {order?.room.area.name}
             </Descriptions.Item> */}
-
-            <Descriptions.Item label="Bàn">{order?.roomName}</Descriptions.Item>
+          
+            <Descriptions.Item label="Bàn">{//@ts-ignore
+            order?.roomName}</Descriptions.Item>
             <Descriptions.Item label="Trạng thái">
               {order?.canceled ? "Đã hủy" : "Đã thanh toán"}
             </Descriptions.Item>
