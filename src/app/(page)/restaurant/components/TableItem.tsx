@@ -4,6 +4,7 @@ import {
   Badge,
   Button,
   Col,
+  Form,
   InputNumber,
   Popconfirm,
   Row,
@@ -22,12 +23,13 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { IRoom, IRoomOrder, RoomOrderDetail } from "@/lib/interfaceBase";
-import { SearchProps } from "antd/es/input";
+import Input, { SearchProps } from "antd/es/input";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjs from "dayjs";
 import "@/lib/assets/styles/buttonTableItem.css";
 import Search from "antd/es/input/Search";
 import TextArea from "antd/es/input/TextArea";
+import { deleteHuyTra } from "@/app/services/roomOrderService";
 
 const { Text } = Typography;
 interface IProps {
@@ -36,6 +38,7 @@ interface IProps {
   onUpdate: (roomOrderDetail: RoomOrderDetail) => void;
   onDelete: (roomOrderId: number) => void;
   onUpdateTotal: (total: number) => void;
+  onHuyTra: (roomOrderDetail: RoomOrderDetail, roomId: any) => void;
 }
 const TableItem: React.FC<IProps> = ({
   // roomOrder,
@@ -43,13 +46,16 @@ const TableItem: React.FC<IProps> = ({
   onUpdate,
   onDelete,
   onUpdateTotal,
+  onHuyTra,
 }) => {
   dayjs.extend(customParseFormat);
   const [remainingQuantity, setRemainingQuantity] = useState<number | null>(
     null
   );
-  const [additionalContentVisible, setAdditionalContentVisible] = useState(false);
-
+  const [remainingNewQuantity, setRemainingNewQuantity] = useState<
+    number | null
+  >(null);
+  const [reason, setReason] = useState<string>();
   const [realTime, setRealTime] = useState(dayjs()); // Thời gian thực tế
   useEffect(() => {
     const interval = setInterval(() => {
@@ -66,28 +72,59 @@ const TableItem: React.FC<IProps> = ({
     onDelete(roomOrderId);
   };
   const handleQuantityChange = (roomOrderId: any, newQuantity: any) => {
-    const currentQuantity = roomOrderId.quantity || 0;
-    const diff = newQuantity - currentQuantity;
+    // const currentQuantity = roomOrderId.quantity || 0;
+    // const diff = newQuantity - currentQuantity;
 
-    // Calculate remaining quantity
-    const remaining = Math.max(currentQuantity - diff, 0);
-    setRemainingQuantity(remaining);
+    // // Calculate remaining quantity
+    // const remaining = Math.max(currentQuantity - diff, 0);
+    // setRemainingQuantity(remaining);
 
     // Update the quantity
     const serializableQuantity = {
+      id: roomOrderId?.id,
       roomId: roomOrderId?.roomId,
       productId: roomOrderId?.productId,
       quantity: newQuantity,
-      orderTime: dayjs(roomOrderId?.orderTime).format("YYYY-MM-DD HH:mm:ss"),
+      orderTimeStart: dayjs(roomOrderId?.orderTime).format(
+        "YYYY-MM-DD HH:mm:ss"
+      ),
     };
     const jsonString = serializableQuantity;
+    //@ts-ignore
     onUpdate(jsonString);
-
-    setAdditionalContentVisible(true);
   };
-  // const newQuantityDl = () => {
+  const handleQuantityDelete = (roomOrderId: any, newQuantity: any) => {
+    // const currentQuantity = roomOrderId.quantity || 0;
+    const currentQuantity = remainingQuantity;
+    const newCurrentQuantity = remainingNewQuantity;
+    //@ts-ignore
+    const diff = newQuantity - currentQuantity;
+    // const newDiff = newQuantity - newCurrentQuantity;
+    //@ts-ignore
+    const remaining = Math.max(currentQuantity + diff, 0);
+    //@ts-ignore
+    const newRemaining = Math.max(newCurrentQuantity - diff, 0);
+    if (remaining > roomOrderId.quantity) {
+      return null;
+    } else if (newRemaining > roomOrderId.quantity) {
+      setRemainingNewQuantity(0);
+      return null;
+    } else if (remaining <= 0) {
+      return null;
+    } else if (newRemaining == roomOrderId.quantity) {
+      return null;
+    } else {
+      setRemainingQuantity(remaining);
+      setRemainingNewQuantity(newRemaining);
+    }
+    console.log(remaining);
+    if (isNaN(remaining)) {
+      setRemainingQuantity(0);
+    }
+    console.log("Số lượng hiện tại: " + currentQuantity);
+    console.log(diff);
+  };
 
-  // }
   const formatCurrency = (value: number | undefined) => {
     if (typeof value !== "number") {
       return "N/A";
@@ -97,29 +134,45 @@ const TableItem: React.FC<IProps> = ({
       currency: "VND",
     });
   };
-  // useEffect(() => {
-  //   const sum =
-  //     roomOrder?.reduce((acc, record) => {//@ts-ignore
-  //       const { quantity, productPrice } = record;
-  //       // const { price } = product || {};
-  //       if (quantity && productPrice) {
-  //         return acc + quantity * productPrice;
-  //       }
-  //       return acc;
-  //     }, 0) || 0;
-  //   if (onUpdateTotal) {
-  //     onUpdateTotal(sum);
-  //   }
-  // }, [roomOrder, onUpdateTotal]);
-  const confirm = () =>
-    new Promise((resolve) => {
-      setTimeout(() => resolve(null), 3000);
-    });
+  useEffect(() => {
+    const sum = //@ts-ignore
+      room?.roomOrders?.reduce((acc, record) => {
+        //@ts-ignore
+        const { quantity, productPrice } = record;
+        // const { price } = product || {};
+        if (quantity && productPrice) {
+          return acc + quantity * productPrice;
+        }
+        return acc;
+      }, 0) || 0;
+    if (onUpdateTotal) {
+      onUpdateTotal(sum);
+    } //@ts-ignore
+  }, [room?.roomOrders, onUpdateTotal]);
+  const confirm = (record: any) => {
+    const serializableQuantity = {
+      id: record?.id,
+      reason: reason, // Get the reason from the state
+      productId: record?.productId,
+      quantity: remainingQuantity,
+      price: record?.productPrice,
+    };
+    const jsonString = serializableQuantity;
+    console.log(record);
+    //@ts-ignore
+
+    onHuyTra(jsonString, record?.roomId);
+  };
   // const onChange = (
   //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   // ) => {
   //   console.log("Change:", e.target.value);
   // };
+  const handlePressEnter = (record: any) => {
+    // Your logic when Enter is pressed, e.g., triggering an action
+    console.log("Enter pressed for record:", record);
+    // Add your additional logic here
+  };
   const columns: ColumnsType<IRoomOrder> = [
     {
       title: "Tên sản phẩm",
@@ -172,8 +225,8 @@ const TableItem: React.FC<IProps> = ({
     },
     {
       title: "Đơn vị",
-      dataIndex: "unit",
-      key: "unit",
+      dataIndex: "productUnit",
+      key: "productUnit",
       width: "10%",
       render: (unit) => <Tag color="#f50">{unit}</Tag>,
     },
@@ -191,12 +244,17 @@ const TableItem: React.FC<IProps> = ({
         const min = name === "Tiền giờ" ? 0.1 : 1;
         return (
           <InputNumber
-            min={min}
+            min={min || 1}
             step={step}
             defaultValue={value}
             value={record.quantity}
             disabled={name === "Tiền giờ" ? index === 0 : false}
-            onChange={(newValue) => handleQuantityChange(record, newValue)}
+            onPressEnter={(e) => {
+              //@ts-ignore
+              e.target.value <= 0
+                ? "" //@ts-ignore
+                : handleQuantityChange(record, e.target.value);
+            }}
           />
         );
       },
@@ -234,59 +292,64 @@ const TableItem: React.FC<IProps> = ({
                 <span
                   className="minus"
                   onClick={() =>
-                    handleQuantityChange(record, record.quantity - 1)
+                    //@ts-ignore
+                    handleQuantityDelete(record, remainingQuantity - 1)
                   }
                 >
                   -
                 </span>
-                <span className="num">{record.quantity}</span>
+                <span className="num">{remainingQuantity}</span>
                 <span
                   className="plus"
                   onClick={() =>
-                    handleQuantityChange(record, record.quantity + 1)
+                    //@ts-ignore
+                    handleQuantityDelete(record, remainingQuantity + 1)
                   }
                 >
                   +
                 </span>
               </div>
-              {additionalContentVisible && (
-                <Row
-                  style={{
-                    marginBottom: "15px",
-                    display: "flex",
-                    alignItems: "center",
-                    paddingTop: "15px",
-                  }}
-                >
+              <Row
+                style={{
+                  marginBottom: "15px",
+                  display: "flex",
+                  alignItems: "center",
+                  paddingTop: "15px",
+                }}
+              >
+                {" "}
+                <Col flex={1}>
                   {" "}
-                  <Col flex={1}>
-                    {" "}
-                    <Typography>Số lượng còn lại: </Typography>
-                  </Col>
-                  <Col>
-                    {" "}
-                    <Tag color="#f50" style={{ fontSize: "20px" }}>
-                      {remainingQuantity !== null ? remainingQuantity : "..."}
-                    </Tag>
-                  </Col>
-                  <TextArea
-                    showCount
-                    maxLength={100}
-                    placeholder="disable resize"
-                    style={{ height: 120, resize: "none", marginTop: "15px" }}
-                  />
-                </Row>
-              )}
+                  <Typography>Số lượng còn lại: </Typography>
+                </Col>
+                <Col>
+                  {" "}
+                  <Tag color="#f50" style={{ fontSize: "20px" }}>
+                    {/* {remainingQuantity !== null ? remainingQuantity : "..."} */}
+                    {remainingNewQuantity}
+                  </Tag>
+                </Col>
+                <TextArea
+                  showCount
+                  maxLength={100}
+                  placeholder="Lý do đổi trả"
+                  style={{ height: 120, resize: "none", marginTop: "15px" }}
+                  onChange={(e) => setReason(e.target.value)}
+                />
+              </Row>
             </>
           }
-          onConfirm={confirm}
+          onConfirm={() => confirm(record)}
           onOpenChange={() => console.log("open change")}
         >
           <Button
             type="text"
             danger
             icon={<DeleteFilled />}
-            // onClick={handleDelete(record.id)}
+            onClick={() => {
+              setRemainingQuantity(record.quantity);
+              setRemainingNewQuantity(record.quantity);
+            }}
           />{" "}
         </Popconfirm>
       ),

@@ -30,7 +30,8 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
   const [valueRadio, setValueRadio] = useState(1);
   const [valueRadioButton, setValueRadioButton] = useState(0);
   // console.log(data);
-  console.log(filteredData)
+  console.log(filteredData);
+
   const handleEdit = async (id: number) => {
     // const roomOrder = await findRoomOrderID(id);
     const room = await roomById(id);
@@ -40,7 +41,9 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
     onEditRoom(room);
     setSelectedRoom(id);
   };
-
+  useEffect(() => {
+    handleEdit(1);
+  }, []);
   const onChangeRoomArea = async (e: RadioChangeEvent) => {
     const areaId = e.target.value as number;
     setSelectedArea(areaId);
@@ -63,7 +66,6 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
     const statusId = e.target.value as number;
     setSelectedStatus(statusId);
     setValueRadio(statusId);
-  
   };
   useEffect(() => {
     //@ts-ignore
@@ -71,21 +73,22 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
       //@ts-ignore
       const areaCondition = selectedArea === 0 || room.areaId === selectedArea;
       let statusCondition;
-  
+
       if (selectedStatus === 11) {
         // Show all rooms
         statusCondition = true;
       } else {
         // Check if roomOrders exist for each room
         const hasOrders = room.roomOrders && room.roomOrders.length > 0;
-        
+
         statusCondition =
-          (selectedStatus === 12 && hasOrders) || (selectedStatus === 13 && !hasOrders);
+          (selectedStatus === 12 && hasOrders) ||
+          (selectedStatus === 13 && !hasOrders);
       }
-  
+
       return areaCondition && statusCondition;
     });
-  
+
     setFilteredData(filteredRooms);
   }, [data, selectedArea, selectedStatus]);
   return (
@@ -119,7 +122,8 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
         <List
           grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 6, xxl: 6 }} // Adjust the grid settings
           dataSource={filteredData}
-          renderItem={(item) => {//@ts-ignore
+          renderItem={(item) => {
+            //@ts-ignore
             const { name, id, roomOrders } = item;
             // const active = roomOrders.length > 0;
             const isUsed = roomOrders && roomOrders.length;

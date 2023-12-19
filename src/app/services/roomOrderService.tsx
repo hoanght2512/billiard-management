@@ -15,6 +15,18 @@ interface roomOrderPayload {
     const response = await axiosClient.delete(`https://beevengers-171751ae310c.herokuapp.com/api/v1/restaurant/${deleteId}`);
     return response;
   }
+  export const deleteHuyTra = async (roomOrderDetail: roomOrderPayload) => {
+    const response = await axiosClient.delete(
+      "https://beevengers-171751ae310c.herokuapp.com/api/v1/restaurant",
+      {
+        data: JSON.stringify(roomOrderDetail),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  };
   export const updateRoomOrder = async (roomOrderDetail: roomOrderPayload) => {
     const response = await axiosClient.put(`https://beevengers-171751ae310c.herokuapp.com/api/v1/restaurant`, JSON.stringify(roomOrderDetail));
     return response;
