@@ -59,6 +59,8 @@ const RoomController = () => {
   const [editing, setEditing] = useState(false);
   const [dataRoom, setDataRoom] = useState<IRoom[]>([]);
   const [dataArea, setDataArea] = useState<DataTypeArea[]>([]);
+  const [editingArea, setEditingArea] = useState<IArea | undefined>(undefined);
+  const [editing1, setEditing1] = useState(false);
   const [isModalVisibleArea, setIsModalVisibleArea] = useState(false);
   const [selectedArea, setSelectedArea] = useState<IArea | undefined>(
     undefined
@@ -91,7 +93,7 @@ const RoomController = () => {
     pageSize: 5, // adjust based on your API response
     totalElements: 0,
   });
-  console.log(dataRoom);
+  // console.log(dataRoom);
   const fetchData = async (page: number = 0) => {
     const response = await findAllInPage(page, pageInfo.pageSize);
     //@ts-ignore
@@ -264,6 +266,7 @@ const RoomController = () => {
           {
             //@ts-ignore
             dataRoom.pageable?.offset + index + 1
+            //@ts-ignore
           }
         </span>
       ),
@@ -272,7 +275,7 @@ const RoomController = () => {
       title: "Tên bàn",
       dataIndex: "name",
       key: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter: (a, b) => a.name.localeCompare(b.name),
       ...getColumnSearchProps("name"),
     },
     {
@@ -280,7 +283,7 @@ const RoomController = () => {
       dataIndex: "areaName",
       key: "areaName",
       //@ts-ignore
-      sorter: (a, b) => a.areaName.length - b.areaName.length,
+      sorter: (a, b) => a.areaName.localeCompare(b.areaName),
       //@ts-ignore
       ...getColumnSearchProps("areaName"),
     },
@@ -306,13 +309,13 @@ const RoomController = () => {
           <Tag color="#2db7f5">
             <a onClick={() => handleEdit(record)}>
               <EditOutlined />
-              Edit
+              Sửa
             </a>
           </Tag>
           <Tag color="#f50">
             <a onClick={() => handleDelete(record.id)}>
               <DeleteOutlined />
-              Delete
+              Xoá
             </a>
           </Tag>
         </Space>
@@ -346,6 +349,7 @@ const RoomController = () => {
         message.success("Thêm khu vực thành công!");
         resetFormData();
         fetchDataArea();
+        setIsModalVisibleArea(false);
       }
     } catch (error) {
       message.error("Thêm khu vực thất bại!");
@@ -359,7 +363,13 @@ const RoomController = () => {
         message.success("Cập nhật khu vực thành công!");
         fetchDataArea();
       }
-    } catch (error) {}
+    } catch (error) {
+      message.success("Cập nhật khu vực thất bại!");
+    }
+  };
+
+  const handleEditArea = (record: IArea) => {
+    console.log(record);
   };
 
   const onDeleteArea = async (areaId: number) => {
@@ -371,6 +381,7 @@ const RoomController = () => {
         fetchDataArea();
       }
     } catch (error) {
+      message.error("Xóa thất bại!");
       console.log(error);
     }
   };
@@ -491,7 +502,15 @@ const RoomController = () => {
                   dataArea?.content?.map((roomArea) => (
                     <>
                       <Select.Option key={roomArea.id} value={roomArea.id}>
-                        {roomArea.name}
+                        <Row justify={"space-between"}>
+                          {roomArea.name}
+                          <Space>
+                            <a onClick={() => handleEditArea(roomArea)}>Sửa</a>
+                            <a onClick={() => onDeleteArea(roomArea.id)}>
+                              Xoá
+                            </a>
+                          </Space>
+                        </Row>
                       </Select.Option>
                     </>
                   ))

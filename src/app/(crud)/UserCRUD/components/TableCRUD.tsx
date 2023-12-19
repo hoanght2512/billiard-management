@@ -12,6 +12,7 @@ import {
   Modal,
   Radio,
   Typography,
+  Checkbox,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { UserDetail, IUser } from "@/lib/interfaceBase";
@@ -143,11 +144,12 @@ const TableUser: React.FC<IProps> = (props) => {
           <Typography style={{ color: "red", marginBottom: "10px" }}>
             Lưu ý: Khi Thêm mới mà chưa chọn Role thì sẽ tự động SET ROLE USER
           </Typography>
-          <Radio.Group>
-            <Radio value="1">Admin</Radio>
-            <Radio value="2">User</Radio>
+          <Checkbox.Group>
+            <Checkbox value="1">MANAGER</Checkbox>
+            <Checkbox value="2">CASHIER</Checkbox>
+            <Checkbox value="3">ORDER</Checkbox>
             {/* Add more roles as needed */}
-          </Radio.Group>
+          </Checkbox.Group>
         </Form.Item>
         <Row gutter={32} justify={"center"}>
           <Col span={16}>
