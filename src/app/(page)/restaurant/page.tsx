@@ -11,7 +11,6 @@ import {
   changeRoomOrder,
   checkoutRoomOrder,
   deleteRoomOrder,
-  findRoomOrderID,
   startRoomProduct,
   updateRoomOrder,
 } from "@/app/services/roomOrderService";
@@ -48,7 +47,7 @@ const App: React.FC = () => {
   const fetchData = async () => {
     if (editRoom) {
       try {
-        const response = await findRoomOrderID(editRoom.id);
+        const response = await roomById(editRoom.id);
         //@ts-ignore
         setEditRoomOrder(response);
       } catch (error) {
@@ -68,14 +67,17 @@ const App: React.FC = () => {
   };
   const onStartRoom = async (roomId: any) => {
     const response = await startRoomProduct(roomId);
-    //@ts-ignore
-    setEditRoomOrder(response);
-    fetchData();
-    fetchRoomList();
-    const dataRoom = await roomById(roomId);
-    //@ts-ignore
-    setEditRoom(dataRoom);
-    console.log(editRoom);
+    if (response) {
+      //@ts-ignores
+      setEditRoomOrder(response);
+      fetchData();
+      fetchRoomList();
+      const dataRoom = await roomById(roomId);
+      //@ts-ignore
+      setEditRoom(dataRoom);
+      console.log(editRoom);
+      console.log(editRoomOrder);
+    }
   };
   const onSubmmit = async (roomOrder: RoomOrderDetail) => {
     console.log(roomOrder);
@@ -111,11 +113,11 @@ const App: React.FC = () => {
     }
   };
   const handleQuantityChange = async (
-    roomOrderId: number,
+    // roomOrderId: number,
     roomOrder: RoomOrderDetail
   ) => {
     //@ts-ignore
-    await updateRoomOrder(roomOrderId, roomOrder);
+    await updateRoomOrder( roomOrder);
     fetchData();
   };
   const onChangeRoomOrder = async (roomId: any, newRoomId: any) => {
@@ -158,7 +160,7 @@ const App: React.FC = () => {
               room={editRoom}
               onUpdate={handleQuantityChange}
               onDelete={onDelete}
-              roomOrder={editRoomOrder}
+              // roomOrder={editRoomOrder}
               onUpdateTotal={handleUpdateTotal}
             />
             <Flex vertical style={footer}>

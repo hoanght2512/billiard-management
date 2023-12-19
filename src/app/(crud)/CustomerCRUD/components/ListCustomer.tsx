@@ -7,6 +7,7 @@ import {
   Input,
   InputRef,
   Modal,
+  Pagination,
   Row,
   Space,
   Spin,
@@ -39,6 +40,12 @@ const CustomerController = () => {
   const [data, setData] = useState<ICustomer[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
+  const [pageInfo, setPageInfo] = useState({
+    totalPages: 0,
+    currentPage: 0,
+    pageSize: 5, // adjust based on your API response
+    totalElements: 0,
+  });
 
   type DataIndex = keyof ICustomer;
 
@@ -51,13 +58,22 @@ const CustomerController = () => {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (page: number = 0) => {
     try {
-      const response = await findAllCustomer();
+      const response = await findAllCustomer(page, pageInfo.pageSize);
       //@ts-ignore
       setData(response);
       setLoading(false);
-      console.log(response);
+      setPageInfo({
+        //@ts-ignore
+        totalPages: response?.totalPages,
+        //@ts-ignore
+        currentPage: response?.number,
+        //@ts-ignore
+        pageSize: response?.size,
+        //@ts-ignore
+        totalElements: response?.totalElements,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -135,17 +151,6 @@ const CustomerController = () => {
             style={{ width: 90 }}
           >
             Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({ closeDropdown: false });
-              setSearchText((selectedKeys as string[])[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
           </Button>
           <Button
             type="link"
@@ -277,7 +282,7 @@ const CustomerController = () => {
         message.success("Thêm khách hàng thành công!");
         resetFormData();
         fetchData();
-        setIsModalVisible(true)
+        setIsModalVisible(false)
       } else {
         message.error(res);
       }
@@ -292,6 +297,7 @@ const CustomerController = () => {
       if (res) {
         message.success("Cập nhật khách hàng thành công!");
         fetchData();
+        setIsModalVisible(false)
       } else {
         message.error(res);
       }
@@ -347,14 +353,7 @@ const CustomerController = () => {
       </Modal>
       <Spin spinning={loading} tip="Loading..." size="large">
         <Table
-          pagination={{
-            showSizeChanger: true,
-            pageSizeOptions: pageSizeOptions,
-            defaultPageSize: Number(pageSizeOptions[0]),
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`,
-            showLessItems: true, // Ẩn bớt nút trang khi có nhiều trang
-          }}
+          pagination={false}
           columns={columns}
           scroll={{ x: 600 }}
           //@ts-ignore
@@ -363,6 +362,17 @@ const CustomerController = () => {
             key: customer.id,
           }))}
         />
+        <Pagination
+              style={{ textAlign: "center", paddingTop: "20px" }}
+              current={pageInfo.currentPage + 1}
+              total={pageInfo.totalElements}
+              pageSize={pageInfo.pageSize}
+              onChange={(page) => fetchData(page - 1)}
+              showTotal={(total, range) =>
+                `${range[0]}-${range[1]} of ${total} items`
+              }
+              showLessItems={true}
+            />
       </Spin>
     </Card>
   );
