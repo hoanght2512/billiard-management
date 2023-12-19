@@ -455,6 +455,7 @@ const Footer: React.FC<IProps> = (props) => {
                   danger
                   block
                   onClick={showPromiseConfirm}
+                  disabled={props.room?.roomOrders?.length > 0 ? false : true}
                 >
                   Thanh toán
                 </Button>

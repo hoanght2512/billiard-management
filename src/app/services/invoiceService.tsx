@@ -38,3 +38,7 @@ interface orderPayload {
     const response = await axiosClient.put(`https://beevengers-171751ae310c.herokuapp.com/api/v1/invoice/${updId}`, JSON.stringify(orderDetail));
     return response;
 }
+export const huyOrder = async (upId: any) => {
+  const response = await axiosClient.put(`https://beevengers-171751ae310c.herokuapp.com/api/v1/invoice/manager/${upId}`);
+  return response;
+}

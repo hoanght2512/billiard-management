@@ -93,7 +93,7 @@ const TableItem: React.FC<IProps> = ({
   };
   console.log(customerData);
   useEffect(() => {
-    findProduct(); 
+    findProduct();
   }, [searchText]);
   const findProduct = async (page: number = 0) => {
     try {
@@ -199,15 +199,39 @@ const TableItem: React.FC<IProps> = ({
   const handleDelete = (roomOrderId: number) => () => {
     onDelete(roomOrderId);
   };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Check each room order for hourly products
+      const updatedOrders = room?.roomOrders?.map((order) => {
+        if (order.productHourly) {
+          const startTime = dayjs(order.orderTimeStart);
+          const currentTime = dayjs();
+          const diffInSeconds = currentTime.diff(startTime, "second");
+          const diffInMinutes = diffInSeconds / 60;
+
+          // If the usage time is a multiple of 6 minutes, update the quantity by 0.1
+          if (diffInMinutes > 0 && diffInMinutes % 6 === 0) {
+            const updatedQuantity = parseFloat(order.quantity) + 0.1;
+
+            return {
+              ...order,
+              quantity: updatedQuantity.toFixed(1),
+            };
+          }
+        }
+        return order;
+      });
+
+      if (updatedOrders) {
+        console.log(updatedOrders)
+        onUpdate(updatedOrders);
+      }
+    }, 1000 * 60); // Run every minute
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, [room?.roomOrders, onUpdate]);
   const handleQuantityChange = (roomOrderId: any, newQuantity: any) => {
-    // const currentQuantity = roomOrderId.quantity || 0;
-    // const diff = newQuantity - currentQuantity;
-
-    // // Calculate remaining quantity
-    // const remaining = Math.max(currentQuantity - diff, 0);
-    // setRemainingQuantity(remaining);
-
-    // Update the quantity
     const serializableQuantity = {
       id: roomOrderId?.id,
       roomId: roomOrderId?.roomId,
@@ -347,6 +371,26 @@ const TableItem: React.FC<IProps> = ({
       ),
     },
     {
+      title: "Thời gian",
+      dataIndex: "orderTime",
+      key: "orderTime",
+      render: (orderTime, record) => {
+        // If the product is hourly, calculate the usage time
+        if (record.productHourly) {
+          const startTime = dayjs(record.orderTimeStart);
+          const currentTime = dayjs();
+          const diffInSeconds = currentTime.diff(startTime, "second");
+          const hours = Math.floor(diffInSeconds / 3600);
+          const minutes = Math.floor((diffInSeconds % 3600) / 60);
+          const seconds = diffInSeconds % 60;
+          return `${hours}:${minutes}:${seconds}`;
+        } else {
+          // If the product is not hourly, display the start time
+          return dayjs(orderTime).format("HH:mm:ss");
+        }
+      },
+    },
+    {
       title: "Đơn vị",
       dataIndex: "productUnit",
       key: "productUnit",
@@ -360,18 +404,17 @@ const TableItem: React.FC<IProps> = ({
       key: "quantity",
       width: "10%",
       render(value, record, index) {
-        // const hourly = record.productHourly;
         //@ts-ignore
-        const name = record.productUnitName;
-        const step = name === "Tiền giờ" ? 0.1 : 1;
-        const min = name === "Tiền giờ" ? 0.1 : 1;
+        const hourly = record.productHourly;
+        const step = hourly ? 0.1 : 1;
+        const min = hourly ? 0.1 : 1;
         return (
           <InputNumber
-            min={min || 1}
+            min={min}
             step={step}
             defaultValue={value}
             value={record.quantity}
-            disabled={name === "Tiền giờ" ? index === 0 : false}
+            disabled={hourly ? index === 0 : false}
             onPressEnter={(e) => {
               //@ts-ignore
               e.target.value <= 0
@@ -523,16 +566,26 @@ const TableItem: React.FC<IProps> = ({
         </AutoComplete>
         <Modal
           title="Thêm khách hàng vào bàn"
-          visible={isModalVisible}  //@ts-ignore
+          visible={isModalVisible} //@ts-ignore
           onOk={() => handleAddCustomerToTable(room?.id, customerData.id)}
           onCancel={() => setIsModalVisible(false)}
         >
           {customerData && (
             <>
-              <p>Name: {//@ts-ignore
-              customerData.name}</p>
-              <p>Email: {//@ts-ignore
-              customerData.email}</p>
+              <p>
+                Name:{" "}
+                {
+                  //@ts-ignore
+                  customerData.name
+                }
+              </p>
+              <p>
+                Email:{" "}
+                {
+                  //@ts-ignore
+                  customerData.email
+                }
+              </p>
             </>
           )}
         </Modal>

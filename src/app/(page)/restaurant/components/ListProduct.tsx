@@ -74,7 +74,7 @@ const ListProduct: React.FC<IProps> = (props) => {
             <Card
               size="small"
               hoverable
-              cover={<Image src={image} alt="product" preview={false} />}
+              cover={<Image src={image} alt="product" preview={false} height={150} />}
             >
               <Tag
                 color="#f50"
