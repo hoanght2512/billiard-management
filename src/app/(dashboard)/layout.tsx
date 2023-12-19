@@ -15,6 +15,7 @@ import AppProductCTRL from "../(crud)/ProductCRUD/page";
 import AppOrderCTRL from "../(crud)/Order/page";
 import AppUserCTRL from "../(crud)/UserCRUD/page";
 import AppCustomerCTRL from "../(crud)/CustomerCRUD/page";
+import History from "../(crud)/HistoryCRUD/page";
 // import AppRoomProductCTRL from "../(crud)/RoomProductCRUD/page";
 
 const RootLayout = () => {
@@ -43,6 +44,8 @@ const RootLayout = () => {
                 <Route path="ordermanager" element={<AppOrderCTRL />}/>
                 <Route path="usermanager" element={<AppUserCTRL />}/>
                 <Route path="customermanager" element={<AppCustomerCTRL />}/>
+                <Route path="history" element={<History />}/>
+
                 {/* <Route path="roomproductmanager" element={<AppRoomProductCTRL />}/> */}
 
               </Routes>

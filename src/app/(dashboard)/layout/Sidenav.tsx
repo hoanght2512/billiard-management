@@ -189,19 +189,19 @@ const Sidenav = (color: any) => {
             <span className="label">Quản lý khách hàng</span>
           </NavLink>
         </Menu.Item>
-        {/* <Menu.Item key="7">
-          <NavLink to="/RoomProductManager">
+        <Menu.Item key="7">
+          <NavLink to="/History">
             <span
               className="icon"
               style={{
-                background: page === "RoomProductManager" ? color : "",
+                background: page === "History" ? color : "",
               }}
             >
               {user}
             </span>
-            <span className="label">Sản phẩm mặc định</span>
+            <span className="label">Lịch sử Hủy/Trả</span>
           </NavLink>
-        </Menu.Item> */}
+        </Menu.Item>
         {/*
         <Menu.Item className="menu-item-header" key="5">
           Account Pages
