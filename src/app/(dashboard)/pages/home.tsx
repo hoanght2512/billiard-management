@@ -34,7 +34,7 @@ import { findOrderDetailByDate } from "@/app/services/invoiceDetailService";
 import { findAllOrder } from "@/app/services/invoiceService";
 
 const Home = () => {
-
+  
   const { Title, Text } = Typography;
 
   const dollor = [
@@ -299,7 +299,6 @@ const Home = () => {
             </Col>
           ))}
         </Row>
-
         <Row gutter={[24, 0]}>
           <Col xs={24} sm={24} md={12} lg={12} xl={10} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
