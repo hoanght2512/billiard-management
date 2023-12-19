@@ -43,3 +43,7 @@ interface roomOrderPayload {
     const response = await axiosClient.post(`https://beevengers-171751ae310c.herokuapp.com/api/v1/restaurant/start?roomId=${roomId}`);
     return response;
   }
+  export const addCustomer = async (roomId:any, customerId:any) => {
+    const response = await axiosClient.post(`https://beevengers-171751ae310c.herokuapp.com/api/v1/restaurant/cashier/setcustomer?roomId=${roomId}&customerId=${customerId}`)
+    return response;
+  }

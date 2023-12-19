@@ -560,7 +560,7 @@ const ProductController: React.FC<IProps> = ({
                 columns={columns}
                 scroll={{ x: 600 }}
                 //@ts-ignore
-                dataSource={dataProduct?.content?.map((product) => ({
+                dataSource={dataProduct?.map((product) => ({
                   ...product,
                   key: product.id,
                 }))}

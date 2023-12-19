@@ -15,6 +15,7 @@ import {
   DatePicker,
   InputRef,
   Tag,
+  Typography,
 } from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
 import { IOrder, IOrderDetail } from "../interfaceOrder";
@@ -51,7 +52,7 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
   const [order, setOrder] = useState<IOrder>();
   const [orderDetails, setOrderDetails] = useState<IOrderDetail>();
   //  const [form] = Form.useForm<CustomerDetail>();
-
+  console.log(data);
   const [form] = Form.useForm();
   const handleEdit = async (record: IOrder) => {
     // const response = await findAllByOrderId(record.id);
@@ -200,12 +201,14 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
       //@ts-ignore
       ...getColumnSearchProps("roomName"),
     },
-    // {
-    //   title: "Khách hàng",
-    //   dataIndex: ["customer", "name"],
-    //   key: "customer.name",
-    //   sorter: (a, b) => a.customer.name.localeCompare(b.customer.name),
-    // },
+    {
+      title: "Khách hàng",
+      dataIndex: "customerName",
+      key: "customerName",
+      render: (customer) => (
+        <Typography>{customer ? customer : <span style={{color:"red"}}>Trống</span>}</Typography>
+      ),
+    },
     {
       title: "Thời gian bắt đầu",
       dataIndex: "createdAt",
@@ -425,7 +428,7 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
         </Row>
         <Row justify={"space-between"}>
           <Table
-          //@ts-ignore
+            //@ts-ignore
             dataSource={order?.invoiceDetails?.map((product) => ({
               ...product,
               key: product.id,

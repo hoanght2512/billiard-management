@@ -233,7 +233,7 @@ const CustomerController = () => {
       onFilter: (value, record) => record.gender === value
     },
     {
-      title: "Giảm giá",
+      title: "Ghi nợ",
       dataIndex: "balance",
       key: "balance",
       //@ts-ignore
