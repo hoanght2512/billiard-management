@@ -23,7 +23,7 @@ const ListProduct: React.FC<IProps> = (props) => {
   const listData = async () => {
     const response = await findAll();
     //@ts-ignore
-    setData(response.content);
+    setData(response);
   };
   useEffect(() => {
     listData();

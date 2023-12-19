@@ -329,7 +329,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
                     }} // Adjust the grid settings
                     style={{ padding: "10px" }}
                     //@ts-ignore
-                    dataSource={dataProduct.content}
+                    dataSource={dataProduct}
                     renderItem={(item) => {
                       //@ts-ignore
                       const { name, id } = item;

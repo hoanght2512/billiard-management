@@ -156,15 +156,15 @@ const TableCustomer: React.FC<IProps> = (props) => {
 
         <Form.Item
           name="balance"
-          label="Giảm giá"
+          label="Ghi nợ"
           rules={[
             {
               required: true,
-              message: "Giảm giá không được để trống!",
+              message: "Ghi nợ không được để trống!",
             },
             {
               type: "number",
-              message: "Giảm giá phải là số!",
+              message: "Ghi nợ phải là số!",
             },
           ]}
         >

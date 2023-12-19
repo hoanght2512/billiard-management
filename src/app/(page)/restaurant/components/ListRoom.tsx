@@ -1,4 +1,5 @@
 "use client";
+import { findAllArea } from "@/app/services/areaService";
 import { findAll, roomByAreaId, roomById } from "@/app/services/roomService";
 import { IRoom, IRoomOrder } from "@/lib/interfaceBase";
 import {
@@ -29,6 +30,7 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [valueRadio, setValueRadio] = useState(1);
   const [valueRadioButton, setValueRadioButton] = useState(0);
+  const [dataArea, setDataArea] = useState<[]>([]);
   // console.log(data);
   console.log(filteredData);
 
@@ -41,6 +43,16 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
     onEditRoom(room);
     setSelectedRoom(id);
   };
+  useEffect(() => {
+    const fetchDataArea = async () => {
+      const res = await findAllArea();
+      if (res) {
+        //@ts-ignore
+        setDataArea(res);
+      }
+    };
+    fetchDataArea();
+  }, []);
   useEffect(() => {
     handleEdit(1);
   }, []);
@@ -102,12 +114,16 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
           <Radio.Button value={0} style={{ marginRight: "10px" }}>
             Tất cả
           </Radio.Button>
-          <Radio.Button value={1} style={{ marginRight: "10px" }}>
-            Khu vực 1
-          </Radio.Button>
-          <Radio.Button value={2} style={{ marginRight: "10px" }}>
-            Khu vực 2
-          </Radio.Button>
+          {//@ts-ignore
+          dataArea.content?.map((areaItem) => (
+            <Radio.Button
+              key={areaItem.id}
+              value={areaItem.id}
+              style={{ marginRight: "10px" }}
+            >
+              {areaItem.name}
+            </Radio.Button>
+          ))}
         </Radio.Group>
         <br />
         <Radio.Group

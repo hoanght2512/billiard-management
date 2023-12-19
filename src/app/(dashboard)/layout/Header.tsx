@@ -57,10 +57,11 @@ const Header: React.FC<HeaderProps> = ({ name, subName, onPress }) => {
   const { data } = useAuth();
   //@ts-ignore
   const username = data?.fullname;
+  console.log(data);
   const { Title, Text } = Typography;
   const logOut = () => {
     deleteCookie("access_token");
-    router.push("/");
+    window.location.replace("/");
   };
   useEffect(() => window.scrollTo(0, 0));
   const items: MenuProps["items"] = [

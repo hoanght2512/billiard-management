@@ -1,11 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
+  AutoComplete,
   Badge,
   Button,
+  Card,
   Col,
+  Flex,
   Form,
   InputNumber,
+  Modal,
   Popconfirm,
   Row,
   Space,
@@ -30,7 +34,8 @@ import dayjs from "dayjs";
 import "@/lib/assets/styles/buttonTableItem.css";
 import Search from "antd/es/input/Search";
 import TextArea from "antd/es/input/TextArea";
-import { deleteHuyTra } from "@/app/services/roomOrderService";
+import { addCustomer, deleteHuyTra } from "@/app/services/roomOrderService";
+import { customerById, findAllCustomer } from "@/app/services/customerService";
 
 const { Text } = Typography;
 interface IProps {
@@ -58,6 +63,128 @@ const TableItem: React.FC<IProps> = ({
   >(null);
   const [reason, setReason] = useState<string>();
   const [realTime, setRealTime] = useState(dayjs()); // Thời gian thực tế
+  const [options, setOptions] = useState<any[]>([]);
+  const [searchText, setSearchText] = useState<string>("");
+  const [customerData, setCustomerData] = useState<[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [pageInfo, setPageInfo] = useState({
+    totalPages: 0,
+    currentPage: 0,
+    pageSize: 100,
+    totalElements: 0,
+  });
+  const handleCustomerSelect = async (customerId: number) => {
+    try {
+      const productsResponse = await customerById(customerId);
+      //@ts-ignore
+      setCustomerData(productsResponse);
+      setIsModalVisible(true); // Show the modal
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+  const handleAddCustomerToTable = async (roomId: any, customerId: any) => {
+    if (customerData) {
+      const res = await addCustomer(roomId, customerId);
+      console.log(res);
+    }
+
+    setIsModalVisible(false);
+  };
+  console.log(customerData);
+  useEffect(() => {
+    findProduct(); 
+  }, [searchText]);
+  const findProduct = async (page: number = 0) => {
+    try {
+      const response = await findAllCustomer(page, pageInfo.pageSize);
+      //@ts-ignore
+      // setCustomerData(response);
+      //@ts-ignore
+      const filteredCustomers = response.content.filter((customer: any) =>
+        customer.email.toLowerCase().includes(searchText.toLowerCase())
+      );
+
+      const slicedProducts = filteredCustomers.slice(0, 6);
+
+      const customerOptions = slicedProducts.map((customer: any) => {
+        const title = customer.email;
+        const lowerCasedTitle = title.toLowerCase();
+        const startIndex = lowerCasedTitle.indexOf(searchText.toLowerCase());
+        const endIndex = startIndex + searchText.length;
+
+        const highlightedTitle = (
+          <span>
+            {title.substring(0, startIndex)}
+            <span style={{ backgroundColor: "#ffcc00" }}>
+              {title.substring(startIndex, endIndex)}
+            </span>
+            {title.substring(endIndex)}
+          </span>
+        );
+
+        return {
+          //@ts-ignore
+          value: title,
+          label: (
+            <>
+              {/* <Link href={`/product/${product.id}`}> */}
+              <Card
+                // hoverable
+                style={{ width: "100%" }}
+                bodyStyle={{ padding: 0, overflow: "hidden" }}
+                key={customer.id}
+              >
+                <Flex>
+                  <Flex
+                    vertical
+                    flex={1}
+                    justify="space-between"
+                    style={{ padding: 10 }}
+                  >
+                    <Typography.Paragraph
+                      style={{ width: "100%" }}
+                      ellipsis={{
+                        rows: 1,
+                        expandable: true,
+                        symbol: "more",
+                      }}
+                    >
+                      {highlightedTitle}
+                    </Typography.Paragraph>
+                    {/* <Typography style={{ color: "#ff2c00" }}>
+                        {formatCurrency(product.price)}
+                      </Typography> */}
+                  </Flex>
+                </Flex>
+              </Card>
+              {/* </Link> */}
+            </>
+          ),
+          customer: customer,
+        };
+      });
+
+      setOptions(customerOptions);
+      setPageInfo({
+        //@ts-ignore
+        totalPages: response?.totalPages,
+        //@ts-ignore
+        currentPage: response?.number,
+        //@ts-ignore
+        pageSize: response?.size,
+        //@ts-ignore
+        totalElements: response?.totalElements,
+      });
+
+      // setVisibleProducts(slicedProducts); // Update the visible products state
+    } catch (error) {
+      console.log("Can't get");
+    }
+  };
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+  };
   useEffect(() => {
     const interval = setInterval(() => {
       setRealTime(dayjs());
@@ -164,21 +291,11 @@ const TableItem: React.FC<IProps> = ({
       //@ts-ignore
 
       onHuyTra(jsonString, record?.roomId);
-    } else{
-      message.error("Bạn phải nhập lý do Đổi/Trả!")
+    } else {
+      message.error("Bạn phải nhập lý do Đổi/Trả!");
     }
   };
 
-  // const onChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  // ) => {
-  //   console.log("Change:", e.target.value);
-  // };
-  const handlePressEnter = (record: any) => {
-    // Your logic when Enter is pressed, e.g., triggering an action
-    console.log("Enter pressed for record:", record);
-    // Add your additional logic here
-  };
   const columns: ColumnsType<IRoomOrder> = [
     {
       title: "Tên sản phẩm",
@@ -383,12 +500,42 @@ const TableItem: React.FC<IProps> = ({
             room?.areaName
           }
         </Tag>
-        <Search
-          placeholder="Tìm khách hàng"
-          allowClear
-          onSearch={onSearch}
-          style={{ width: 200 }}
-        />
+        <AutoComplete
+          style={{ width: 200, margin: "auto" }}
+          popupClassName="certain-category-search-dropdown"
+          popupMatchSelectWidth={300}
+          options={options}
+          onSelect={(value, option) => {
+            const customerId = option?.customer?.id;
+            if (customerId) {
+              handleCustomerSelect(customerId);
+            }
+          }}
+          onSearch={handleSearch}
+          filterOption={(inputValue, option) =>
+            option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+          }
+        >
+          <Input
+            prefix={<SearchOutlined />}
+            placeholder="Tìm kiếm khách hàng"
+          />
+        </AutoComplete>
+        <Modal
+          title="Thêm khách hàng vào bàn"
+          visible={isModalVisible}  //@ts-ignore
+          onOk={() => handleAddCustomerToTable(room?.id, customerData.id)}
+          onCancel={() => setIsModalVisible(false)}
+        >
+          {customerData && (
+            <>
+              <p>Name: {//@ts-ignore
+              customerData.name}</p>
+              <p>Email: {//@ts-ignore
+              customerData.email}</p>
+            </>
+          )}
+        </Modal>
       </Space>
 
       <Table
