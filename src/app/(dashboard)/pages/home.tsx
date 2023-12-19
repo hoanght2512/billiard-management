@@ -168,12 +168,13 @@ const Home = () => {
     if (!fromDate || !toDate) {
       try {
         const responseOrderDetail = await findOrderDetailByDate(
-          dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"),
-          dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss")
+          dayjs(new Date()).format("YYYY-MM-DD 00:00:00"),
+          dayjs(new Date()).format("YYYY-MM-DD 23:59:59")
         );
+        console.log(responseOrderDetail)
         const responseOrder = await findAllOrder(
-          dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"),
-          dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss")
+          dayjs(new Date()).format("YYYY-MM-DD 00:00:00"),
+          dayjs(new Date()).format("YYYY-MM-DD 23:59:59")
         );
         //@ts-ignore
         setDataOrderDetail(responseOrderDetail);
@@ -188,6 +189,7 @@ const Home = () => {
       const responseOrder = await findAllOrder(fromDate, toDate);
       //@ts-ignore
       setDataOrderDetail(responseOrderDetail);
+      console.log(responseOrderDetail)
       //@ts-ignore
       setDataOrder(responseOrder);
     } catch (error) {
@@ -195,9 +197,6 @@ const Home = () => {
     }
   };
 
-  const totalPrice = dataOrderDetail?.reduce((acc, detail) => {
-    return acc + detail.productPrice * detail.quantity;
-  }, 0);
 
   const totalOrder = dataOrder?.length;
 
@@ -206,7 +205,8 @@ const Home = () => {
   const count = [
     {
       today: "Tổng Doanh Thu",
-      title: formatCurrency(totalPrice),
+      //@ts-ignore
+      title: formatCurrency(dataOrderDetail.totalPrice),
       // persent: "+30%",
       icon: dollor,
       bnb: "bnb2",
@@ -219,19 +219,37 @@ const Home = () => {
       bnb: "bnb2",
     },
     {
-      today: "Tổng Bàn",
+      today: "Tổng Sản phẩm bán",
       //@ts-ignore
-      title: dataRoom?.totalElements,
+      title: dataOrderDetail.totalProduct,
       // persent: "-20%",
       icon: heart,
       bnb: "redtext",
     },
     {
-      today: "Tổng khu vực",
+      today: "Tổng Tiền bán sản phẩm",
       //@ts-ignore
-      title: dataArea?.totalElements,
+      title: formatCurrency(dataOrderDetail.totalProductPrice),
+      // persent: "10%",
+      icon: dollor,
+      bnb: "bnb2",
+    },
+    ,
+    {
+      today: "Tổng dịch vụ",
+      //@ts-ignore
+      title: dataOrderDetail.totalService,
       // persent: "10%",
       icon: profile,
+      bnb: "bnb2",
+    },
+    ,
+    {
+      today: "Tổng Tiền dịch vụ",
+      //@ts-ignore
+      title: formatCurrency(dataOrderDetail.totalService),
+      // persent: "10%",
+      icon: dollor,
       bnb: "bnb2",
     },
   ];
@@ -282,16 +300,16 @@ const Home = () => {
                 <div className="number">
                   <Row align="middle" gutter={[24, 0]}>
                     <Col xs={18}>
-                      <span>{c.today}</span>
+                      <span>{c?.today}</span>
                       {/* <Title level={3}>
                         {c.title} <small className={c.bnb}>{c.persent}</small>
                       </Title> */}
                       <Title level={3}>
-                        {c.title} <small className={c.bnb}></small>
+                        {c?.title} <small className={c?.bnb}></small>
                       </Title>
                     </Col>
                     <Col xs={6}>
-                      <div className="icon-box">{c.icon}</div>
+                      <div className="icon-box">{c?.icon}</div>
                     </Col>
                   </Row>
                 </div>

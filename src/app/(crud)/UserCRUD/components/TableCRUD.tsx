@@ -20,8 +20,9 @@ import { UserDetail, IUser } from "@/lib/interfaceBase";
 interface IProps {
   user?: IUser;
   onSubmit: (user: UserDetail, resetFormData: () => void) => void;
-  onDelete: (userId: number) => void;
-  onUpdate: (userId: number, area: UserDetail) => void;
+  onDelete: (username: string) => void;
+  onUpdate: (username: string, area: UserDetail) => void;
+  editing: boolean;
 }
 const initialValues: UserDetail = {
   username: "",
@@ -29,7 +30,7 @@ const initialValues: UserDetail = {
   email: "",
   fullname: "",
   //@ts-ignore
-  role: [],
+  roles: [],
 };
 const fullwidth: React.CSSProperties = {
   width: "100%",
@@ -43,33 +44,34 @@ const TableUser: React.FC<IProps> = (props) => {
       setEditing(true);
       form.setFieldsValue(props.user);
     }
-  }, [form, props.user]);
+  }, [props.editing, form, props.user]);
   const handleSubmit = () => {
     const data = form.getFieldsValue() as UserDetail;
-    // const selectedRole = data.roles;
+    const selectedRole = data.roles.map((id) => ({ id }));
+    console.log(selectedRole);
     //@ts-ignore
-    // data.roles = [{ id: selectedRole }];
+    data.roles = selectedRole;
     props.onSubmit(data, () => {
       form.resetFields();
     });
   };
 
-  const handleUpdate = async (userId: any) => {
+  const handleUpdate = async (username: any) => {
     const data = form.getFieldsValue() as UserDetail;
-    const selectedRole = data.roles;
+    const selectedRole = data.roles.map((id) => ({ id }));
     //@ts-ignore
-    data.roles = [{ id: selectedRole }];
-    props.onUpdate(userId, data);
+    data.roles = selectedRole;
+    props.onUpdate(username, data);
   };
 
-  const handleDelete = async (userId: any) => {
+  const handleDelete = async (username: any) => {
     Modal.confirm({
       title: "Bạn có muốn xóa ?",
       okText: "Yes",
       okType: "danger",
       width: "600px",
       onOk: () => {
-        props.onDelete(userId);
+        props.onDelete(username);
       },
     });
   };
@@ -135,19 +137,18 @@ const TableUser: React.FC<IProps> = (props) => {
           <Input.Password placeholder="Mật khẩu" />
         </Form.Item>
         <Form.Item
-          label="Roles"
-          name="role"
+          label="Vai trò"
+          name="roles"
           // rules={[
           //   { required: true, message: "Vui lòng chọn ít nhất một vai trò!" },
           // ]}
         >
-          <Typography style={{ color: "red", marginBottom: "10px" }}>
+          {/* <Typography style={{ color: "red", marginBottom: "10px" }}>
             Lưu ý: Khi Thêm mới mà chưa chọn Role thì sẽ tự động SET ROLE USER
-          </Typography>
+          </Typography> */}
           <Checkbox.Group>
-            <Checkbox value="1">MANAGER</Checkbox>
-            <Checkbox value="2">CASHIER</Checkbox>
-            <Checkbox value="3">ORDER</Checkbox>
+            <Checkbox value={1}>MANAGER</Checkbox>
+            <Checkbox value={2}>CASHIER</Checkbox>
             {/* Add more roles as needed */}
           </Checkbox.Group>
         </Form.Item>
@@ -188,7 +189,7 @@ const TableUser: React.FC<IProps> = (props) => {
                         size="large"
                         block
                         onClick={() => {
-                          handleUpdate(props.user?.id);
+                          handleUpdate(props.user?.username);
                         }}
                       >
                         Sửa
@@ -218,7 +219,7 @@ const TableUser: React.FC<IProps> = (props) => {
                   danger
                   block
                   onClick={() => {
-                    handleDelete(props.user?.id);
+                    handleDelete(props.user?.username);
                   }}
                 >
                   Xóa
