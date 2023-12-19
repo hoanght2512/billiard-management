@@ -6,7 +6,7 @@ interface LoginPayload {
 }
 
 export const login = async (loginDetail: LoginPayload) => {    
-    const response = await axiosClient.post("http://localhost:8080/api/v1/auth/login", JSON.stringify(loginDetail));
+    const response = await axiosClient.post("https://beevengers-171751ae310c.herokuapp.com/api/v1/auth/login", JSON.stringify(loginDetail));
     // @ts-ignore 
     if (response.tokenType === "Bearer") {
       // @ts-ignore 
