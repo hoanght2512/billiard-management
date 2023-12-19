@@ -44,8 +44,12 @@ const UserController = () => {
   const [editUser, setEditUser] = useState<IUser>();
   const [dataUser, setDataUser] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+
   const handleEdit = (record: IUser) => {
     setEditUser(record);
+    setEditing(true);
+    setIsModalVisible(true);
   };
 
   const handleDelete = (username: any) => {
@@ -279,6 +283,7 @@ const UserController = () => {
         message.success("Thêm tài khoản thành công!");
         resetFormData();
         fetchData();
+        setIsModalVisible(false)
       } else {
         message.error(res);
       }
@@ -288,24 +293,26 @@ const UserController = () => {
     }
   };
 
-  const onUpdate = async (userId: number, user: UserDetail) => {
+  const onUpdate = async (username: string, user: UserDetail) => {
     try {
-      const res = await updateUser(userId, user);
+      const res = await updateUser(username, user);
       if (res) {
         message.success("Cập nhật tài khoản thành công!");
         fetchData();
+        setIsModalVisible(false)
       } else {
         message.error(res);
       }
     } catch (error) {}
   };
 
-  const onDeleteUser = async (userId: number) => {
+  const onDeleteUser = async (username: string) => {
     try {
-      const res = await deleteUser(userId);
+      const res = await deleteUser(username);
       if (res) {
         message.success("Xóa thành công!");
         fetchData();
+        setIsModalVisible(false)
       } else {
         message.error(res);
       }
@@ -314,8 +321,6 @@ const UserController = () => {
   // const onCurrentUser = (user: IUser) => {
   //   setEditUser(user);
   // };
-  
-  console.log(dataUser);
 
   useEffect(() => {
     fetchData();
@@ -358,6 +363,7 @@ const UserController = () => {
           onSubmit={onSubmmit}
           onDelete={onDeleteUser}
           onUpdate={onUpdate}
+          editing={editing}
         />
       </Modal>
       <Spin spinning={loading} tip="Loading..." size="large">
