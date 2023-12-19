@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Menu, MenuProps } from "antd";
+import { Button, Col, Menu, MenuProps, Row, Typography } from "antd";
 import { useAuth } from "@/app/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { deleteCookie } from "cookies-next";
@@ -50,14 +50,29 @@ const Nav = () => {
     setCurrent(e.key);
   };
   return (
-    <Menu
-      onClick={onClick}
-      theme="light"
-      mode="horizontal"
-      selectedKeys={[current]}
-      items={items}
-      style={{justifyContent: "flex-end"}}
-    />
+    <>
+      <Row
+        style={{
+          marginBottom: "15px",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <Typography style={{ fontWeight: "500", fontSize: "23px", flex: 1, padding:"10px" }}>
+          Billiard Manager
+        </Typography>
+        <Col>
+            <Menu
+              onClick={onClick}
+              theme="light"
+              mode="horizontal"
+              selectedKeys={[current]}
+              items={items}
+              style={{ justifyContent: "flex-end" }}
+            />
+        </Col>
+      </Row>
+    </>
   );
 };
 export default Nav;

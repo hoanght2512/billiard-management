@@ -201,6 +201,7 @@ const TableItem: React.FC<IProps> = ({
   };
   useEffect(() => {
     const interval = setInterval(() => {
+      //@ts-ignore
       const updatedOrders = room?.roomOrders?.map((order) => {
         if (order.productHourly) {
           const startTime = dayjs(order.orderTimeStart);
@@ -234,6 +235,7 @@ const TableItem: React.FC<IProps> = ({
   
     // Dọn dẹp interval khi component unmount
     return () => clearInterval(interval);
+    //@ts-ignore
   }, [room?.roomOrders, onUpdate]);
   const handleQuantityChange = (roomOrderId: any, newQuantity: any) => {
     const serializableQuantity = {
