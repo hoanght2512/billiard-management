@@ -10,6 +10,7 @@ import {
   addRoomOrder,
   changeRoomOrder,
   checkoutRoomOrder,
+  deleteHuyTra,
   deleteRoomOrder,
   startRoomProduct,
   updateRoomOrder,
@@ -117,8 +118,16 @@ const App: React.FC = () => {
     roomOrder: RoomOrderDetail
   ) => {
     //@ts-ignore
-    await updateRoomOrder( roomOrder);
-    fetchData();
+    const res = await updateRoomOrder(roomOrder);
+    if (res) {
+      //@ts-ignore
+
+      const dataRoom = await roomById(res.roomId);
+      //@ts-ignore
+
+      setEditRoom(dataRoom);
+      fetchData();
+    }
   };
   const onChangeRoomOrder = async (roomId: any, newRoomId: any) => {
     const res = await changeRoomOrder(roomId, newRoomId);
@@ -147,6 +156,17 @@ const App: React.FC = () => {
     setEditRoom(room);
     console.log(room);
   };
+  const onHuyTra = async (room: any, roomId: any) => {
+    const res = await deleteHuyTra(room);
+    if (res) {
+      message.success("Đổi trả thành công!");
+      const dataRoom = await roomById(roomId);
+      //@ts-ignore
+      setEditRoom(dataRoom);
+      fetchData();
+      fetchRoomList();
+    }
+  };
   return (
     <>
       <Nav />
@@ -161,6 +181,7 @@ const App: React.FC = () => {
               onUpdate={handleQuantityChange}
               onDelete={onDelete}
               // roomOrder={editRoomOrder}
+              onHuyTra={onHuyTra}
               onUpdateTotal={handleUpdateTotal}
             />
             <Flex vertical style={footer}>

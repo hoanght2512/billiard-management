@@ -246,7 +246,9 @@ const Footer: React.FC<IProps> = (props) => {
     }
     setIsModalOpenTamTinh(false);
     // Perform the print operation
+    document.title = "Hóa đơn tạm tính " + props.room?.name;
     window.print();
+
   };
 
   const showModalTamTinh = () => {
@@ -467,17 +469,20 @@ const Footer: React.FC<IProps> = (props) => {
             Tổng cộng:
             <Text type="danger"> {formatCurrency(props.totalPrice)}</Text>
           </Text>
+          {/* {props.room?.roomProducts?.length } */}
           <Button
             type="primary"
             danger
             size="large"
             block
             //@ts-ignore
-            disabled={props.room?.roomOrders?.some((order) => order.productName === "Tiền giờ") ? true : false}
-            
+            // disabled={props.room?.roomOrders?.some((order) => order.productName === "Tiền giờ") ? true : false}
+            disabled={props.room?.roomOrders?.length > 0 || props.room?.roomProducts?.length <= 0 ? true : false}
             onClick={() =>
               //@ts-ignore
-              props.room?.roomOrders?.some((order) => order.productName === "Tiền giờ"
+              props.room?.roomOrders?.some(
+                //@ts-ignore
+                (order) => order.productName === "Tiền giờ"
               )
                 ? message.error("Error: Cannot start room with hourly product.")
                 : startRoom()
