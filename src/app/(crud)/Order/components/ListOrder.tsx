@@ -26,10 +26,10 @@ import {
 } from "@ant-design/icons";
 
 import dayjs from "dayjs";
-import { findAllByOrderId } from "@/app/services/orderDetailService";
+import { findAllByOrderId } from "@/app/services/invoiceDetailService";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
-import { findAllOrder } from "@/app/services/orderService";
+import { findAllOrder } from "@/app/services/invoiceService";
 import { useForm } from "antd/es/form/Form";
 
 interface IProps {
@@ -196,28 +196,15 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
       dataIndex: "roomName",
       key: "roomName",
       //@ts-ignore
-      sorter: (a, b) => a.roomName.length - b.roomName.length,
+      sorter: (a, b) => a.roomName.localeCompare(b.roomName),
       //@ts-ignore
       ...getColumnSearchProps('roomName')
     },
     // {
-    //   title: "Khu vực",
-    //   dataIndex: ["room", "area", "name"],
-    //   key: "room.area.name",
-    //   sorter: (a, b) => a.room.area.name.length - b.room.area.name.length,
-    //   ...getColumnSearchProps("room")
-    // },
-    // {
-    //   title: "User",
-    //   dataIndex: ["user", "username"],
-    //   key: "user.username",
-    //   sorter: (a, b) => a.user.username.length - b.user.username.length,
-    // },
-    // {
     //   title: "Khách hàng",
     //   dataIndex: ["customer", "name"],
     //   key: "customer.name",
-    //   sorter: (a, b) => a.customer.name.length - b.customer.name.length,
+    //   sorter: (a, b) => a.customer.name.localeCompare(b.customer.name),
     // },
     {
       title: "Thời gian bắt đầu",
@@ -241,18 +228,18 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
         dayjs(a.updatedAt).valueOf() - dayjs(b.updatedAt).valueOf(),
       ...getColumnSearchProps("updatedAt"),
     },
+    // {
+    //   title: "Người tạo",
+    //   dataIndex: "createdBy",
+    //   key: "createdBy",
+    //   sorter: (a, b) => a.createdBy.length - b.createdBy.length,
+    //   ...getColumnSearchProps("createdBy"),
+    // },
     {
       title: "Người tạo",
-      dataIndex: "createdBy",
-      key: "createdBy",
-      sorter: (a, b) => a.createdBy.length - b.createdBy.length,
-      ...getColumnSearchProps("createdBy"),
-    },
-    {
-      title: "Người cập nhật",
       dataIndex: "updatedBy",
       key: "updatedBy",
-      sorter: (a, b) => a.updatedBy.length - b.updatedBy.length,
+      sorter: (a, b) => a.updatedBy.localeCompare(b.updatedBy),
       ...getColumnSearchProps("updatedBy"),
     },
     {
@@ -278,15 +265,15 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
       render: (_, record) => (
         <Space size="middle">
           <Tag color="#2db7f5">
-            <a onClick={() => handleEdit(record)}>
+            <a onClick={() => {handleEdit(record), console.log(record)}}>
               <EyeOutlined />
-              View
+              Xem chi tiết
             </a>
           </Tag>
           <Tag color="#f50">
             <a onClick={() => handleDelete(record.id)}>
               <DeleteOutlined />
-              Cancel
+              Huỷ hoá đơn
             </a>
           </Tag>
         </Space>
@@ -419,10 +406,10 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
             <Descriptions.Item label="Thời gian kết thúc">
               {dayjs(order?.updatedAt).format("YYYY-MM-DD HH:mm:ss")}
             </Descriptions.Item>
-            <Descriptions.Item label="Người tạo">
+            {/* <Descriptions.Item label="Người tạo">
               {order?.createdBy}
-            </Descriptions.Item>
-            <Descriptions.Item label="Người cập nhật">
+            </Descriptions.Item> */}
+            <Descriptions.Item label="Người tạo">
               {order?.updatedBy}
             </Descriptions.Item>
           </Descriptions>

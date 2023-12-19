@@ -30,10 +30,11 @@ import { IOrder, IOrderDetail } from "@/app/(crud)/Order/interfaceOrder";
 import { IArea, IRoom } from "@/lib/interfaceBase";
 import { findAll } from "@/app/services/roomService";
 import { findAllArea } from "@/app/services/areaService";
-import { findOrderDetailByDate } from "@/app/services/orderDetailService";
-import { findAllOrder } from "@/app/services/orderService";
+import { findOrderDetailByDate } from "@/app/services/invoiceDetailService";
+import { findAllOrder } from "@/app/services/invoiceService";
 
 const Home = () => {
+
   const { Title, Text } = Typography;
 
   const dollor = [

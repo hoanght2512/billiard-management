@@ -11,7 +11,6 @@ interface customerPayload {
     const response = await axiosClient.get(`https://beevengers-171751ae310c.herokuapp.com/api/v1/customer/findbyid?customerId=${customerId}`);
     return response;
   }
-  export const addCustomer = async (customerDetail: customerPayload) => {
     const response = await axiosClient.post("https://beevengers-171751ae310c.herokuapp.com/api/v1/customer/manager", JSON.stringify(customerDetail));
     return response;
   }

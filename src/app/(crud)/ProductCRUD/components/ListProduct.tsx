@@ -19,7 +19,13 @@ import {
   message,
 } from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
-import { CategoryDetail, DataTypeCategory, ICategory, IProduct, ProductDetail } from "@/lib/interfaceBase";
+import {
+  CategoryDetail,
+  DataTypeCategory,
+  ICategory,
+  IProduct,
+  ProductDetail,
+} from "@/lib/interfaceBase";
 import Paragraph from "antd/es/typography/Paragraph";
 import {
   DeleteOutlined,
@@ -39,7 +45,12 @@ import {
   updateProduct,
 } from "@/app/services/productService";
 import TableCategory from "../../CategoryCRUD/components/TableCRUD";
-import { addCategory, deleteCategory, findAllCategory, updateCategory } from "@/app/services/categoryService";
+import {
+  addCategory,
+  deleteCategory,
+  findAllCategory,
+  updateCategory,
+} from "@/app/services/categoryService";
 
 interface IProps {
   onEdit: (product: IProduct) => void;
@@ -91,9 +102,9 @@ const ProductController: React.FC<IProps> = ({
   const [dataProduct, setDataProduct] = useState<IProduct[]>([]);
   const [editing, setEditing] = useState(false);
   const [isModalVisibleCategory, setIsModalVisibleCategory] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<ICategory | undefined>(
-    undefined
-  );
+  const [selectedCategory, setSelectedCategory] = useState<
+    ICategory | undefined
+  >(undefined);
   const [dataCategory, setDataCategory] = useState<DataTypeCategory[]>([]);
 
   const showModalCategory = (category?: ICategory) => {
@@ -222,7 +233,7 @@ const ProductController: React.FC<IProps> = ({
       title: "Name",
       dataIndex: "name",
       key: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter: (a, b) => a.name.localeCompare(b.name),
       ...getColumnSearchProps("name"),
     },
     {
@@ -256,7 +267,7 @@ const ProductController: React.FC<IProps> = ({
       dataIndex: "categoryName",
       key: "categoryName",
       //@ts-ignore
-      sorter: (a, b) => a.categoryName.length - b.categoryName.length,
+      sorter: (a, b) => a.categoryName.localeCompare(b.categoryName),
       //@ts-ignore
       ...getColumnSearchProps("categoryName"),
     },
@@ -265,7 +276,7 @@ const ProductController: React.FC<IProps> = ({
       dataIndex: "unit",
       key: "unit",
       //@ts-ignore
-      sorter: (a, b) => a.unit.length - b.unit.length,
+      sorter: (a, b) => a.unit.localeCompare(b.unit),
       //@ts-ignore
       ...getColumnSearchProps("unit"),
     },
@@ -277,13 +288,13 @@ const ProductController: React.FC<IProps> = ({
           <Tag color="#2db7f5">
             <a onClick={() => handleEdit(record)}>
               <EditOutlined />
-              Edit
+              Sửa
             </a>
           </Tag>
           <Tag color="#f50">
             <a onClick={() => handleDelete(record.id)}>
               <DeleteOutlined />
-              Delete
+              Xoá
             </a>
           </Tag>
         </Space>
@@ -326,9 +337,11 @@ const ProductController: React.FC<IProps> = ({
         message.success("Thêm sản phẩm thành công!");
         resetFormData();
         fetchData();
+        setIsModalVisible(false)
       }
     } catch (error) {
       console.log(error);
+      message.error("Thêm sản phẩm thất bại!");
     }
   };
 
@@ -341,6 +354,7 @@ const ProductController: React.FC<IProps> = ({
       }
     } catch (error) {
       console.log(error);
+      message.error("Cập nhật sản phẩm thất bại!");
     }
   };
 
@@ -353,6 +367,7 @@ const ProductController: React.FC<IProps> = ({
       }
     } catch (error) {
       console.log(error);
+      message.error("Xóa thất bại!");
     }
   };
   const fetchDataCategory = async () => {
@@ -382,20 +397,27 @@ const ProductController: React.FC<IProps> = ({
     //@ts-ignore
     setDefaultCategoryId(dataCategory?.[0]?.id || 0);
   }, [dataCategory]);
-  const onSubmmitCategory = async (category: CategoryDetail, resetFormData: () => void) => {
+  const onSubmmitCategory = async (
+    category: CategoryDetail,
+    resetFormData: () => void
+  ) => {
     try {
       const res = await addCategory(category);
       if (res) {
         message.success("Thêm danh mục thành công!");
         resetFormData();
         fetchDataCategory();
+        setIsModalVisibleCategory(false);
       }
     } catch (error) {
       message.error("Thêm danh mục thất bại!");
     }
   };
 
-  const onUpdateCategory = async (categoryId: number, category: CategoryDetail) => {
+  const onUpdateCategory = async (
+    categoryId: number,
+    category: CategoryDetail
+  ) => {
     try {
       const res = await updateCategory(categoryId, category);
       if (res) {
@@ -415,6 +437,7 @@ const ProductController: React.FC<IProps> = ({
       }
     } catch (error) {
       console.log(error);
+      message.error("Xóa thất bại!");
     }
   };
   return (
@@ -470,7 +493,15 @@ const ProductController: React.FC<IProps> = ({
                   dataCategory.map((category) => (
                     <>
                       <Select.Option key={category.id} value={category.id}>
-                        {category.name}
+                        <Row justify={"space-between"}>
+                          {category.name}
+                          <Space>
+                            <a>Sửa</a>
+                            <a onClick={() => onDeleteCategory(category.id)}>
+                              Xoá
+                            </a>
+                          </Space>
+                        </Row>
                       </Select.Option>
                     </>
                   ))

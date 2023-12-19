@@ -195,33 +195,46 @@ const CustomerController = () => {
       ...getColumnSearchProps("id"),
     },
     {
-      title: "Name",
+      title: "Tên",
       dataIndex: "name",
       key: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter: (a, b) => a.name.localeCompare(b.name),
       ...getColumnSearchProps("name"),
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      sorter: (a, b) => a.email.length - b.email.length,
+      sorter: (a, b) => a.email.localeCompare(b.email),
       ...getColumnSearchProps("email"),
     },
     {
-      title: "Phone",
+      title: "Số điện thoại",
       dataIndex: "phone",
       key: "phone",
-      sorter: (a, b) => a.phone.length - b.phone.length,
+      sorter: (a, b) => a.phone.localeCompare(b.phone),
       ...getColumnSearchProps("phone"),
     },
     {
-      title: "Discount",
-      dataIndex: "discount",
-      key: "discount",
-      render: (text) => <>{text}%</>,
-      sorter: (a, b) => a.discount - b.discount,
-      ...getColumnSearchProps("discount"),
+      title: "Giới tính",
+      dataIndex: "gender",
+      key: "gender",
+      sorter: (a, b) => a.gender.localeCompare(b.gender),
+      filters: [
+        { text: "Male", value: "Male" },
+        { text: "Female", value: "Female" },
+        { text: "Other", value: "Other" },
+      ],
+      onFilter: (value, record) => record.gender === value
+    },
+    {
+      title: "Giảm giá",
+      dataIndex: "balance",
+      key: "balance",
+      //@ts-ignore
+      sorter: (a, b) => a.balance - b.balance,
+      //@ts-ignore
+      ...getColumnSearchProps("balance"),
     },
     {
       title: "Action",
@@ -231,13 +244,13 @@ const CustomerController = () => {
           <Tag color="#2db7f5">
             <a onClick={() => handleEdit(record)}>
               <EditOutlined />
-              Edit
+              Sửa
             </a>
           </Tag>
           <Tag color="#f50">
             <a onClick={() => handleDelete(record.id)}>
               <DeleteOutlined />
-              Delete
+              Xoá
             </a>
           </Tag>
         </Space>
@@ -264,10 +277,13 @@ const CustomerController = () => {
         message.success("Thêm khách hàng thành công!");
         resetFormData();
         fetchData();
+        setIsModalVisible(true)
       } else {
         message.error(res);
       }
-    } catch (error) {}
+    } catch (error) {
+      message.error("Thêm thất bại");
+    }
   };
 
   const onUpdate = async (customerId: number, customer: CustomerDetail) => {
@@ -279,7 +295,9 @@ const CustomerController = () => {
       } else {
         message.error(res);
       }
-    } catch (error) {}
+    } catch (error) {
+      message.error("Cập nhật thất bại");
+    }
   };
 
   const onDeleteCustomer = async (customerId: number) => {
@@ -291,7 +309,9 @@ const CustomerController = () => {
       } else {
         message.error(res);
       }
-    } catch (error) {}
+    } catch (error) {
+      message.error("Xoá thất bại");
+    }
   };
   return (
     <Card>

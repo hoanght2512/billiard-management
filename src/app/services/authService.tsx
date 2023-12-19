@@ -16,3 +16,8 @@ export const login = async (loginDetail: LoginPayload) => {
     }
     return response;
  };
+
+ export const resetPassword = async (userDetail: LoginPayload) => {
+  const response = await axiosClient.post("http://localhost:8080/api/v1/auth/reset-password", JSON.stringify(userDetail));
+  return response;
+}

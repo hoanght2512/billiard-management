@@ -10,6 +10,7 @@ import {
   Popover,
   InputNumber,
   Modal,
+  Radio,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { CustomerDetail, ICustomer } from "@/lib/interfaceBase";
@@ -25,7 +26,8 @@ const initialValues: CustomerDetail = {
   name: "",
   email: "",
   phone: "",
-  discount: 0,
+  balance: 0,
+  gender: ""
 };
 const fullwidth: React.CSSProperties = {
   width: "100%",
@@ -46,6 +48,7 @@ const TableCustomer: React.FC<IProps> = (props) => {
     }
   }, [props.editing, form, props.customer]);
   const handleSubmit = (data: CustomerDetail) => {
+    console.log(data)
     props.onSubmit(data, () => form.resetFields());
   };
 
@@ -152,7 +155,7 @@ const TableCustomer: React.FC<IProps> = (props) => {
         </Form.Item>
 
         <Form.Item
-          name="discount"
+          name="balance"
           label="Giảm giá"
           rules={[
             {
@@ -167,12 +170,25 @@ const TableCustomer: React.FC<IProps> = (props) => {
         >
           <InputNumber
             formatter={(value) => `${value}%`}
-            name="discount"
+            name="balance"
             min={0}
             max={100}
           />
         </Form.Item>
-
+        <Form.Item
+          label="Giới tính"
+          name="gender"
+          rules={[
+            { required: true, message: "Vui lòng chọn !" },
+          ]}
+        >
+          <Radio.Group>
+            <Radio value="Male" checked>NAM</Radio>
+            <Radio value="Female">NỮ</Radio>
+            <Radio value="Other">Khác</Radio>
+            {/* Add more roles as needed */}
+          </Radio.Group>
+        </Form.Item>
         <Row gutter={32} justify={"center"}>
           <Col span={16}>
             <Space direction="vertical" style={fullwidth}>

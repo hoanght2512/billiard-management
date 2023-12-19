@@ -48,15 +48,15 @@ const UserController = () => {
     setEditUser(record);
   };
 
-  const handleDelete = (id: any) => {
-    console.log(id);
+  const handleDelete = (username: any) => {
+    console.log(username);
     Modal.confirm({
       title: "Bạn có muốn xóa ?",
       okText: "Yes",
       okType: "danger",
       width: "600px",
       onOk: () => {
-        onDeleteUser(id);
+        onDeleteUser(username);
       },
     });
   };
@@ -196,7 +196,7 @@ const UserController = () => {
       title: "Tên đăng nhập",
       dataIndex: "username",
       key: "username",
-      sorter: (a, b) => a.username.length - b.username.length,
+      sorter: (a, b) => a.username.localeCompare(b.username),
       ...getColumnSearchProps("username"),
     },
     {
@@ -207,7 +207,7 @@ const UserController = () => {
         if (a.email === null || b.email === null) {
           return a.email === null ? 1 : -1;
         }
-        return a.email.length - b.email.length;
+        return a.email.localeCompare(b.email);
       },
       ...getColumnSearchProps("email"),
     },
@@ -215,7 +215,7 @@ const UserController = () => {
       title: "Họ và tên",
       dataIndex: "fullname",
       key: "fullname",
-      sorter: (a, b) => a.fullname.length - b.fullname.length,
+      sorter: (a, b) => a.fullname.localeCompare(b.fullname),
       ...getColumnSearchProps("fullname"),
     },
     {
@@ -234,8 +234,9 @@ const UserController = () => {
       ),
       sorter: (a, b) => a.roles.length - b.roles.length,
       filters: [
-        { text: "ROLE_ADMIN", value: "ROLE_ADMIN" },
-        { text: "ROLE_USER", value: "ROLE_USER" },
+        { text: "ROLE_MANAGER", value: "ROLE_MANAGER" },
+        { text: "ROLE_CASHIER", value: "ROLE_CASHIER" },
+        { text: "ROLE_ORDER", value: "ROLE_ORDER" },
       ],
       onFilter: (value, record) =>
         record.roles.some((role) => role.name === value),
@@ -252,7 +253,7 @@ const UserController = () => {
             </a>
           </Tag>
           <Tag color="#f50">
-            <a onClick={() => handleDelete(record.id)}>
+            <a onClick={() => handleDelete(record.username)}>
               <DeleteOutlined />
               Delete
             </a>
