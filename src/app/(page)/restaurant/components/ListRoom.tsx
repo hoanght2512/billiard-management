@@ -1,5 +1,4 @@
 "use client";
-import { findRoomOrderID } from "@/app/services/roomOrderService";
 import { findAll, roomByAreaId, roomById } from "@/app/services/roomService";
 import { IRoom, IRoomOrder } from "@/lib/interfaceBase";
 import {
@@ -33,10 +32,10 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
   // console.log(data);
   console.log(filteredData)
   const handleEdit = async (id: number) => {
-    const roomOrder = await findRoomOrderID(id);
+    // const roomOrder = await findRoomOrderID(id);
     const room = await roomById(id);
     //@ts-ignore
-    onEdit(roomOrder);
+    onEdit(room);
     //@ts-ignore
     onEditRoom(room);
     setSelectedRoom(id);
