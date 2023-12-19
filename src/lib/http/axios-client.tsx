@@ -31,7 +31,7 @@ const subscribersHandler = (error: any, token = null) => {
 };
 
 const axiosClient = axios.create({
-    baseURL: 'http://localhost:8080/api',
+    baseURL: 'https://beevengers-171751ae310c.herokuapp.com/api',
     timeout: 30000, 
     headers: { 'Content-Type': 'application/json'}
   });

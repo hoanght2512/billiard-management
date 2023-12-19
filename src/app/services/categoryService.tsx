@@ -4,22 +4,22 @@ interface categoryPayload {
     [x: string]: any
   }
   export const findAllCategory = async () => {
-    const response = await axiosClient.get("http://localhost:8080/api/v1/category")
+    const response = await axiosClient.get("https://beevengers-171751ae310c.herokuapp.com/api/v1/category")
     return response;
   }
   export const categoryById = async (categoryId: any) => {
-    const response = await axiosClient.get(`http://localhost:8080/api/v1/category/findbyid?categoryId=${categoryId}`);
+    const response = await axiosClient.get(`https://beevengers-171751ae310c.herokuapp.com/api/v1/category/findbyid?categoryId=${categoryId}`);
     return response;
   }
   export const addCategory = async (categoryDetail: categoryPayload) => {
-    const response = await axiosClient.post("http://localhost:8080/api/v1/category/manager", JSON.stringify(categoryDetail));
+    const response = await axiosClient.post("https://beevengers-171751ae310c.herokuapp.com/api/v1/category/manager", JSON.stringify(categoryDetail));
     return response;
   }
   export const deleteCategory = async (deleteId: any) => {
-    const response = await axiosClient.delete(`http://localhost:8080/api/v1/category/manager/${deleteId}`)
+    const response = await axiosClient.delete(`https://beevengers-171751ae310c.herokuapp.com/api/v1/category/manager/${deleteId}`)
     return response;
   }
   export const updateCategory = async (updId:any,categoryDetail: categoryPayload) => {
-    const response = await axiosClient.put(`http://localhost:8080/api/v1/category/manager/${updId}`, JSON.stringify(categoryDetail));
+    const response = await axiosClient.put(`https://beevengers-171751ae310c.herokuapp.com/api/v1/category/manager/${updId}`, JSON.stringify(categoryDetail));
     return response;
 }

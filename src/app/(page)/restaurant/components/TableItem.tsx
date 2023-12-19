@@ -1,8 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
+  Badge,
   Button,
+  Col,
   InputNumber,
+  Popconfirm,
+  Row,
   Space,
   Table,
   Tag,
@@ -21,25 +25,31 @@ import { IRoom, IRoomOrder, RoomOrderDetail } from "@/lib/interfaceBase";
 import { SearchProps } from "antd/es/input";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjs from "dayjs";
-
+import "@/lib/assets/styles/buttonTableItem.css";
 import Search from "antd/es/input/Search";
+import TextArea from "antd/es/input/TextArea";
 
 const { Text } = Typography;
 interface IProps {
-  roomOrder?: IRoomOrder[];
+  // roomOrder?: IRoomOrder[];
   room: IRoom | undefined;
-  onUpdate: (roomOrderId: any, roomOrderDetail: RoomOrderDetail) => void;
+  onUpdate: (roomOrderDetail: RoomOrderDetail) => void;
   onDelete: (roomOrderId: number) => void;
   onUpdateTotal: (total: number) => void;
 }
 const TableItem: React.FC<IProps> = ({
-  roomOrder,
+  // roomOrder,
   room,
   onUpdate,
   onDelete,
   onUpdateTotal,
 }) => {
   dayjs.extend(customParseFormat);
+  const [remainingQuantity, setRemainingQuantity] = useState<number | null>(
+    null
+  );
+  const [additionalContentVisible, setAdditionalContentVisible] = useState(false);
+
   const [realTime, setRealTime] = useState(dayjs()); // Thời gian thực tế
   useEffect(() => {
     const interval = setInterval(() => {
@@ -50,30 +60,34 @@ const TableItem: React.FC<IProps> = ({
     return () => clearInterval(interval);
   }, []);
   // console.log(roomOrder);
-  const startRoom = () => {
-  }
+  const startRoom = () => {};
+
   const handleDelete = (roomOrderId: number) => () => {
     onDelete(roomOrderId);
   };
-  const handleQuantityChange = (
-    roomOrderId: any,
-    newQuantity: any
-  ) => {
+  const handleQuantityChange = (roomOrderId: any, newQuantity: any) => {
+    const currentQuantity = roomOrderId.quantity || 0;
+    const diff = newQuantity - currentQuantity;
+
+    // Calculate remaining quantity
+    const remaining = Math.max(currentQuantity - diff, 0);
+    setRemainingQuantity(remaining);
+
+    // Update the quantity
     const serializableQuantity = {
       roomId: roomOrderId?.roomId,
       productId: roomOrderId?.productId,
       quantity: newQuantity,
-      //@ts-ignore
-      orderTime: dayjs(roomOrderId?.orderTime).format("YYYY-MM-DD HH:mm:ss")
-      
+      orderTime: dayjs(roomOrderId?.orderTime).format("YYYY-MM-DD HH:mm:ss"),
     };
     const jsonString = serializableQuantity;
-    console.log(jsonString)
-    //@ts-ignore
-    onUpdate(roomOrderId?.id, jsonString);
-    console.log(newQuantity)
-    console.log(roomOrderId)
+    onUpdate(jsonString);
+
+    setAdditionalContentVisible(true);
   };
+  // const newQuantityDl = () => {
+
+  // }
   const formatCurrency = (value: number | undefined) => {
     if (typeof value !== "number") {
       return "N/A";
@@ -83,20 +97,29 @@ const TableItem: React.FC<IProps> = ({
       currency: "VND",
     });
   };
-  useEffect(() => {
-    const sum =
-      roomOrder?.reduce((acc, record) => {//@ts-ignore
-        const { quantity, productPrice } = record;
-        // const { price } = product || {};
-        if (quantity && productPrice) {
-          return acc + quantity * productPrice;
-        }
-        return acc;
-      }, 0) || 0;
-    if (onUpdateTotal) {
-      onUpdateTotal(sum);
-    }
-  }, [roomOrder, onUpdateTotal]);
+  // useEffect(() => {
+  //   const sum =
+  //     roomOrder?.reduce((acc, record) => {//@ts-ignore
+  //       const { quantity, productPrice } = record;
+  //       // const { price } = product || {};
+  //       if (quantity && productPrice) {
+  //         return acc + quantity * productPrice;
+  //       }
+  //       return acc;
+  //     }, 0) || 0;
+  //   if (onUpdateTotal) {
+  //     onUpdateTotal(sum);
+  //   }
+  // }, [roomOrder, onUpdateTotal]);
+  const confirm = () =>
+    new Promise((resolve) => {
+      setTimeout(() => resolve(null), 3000);
+    });
+  // const onChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  // ) => {
+  //   console.log("Change:", e.target.value);
+  // };
   const columns: ColumnsType<IRoomOrder> = [
     {
       title: "Tên sản phẩm",
@@ -104,32 +127,42 @@ const TableItem: React.FC<IProps> = ({
       key: "id",
       render: (_, record) => (
         <>
-          {//@ts-ignore
-          record.productHourly && (
-            <>
-              <Tag color="#f50">
-                <FontAwesomeIcon icon={faClock} />
-              </Tag>
-            </>
-          )}
-          <Text strong>{//@ts-ignore
-          record.productName} </Text>
-          {//@ts-ignore
-          record.productHourly && (
-            // <Tag color="blue" style={{ borderRadius: "24px" }}>
-            <>
-              <Text style={{ marginLeft: "20px" }}>Từ</Text>
-              <TimePicker
-                bordered={false}
-                // value={dayjs(record.created_at).add(realTime.diff(dayjs()), 'ms')}
-                suffixIcon={false}
-                defaultValue=//@ts-ignore
-                {dayjs(record.createdAt)}
-                format="HH:mm:ss"
-              />
-            </>
-            //  </Tag>
-          )}
+          {
+            //@ts-ignore
+            record.productHourly && (
+              <>
+                <Tag color="#f50">
+                  <FontAwesomeIcon icon={faClock} />
+                </Tag>
+              </>
+            )
+          }
+          <Text strong>
+            {
+              //@ts-ignore
+              record.productName
+            }{" "}
+          </Text>
+          {
+            //@ts-ignore
+            record.productHourly && (
+              // <Tag color="blue" style={{ borderRadius: "24px" }}>
+              <>
+                <Text style={{ marginLeft: "20px" }}>Từ</Text>
+                <TimePicker
+                  bordered={false}
+                  // value={dayjs(record.created_at).add(realTime.diff(dayjs()), 'ms')}
+                  suffixIcon={false}
+                  defaultValue={dayjs(
+                    //@ts-ignore
+                    record.createdAt
+                  )}
+                  format="HH:mm:ss"
+                />
+              </>
+              //  </Tag>
+            )
+          }
           {/* <TimePicker
               value={dayjs(record.created_at).add(realTime.diff(dayjs()), 'ms')}
               format="HH:mm:ss"
@@ -139,8 +172,8 @@ const TableItem: React.FC<IProps> = ({
     },
     {
       title: "Đơn vị",
-      dataIndex: "productUnitName",
-      key: "productUnitName",
+      dataIndex: "unit",
+      key: "unit",
       width: "10%",
       render: (unit) => <Tag color="#f50">{unit}</Tag>,
     },
@@ -193,12 +226,69 @@ const TableItem: React.FC<IProps> = ({
       key: "key",
       width: "5%",
       render: (_, record) => (
-        <Button
-          type="text"
-          danger
-          icon={<DeleteFilled />}
-          onClick={handleDelete(record.id)}
-        />
+        <Popconfirm
+          title="Hủy/Trả đồ "
+          description={
+            <>
+              <div className="wrapper">
+                <span
+                  className="minus"
+                  onClick={() =>
+                    handleQuantityChange(record, record.quantity - 1)
+                  }
+                >
+                  -
+                </span>
+                <span className="num">{record.quantity}</span>
+                <span
+                  className="plus"
+                  onClick={() =>
+                    handleQuantityChange(record, record.quantity + 1)
+                  }
+                >
+                  +
+                </span>
+              </div>
+              {additionalContentVisible && (
+                <Row
+                  style={{
+                    marginBottom: "15px",
+                    display: "flex",
+                    alignItems: "center",
+                    paddingTop: "15px",
+                  }}
+                >
+                  {" "}
+                  <Col flex={1}>
+                    {" "}
+                    <Typography>Số lượng còn lại: </Typography>
+                  </Col>
+                  <Col>
+                    {" "}
+                    <Tag color="#f50" style={{ fontSize: "20px" }}>
+                      {remainingQuantity !== null ? remainingQuantity : "..."}
+                    </Tag>
+                  </Col>
+                  <TextArea
+                    showCount
+                    maxLength={100}
+                    placeholder="disable resize"
+                    style={{ height: 120, resize: "none", marginTop: "15px" }}
+                  />
+                </Row>
+              )}
+            </>
+          }
+          onConfirm={confirm}
+          onOpenChange={() => console.log("open change")}
+        >
+          <Button
+            type="text"
+            danger
+            icon={<DeleteFilled />}
+            // onClick={handleDelete(record.id)}
+          />{" "}
+        </Popconfirm>
       ),
     },
   ];
@@ -218,8 +308,11 @@ const TableItem: React.FC<IProps> = ({
     >
       <Space style={{ margin: "10px" }}>
         <Tag color="blue" style={{ borderRadius: "24px", padding: "5px" }}>
-          {room?.name} - {//@ts-ignore
-          room?.areaName}
+          {room?.name} -{" "}
+          {
+            //@ts-ignore
+            room?.areaName
+          }
         </Tag>
         <Search
           placeholder="Tìm khách hàng"
@@ -234,7 +327,7 @@ const TableItem: React.FC<IProps> = ({
         pagination={false}
         columns={columns}
         //@ts-ignore
-        dataSource={roomOrder}
+        dataSource={room?.roomOrders}
         //        dataSource={data.map((room) => ({ ...room, key: room.id }))}
         style={{ padding: "0 auto " }}
       />
