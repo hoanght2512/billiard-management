@@ -292,7 +292,7 @@ const ProductController: React.FC<IProps> = ({
             </a>
           </Tag>
           <Tag color="#f50">
-            <a onClick={() => handleDelete(record.id)}>
+            <a onClick={() => onDeleteProduct(record.id)}>
               <DeleteOutlined />
               Xoá
             </a>
@@ -350,6 +350,8 @@ const ProductController: React.FC<IProps> = ({
       const res = await updateProduct(productId, product);
       if (res) {
         message.success("Cập nhật sản phẩm thành công!");
+        setIsModalVisible(false);
+        handleCancel();
         fetchData();
       }
     } catch (error) {
@@ -453,7 +455,7 @@ const ProductController: React.FC<IProps> = ({
               }}
             >
               <Typography style={{ fontWeight: "500", flex: 1 }}>
-                danh mục
+                Danh mục
               </Typography>
 
               <Col>

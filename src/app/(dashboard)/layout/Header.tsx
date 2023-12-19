@@ -13,6 +13,8 @@ import {
   Drawer,
   Typography,
   Switch,
+  Menu,
+  MenuProps,
 } from "antd";
 
 import {
@@ -25,6 +27,7 @@ import {
 import { NavLink, Link } from "react-router-dom";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/hooks/use-auth";
+import { deleteCookie } from "cookies-next";
 
 const profile = [
   <svg
@@ -55,9 +58,45 @@ const Header: React.FC<HeaderProps> = ({ name, subName, onPress }) => {
   //@ts-ignore
   const username = data?.fullname;
   const { Title, Text } = Typography;
-
+  const logOut = () => {
+    deleteCookie("access_token");
+    router.push("/");
+  };
   useEffect(() => window.scrollTo(0, 0));
+  const items: MenuProps["items"] = [
+    {
+      label: username ? (
+        username
+      ) : (
+        <Button onClick={() => router.push("/signin")}>Đăng nhập</Button>
+      ),
+      key: "SubMenu",
+      //   icon: <SettingOutlined />,
+      children: data
+        ? [
+            {
+              key: "1",
+              label: "Thông tin tài khoản",
+            },
+            // {
+            //   key: "2",
+            //   label: <a onClick={() => router.push("/")}>Về Dashboard</a>,
+            // },
+            {
+              key: "2",
+              danger: true,
+              label: <a onClick={() => logOut()}>Đăng xuất</a>,
+            },
+          ]
+        : [],
+    },
+  ];
+  const [current, setCurrent] = useState("mail");
 
+  const onClick: MenuProps["onClick"] = (e) => {
+    console.log("click ", e);
+    setCurrent(e.key);
+  };
   return (
     <>
       <Row gutter={[24, 0]}>
@@ -78,24 +117,28 @@ const Header: React.FC<HeaderProps> = ({ name, subName, onPress }) => {
           </div>
         </Col>
         <Col span={24} md={18} className="header-control">
-          {/* <Button
+          <Button
             type="link"
             className="sidebar-toggler"
             onClick={() => onPress()}
           >
-            {toggler}
-          </Button> */}
-          <Button
+            Menu
+          </Button>
+          {/* <Button
             className="btn-sign-in"
           >
             {profile}
             <span>{username}</span>
+          </Button> */}
+          <Menu
+            onClick={onClick}
+            theme="light"
+            selectedKeys={[current]}
+            items={items}
+          />
+          <Button style={{ marginRight: "20px" }} href="/restaurant">
+            Trang thu ngân
           </Button>
-          {/* <Input
-            className="header-search"
-            placeholder="Type here..."
-            prefix={<SearchOutlined />}
-          /> */}
         </Col>
       </Row>
     </>
