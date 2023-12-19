@@ -198,7 +198,7 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
       //@ts-ignore
       sorter: (a, b) => a.roomName.localeCompare(b.roomName),
       //@ts-ignore
-      ...getColumnSearchProps('roomName')
+      ...getColumnSearchProps("roomName"),
     },
     // {
     //   title: "Khách hàng",
@@ -265,7 +265,11 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
       render: (_, record) => (
         <Space size="middle">
           <Tag color="#2db7f5">
-            <a onClick={() => {handleEdit(record), console.log(record)}}>
+            <a
+              onClick={() => {
+                handleEdit(record), console.log(record);
+              }}
+            >
               <EyeOutlined />
               Xem chi tiết
             </a>
@@ -284,8 +288,9 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
   const pageSizeOptions = ["5", "10", "20"];
 
   const footer = () => {
-    const totalCost = order?.orderDetails?.reduce((acc, detail) => {
-      return acc + detail.productPrice * detail.quantity;
+    //@ts-ignore
+    const totalCost = order?.invoiceDetails?.reduce((acc, detail) => {
+      return acc + detail.price * detail.quantity;
     }, 0);
 
     return (
@@ -394,9 +399,13 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
             {/* <Descriptions.Item label="Khu vực">
               {order?.room.area.name}
             </Descriptions.Item> */}
-          
-            <Descriptions.Item label="Bàn">{//@ts-ignore
-            order?.roomName}</Descriptions.Item>
+
+            <Descriptions.Item label="Bàn">
+              {
+                //@ts-ignore
+                order?.roomName
+              }
+            </Descriptions.Item>
             <Descriptions.Item label="Trạng thái">
               {order?.canceled ? "Đã hủy" : "Đã thanh toán"}
             </Descriptions.Item>
@@ -416,7 +425,8 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
         </Row>
         <Row justify={"space-between"}>
           <Table
-            dataSource={order?.orderDetails?.map((product) => ({
+          //@ts-ignore
+            dataSource={order?.invoiceDetails?.map((product) => ({
               ...product,
               key: product.id,
             }))}
@@ -431,8 +441,11 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
             />
             <Table.Column
               title="Giá"
-              dataIndex={"productPrice"}
-              key={"productPrice"}
+              dataIndex={"price"}
+              key={"price"}
+              render={(text: any) => {
+                return `${formatCurrency(text)}`;
+              }}
             />
             <Table.Column
               title="Số lượng"
@@ -471,7 +484,7 @@ const OrderController: React.FC<IProps> = ({ onDelete, data, loading }) => {
               key={"total"}
               render={(text: any, record: IOrderDetail) => {
                 //@ts-ignore
-                const total = record.quantity * record.productPrice;
+                const total = record.quantity * record.price;
                 return `${formatCurrency(total)}`;
               }}
             />

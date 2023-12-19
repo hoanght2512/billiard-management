@@ -13,6 +13,7 @@ import {
   Tag,
   TimePicker,
   Typography,
+  message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -150,19 +151,24 @@ const TableItem: React.FC<IProps> = ({
     } //@ts-ignore
   }, [room?.roomOrders, onUpdateTotal]);
   const confirm = (record: any) => {
-    const serializableQuantity = {
-      id: record?.id,
-      reason: reason, // Get the reason from the state
-      productId: record?.productId,
-      quantity: remainingQuantity,
-      price: record?.productPrice,
-    };
-    const jsonString = serializableQuantity;
-    console.log(record);
-    //@ts-ignore
+    if (reason) {
+      const serializableQuantity = {
+        id: record?.id,
+        reason: reason, // Get the reason from the state
+        productId: record?.productId,
+        quantity: remainingQuantity,
+        price: record?.productPrice,
+      };
+      const jsonString = serializableQuantity;
+      console.log(record);
+      //@ts-ignore
 
-    onHuyTra(jsonString, record?.roomId);
+      onHuyTra(jsonString, record?.roomId);
+    } else{
+      message.error("Bạn phải nhập lý do Đổi/Trả!")
+    }
   };
+
   // const onChange = (
   //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   // ) => {

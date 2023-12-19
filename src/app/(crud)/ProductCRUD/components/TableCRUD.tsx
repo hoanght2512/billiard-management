@@ -175,8 +175,15 @@ const TableCRUD: React.FC<IProps> = (props) => {
     }
   };
 
-  const handleUpdate = async (productId: any) => {
-    props.onUpdate(productId, form.getFieldsValue());
+  const handleUpdate = async (productId: any, product: any) => {
+    const updatedProduct: ProductDetail = {
+      ...form.getFieldsValue(),
+      //@ts-ignore
+      imageId: product.imageId,
+      imageUrl: product.imageUrl,
+    };
+    console.log(updatedProduct);
+    props.onUpdate(productId, updatedProduct);
   };
 
   const handleDelete = async (productId: any) => {
@@ -417,7 +424,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
                           size="large"
                           block
                           onClick={() => {
-                            handleUpdate(props.product?.id);
+                            handleUpdate(props.product?.id, props.product);
                           }}
                         >
                           Sửa

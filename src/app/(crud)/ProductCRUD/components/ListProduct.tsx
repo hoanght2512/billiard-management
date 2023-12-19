@@ -106,7 +106,6 @@ const ProductController: React.FC<IProps> = ({
     ICategory | undefined
   >(undefined);
   const [dataCategory, setDataCategory] = useState<DataTypeCategory[]>([]);
-
   const showModalCategory = (category?: ICategory) => {
     setSelectedCategory(category);
     setIsModalVisibleCategory(true);
