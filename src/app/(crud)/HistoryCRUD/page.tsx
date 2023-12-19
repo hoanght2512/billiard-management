@@ -1,3 +1,4 @@
+"use client";
 import { onGetHistory } from "@/app/services/HistoryService";
 import { Tag } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
