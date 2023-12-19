@@ -86,6 +86,7 @@ const Signin = () => {
               Submit
             </Button>
           </Form.Item>
+          <a href="/resetPassword">Quên mật khẩu ?</a>
         </Form>
       </Card>
     </div>

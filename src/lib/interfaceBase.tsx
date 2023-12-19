@@ -33,7 +33,7 @@ export interface IProduct {
   unitId: string;
 }
 export interface DataTypeCategory {
-  id: string;
+  id: number;
   name: string;
 }
 
@@ -68,18 +68,25 @@ export interface LoginDetail {
   password: string;
 }
 //
+export interface ResetPasswordDetail {
+  username: string;
+  email: string;
+}
+//
 export interface ICustomer {
   id: number;
   name: string;
   email: string;
   phone: string;
   discount: number;
+  gender: string;
 }
 export interface CustomerDetail {
   name: string;
   email: string;
   phone: string;
-  discount: number;
+  balance: number;
+  gender: string;
 }
 //
 export interface IRole extends IArea {}
@@ -150,10 +157,10 @@ export interface IProduct {
   productCategory: DataTypeCategory;
   productUnit: DataTypeUnit;
 }
-export interface DataTypeCategory {
-  id: string;
-  name: string;
-}
+// export interface DataTypeCategory {
+//   id: string;
+//   name: string;
+// }
 
 export interface DataTypeUnit extends DataTypeCategory {}
 
@@ -188,19 +195,19 @@ export interface LoginDetail {
   password: string;
 }
 //
-export interface ICustomer {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  discount: number;
-}
-export interface CustomerDetail {
-  name: string;
-  email: string;
-  phone: string;
-  discount: number;
-}
+// export interface ICustomer {
+//   id: number;
+//   name: string;
+//   email: string;
+//   phone: string;
+//   discount: number;
+// }
+// export interface CustomerDetail {
+//   name: string;
+//   email: string;
+//   phone: string;
+//   discount: number;
+// }
 //
 export interface IRole extends IArea {}
 export interface IUser {

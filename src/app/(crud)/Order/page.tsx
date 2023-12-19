@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Col, Flex, Row, message } from "antd";
 import OrderController from "./components/ListOrder";
-import { deleteOrder, findAllOrder } from "@/app/services/orderService";
+import { deleteOrder, findAllOrder } from "@/app/services/invoiceService";
 import { IOrder } from "./interfaceOrder";
 
 const AppOrderCTRL: React.FC = () => {
