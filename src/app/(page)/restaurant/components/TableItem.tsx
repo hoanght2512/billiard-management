@@ -201,34 +201,38 @@ const TableItem: React.FC<IProps> = ({
   };
   useEffect(() => {
     const interval = setInterval(() => {
-      // Check each room order for hourly products
       const updatedOrders = room?.roomOrders?.map((order) => {
         if (order.productHourly) {
           const startTime = dayjs(order.orderTimeStart);
           const currentTime = dayjs();
-          const diffInSeconds = currentTime.diff(startTime, "second");
+          const diffInSeconds = currentTime.diff(startTime, 'second');
           const diffInMinutes = diffInSeconds / 60;
-
-          // If the usage time is a multiple of 6 minutes, update the quantity by 0.1
+  
+          // Kiểm tra nếu thời gian sử dụng là bội số của 6 phút
           if (diffInMinutes > 0 && diffInMinutes % 6 === 0) {
             const updatedQuantity = parseFloat(order.quantity) + 0.1;
-
-            return {
-              ...order,
-              quantity: updatedQuantity.toFixed(1),
-            };
+  
+            // Chỉ cập nhật nếu số lượng mới khác số lượng hiện tại
+            if (updatedQuantity !== parseFloat(order.quantity)) {
+              const serializableQuantity = {
+                id: order.id,
+                roomId: order.roomId,
+                productId: order.productId,
+                quantity: updatedQuantity.toFixed(1),
+                orderTimeStart: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+              };
+              return serializableQuantity;
+            }
           }
         }
         return order;
-      });
+      }).filter(Boolean); // Lọc bỏ các đơn hàng không xác định (undefined)
+  
+      onUpdate(updatedOrders[0]);
 
-      if (updatedOrders) {
-        console.log(updatedOrders)
-        onUpdate(updatedOrders);
-      }
-    }, 1000 * 60); // Run every minute
-
-    // Cleanup interval on component unmount
+    }, 3000); // Chạy mỗi 3 giây
+  
+    // Dọn dẹp interval khi component unmount
     return () => clearInterval(interval);
   }, [room?.roomOrders, onUpdate]);
   const handleQuantityChange = (roomOrderId: any, newQuantity: any) => {
@@ -350,6 +354,7 @@ const TableItem: React.FC<IProps> = ({
               <>
                 <Text style={{ marginLeft: "20px" }}>Từ</Text>
                 <TimePicker
+                disabled
                   bordered={false}
                   // value={dayjs(record.created_at).add(realTime.diff(dayjs()), 'ms')}
                   suffixIcon={false}
@@ -369,26 +374,6 @@ const TableItem: React.FC<IProps> = ({
             /> */}
         </>
       ),
-    },
-    {
-      title: "Thời gian",
-      dataIndex: "orderTime",
-      key: "orderTime",
-      render: (orderTime, record) => {
-        // If the product is hourly, calculate the usage time
-        if (record.productHourly) {
-          const startTime = dayjs(record.orderTimeStart);
-          const currentTime = dayjs();
-          const diffInSeconds = currentTime.diff(startTime, "second");
-          const hours = Math.floor(diffInSeconds / 3600);
-          const minutes = Math.floor((diffInSeconds % 3600) / 60);
-          const seconds = diffInSeconds % 60;
-          return `${hours}:${minutes}:${seconds}`;
-        } else {
-          // If the product is not hourly, display the start time
-          return dayjs(orderTime).format("HH:mm:ss");
-        }
-      },
     },
     {
       title: "Đơn vị",
