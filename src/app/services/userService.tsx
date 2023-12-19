@@ -16,7 +16,6 @@ export const addUser = async (userDetail: userPayload) => {
   const response = await axiosClient.post("https://beevengers-171751ae310c.herokuapp.com/api/v1/user/manager", JSON.stringify(userDetail));
   return response;
 }
-
 export const deleteUser = async (deleteId: any) => {
   const response = await axiosClient.delete(`https://beevengers-171751ae310c.herokuapp.com/api/v1/user/manager/${deleteId}`)
   return response;
