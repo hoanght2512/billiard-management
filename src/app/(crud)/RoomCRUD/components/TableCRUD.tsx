@@ -130,6 +130,7 @@ const TableCRUD: React.FC<IProps> = (props) => {
     }
   };
   const handleClickSelect = (product: ProductDetail) => {
+    
     setSelectedProduct(product);
     console.log(selectedProduct);
   };
@@ -337,6 +338,8 @@ const TableCRUD: React.FC<IProps> = (props) => {
                       const price = item.price;
                       //@ts-ignore
                       const image = item.imageUrl;
+                      //@ts-ignore
+                      const isSelected = selectedProduct?.id === id;
 
                       return (
                         <List.Item key={id}>
@@ -354,8 +357,11 @@ const TableCRUD: React.FC<IProps> = (props) => {
                                   src={image}
                                   alt="product"
                                   preview={false}
+                                  height={150}
                                 />
                               }
+                              style={{ border: isSelected ? "2px solid red" : "2px solid transparent" }}
+
                             >
                               <Text
                                 style={{

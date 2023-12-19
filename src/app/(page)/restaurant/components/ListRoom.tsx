@@ -176,7 +176,7 @@ const ListRoom: React.FC<IProps> = ({ onEdit, onEditRoom, data }) => {
                       type="secondary"
                       style={{ color: isUsed ? "white" : "" }}
                     >
-                      {isUsed ? "Đang sử dụng" : "Trống"}
+                      {isUsed ? "Sử dụng" : "Trống"}
                     </Text>
                   </Card>
                 </a>
